@@ -1,0 +1,129 @@
+<%-include('../layouts/adminHeader')%>
+<%-include('../layouts/adminSidebar')%>
+<div class="pc-container" style="background-color: rgb(234, 230, 230);">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Enter Product Details</h4>
+                        <form action="/admin/addCategory" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                            <div class="form-body">
+                                <div class="form-group" >
+                                    <div class="row">
+                                        <label class="col-lg-2">Name</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                                
+                                                <div class="col-md-11">
+                                                    <input type="text" class="form-control" id="name" name="name"
+                                                        placeholder="Enter Product Name">
+                                                    <div id="nameContainer" class="text-danger"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <div class="row">
+                                        <label class="col-lg-2">Price</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                                
+                                                <div class="col-md-11">
+                                                    <input type="text" class="form-control" id="price" name="price"
+                                                        placeholder="Enter Product Price">
+                                                    <div id="priceContainer" class="text-danger"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <div class="row">
+                                        <label class="col-lg-2">Quantity</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                        
+                                                <div class="col-md-11">
+                                                    <input type="number" class="form-control" id="quantity" name="quantity"
+                                                        placeholder="Enter Quantity">
+                                                    <div id="quantityContainer" class="text-danger"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <div class="row">
+                                        <label class="col-lg-2">Category</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                    
+                                                <div class="col-md-11">
+                                                    <!-- <form> -->
+                                                        <div class="form-group mb-4">
+                                                            
+                                                            <select class="custom-select mr-sm-2" id="category" name="category">
+                                                                <option value="" disabled selected>Choose Category</option>
+                                                                <% categories.forEach(function(category) { %>
+                                                                    <option value="<%= category._id %>"><%= category.name %></option>
+                                                                <% }); %>
+                                                            </select>
+                                                            <div id="categoryContainer" class="text-danger"></div>
+                                                        </div>
+                                                    <!-- </form> -->
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <div class="row">
+                                        <label class="col-lg-2">Description</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                                <div class="col-md-11">
+                                                    <textarea class="form-control" rows="3" id="description" name="description"
+                                                    placeholder="Text Here..."></textarea>
+                                                    <div id="descriptionContainer" class="text-danger"></div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-lg-2">Images</label>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="file" class="form-control-file" id="imageInput" multiple="multiple" onchange="previewImages()" accept="image/*" name="image">
+                                                    <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
+                                                    <input type="hidden" id="deletedImages" name="deletedImages" value=""> <!-- Hidden input to store deleted image filenames -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                              
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-3 thumbnail-container"></div>
+                            <!-- Image Preview end -->
+                            <div class="form-actions">
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-info">Submit</button>
+                                    <button type="reset" class="btn btn-dark">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>   
+</div>
+<%-include('../layouts/adminFooter')%>

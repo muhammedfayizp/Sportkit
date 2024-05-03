@@ -1,0 +1,499 @@
+<%-include('../layouts/header')%>
+    <%-include('../layouts/navbar')%>
+        <style type="text/css">
+            body {
+                background-color: #cad1dc;
+                color: #333639;
+            }
+
+            .img-account-profile {
+                height: 10rem;
+            }
+
+            .rounded-circle {
+                border-radius: 50% !important;
+            }
+
+            .card {
+                box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+            }
+
+            .card .card-header {
+                font-weight: 500;
+            }
+
+            .card-header:first-child {
+                border-radius: 0.35rem 0.35rem 0 0;
+            }
+
+            .card-header {
+                padding: 1rem 1.35rem;
+                margin-bottom: 0;
+                background-color: rgba(33, 40, 50, 0.03);
+                border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+            }
+
+            .form-control,
+            .dataTable-input {
+                display: block;
+                width: 100%;
+                padding: 0.875rem 1.125rem;
+                font-size: 0.875rem;
+                font-weight: 400;
+                line-height: 1;
+                color: #69707a;
+                background-color: #fff;
+                background-clip: padding-box;
+                border: 1px solid #7e8082;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                border-radius: 0.35rem;
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+
+            .nav-borders .nav-link.active {
+                color: #0061f2;
+                border-bottom-color: #0061f2;
+            }
+
+            .nav-borders .nav-link {
+                color: #69707a;
+                border-bottom-width: 0.125rem;
+                border-bottom-style: solid;
+                border-bottom-color: transparent;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+        </style>
+
+        <body>
+            <div class="container-xl px-4 mt-4" style="height: 700px;">
+
+                <nav class="nav nav-borders">
+                    <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
+                    <a class="nav-link active ms-0" href="" target="__blank">Address</a>
+                    <a class="nav-link" href="" target="__blank">Wallet</a>
+                    <a class="nav-link" href="" target="__blank">Offer</a>
+                    <a class="nav-link" href="" target="__blank">Order History</a>
+                </nav>
+                <hr class="mt-0 mb-4">
+                <div class="row">
+                    <div class="col-xl-4">
+
+                        <div class="card mb-4 mb-xl-0">
+                            <div class="card-header">Profile Picture</div>
+                            <div class="card-body text-center">
+
+                                <img class="img-account-profile rounded-circle mb-2"
+                                    src="http://bootdey.com/img/Content/avatar/avatar1.png" alt>
+
+                                <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+
+                                <button class="btn btn-primary" type="button">Upload new image</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+
+                        <div class="card mb-4">
+                            <div class="card-header" style="text-align: center;">
+                                <h3>Address</h3>
+                            </div>
+                            <div class="card-body">
+                                <form>
+
+                                    <div class="row" style="margin-top: 15px; padding-top:15px">
+                                        <% if(addressData&&addressData.address){%>
+                                            <% addressData.address.forEach((addresses,index)=> { %>
+                                                <div class="col-sm-4">
+
+                                                    <h4>Address <%= index + 1 %>
+                                                    </h4>
+                                                    <p>
+                                                        <%= addresses.name%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.emial%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.mobile%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.pincode%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.state%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.dist%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.city%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.area%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.houseName%>
+                                                    </p>
+                                                    <p>
+                                                        <%= addresses.houseNo%>
+                                                    </p>
+                                                    <div class="text-center mb-2 mt-2">
+                                                        <a href="/editAddresspage" onclick="editAddress('<%= addresses._id %>')">edit</a>
+                                                        <button class="delete-btn" data-address-id="<%= addresses._id %>">delete</button>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
+                                                    <%}%>
+
+                                    </div>
+                                    <button id="addAddressBtn" class="btn btn-primary" type="button">Add New
+                                        Address</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog"
+                aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+                            <form method="post" action="/addAddress" onsubmit="return validation()">
+
+                                <div class="form-row px-3">
+                                    <div class="col">
+                                        <label for="address">Name:</label>
+                                        <input type="text" class="form-control" id="Name" name="Name"
+                                            placeholder="Enter your Name">
+                                            <span id="errorName" class="text-danger"></span>
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="address">Email:</label>
+                                        <input type="text" class="form-control" id="Email" name="Email"
+                                            placeholder="Enter your Email">
+                                            <span id="errorEmail" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="form-row px-3">
+                                    <div class="col">
+                                        <label for="address">Mobile:</label>
+                                        <input type="text" class="form-control" id="Mobile" name="Mobile"
+                                            placeholder="Enter your Mobile number">
+                                            <span id="errorMobile" class="text-danger"></span>
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="address">Pincode:</label>
+                                        <input type="text" class="form-control" id="Pincode" name="Pincode"
+                                            placeholder="Enter Pincode">
+                                            <span id="errorPincode" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="form-row px-3">
+                                    <div class="col">
+                                        <label for="address">State:</label>
+                                        <input type="text" class="form-control" id="State" name="State" placeholder="Enter state">
+                                        <span id="errorState" class="text-danger"></span>
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="address">Dist:</label>
+                                        <input type="text" class="form-control" id="District" name="District"
+                                            placeholder="Enter District">
+                                            <span id="errorDistrict" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="form-row px-3">
+                                    <div class="col">
+                                        <label for="address">City:</label>
+                                        <input type="text" class="form-control" id="City" name="City" placeholder="Enter City">
+                                        <span id="errorCity" class="text-danger"></span>
+
+                                    </div>
+                                    <div class="col">
+                                        <label for="address">Area:</label>
+                                        <input type="text" class="form-control" id="Area" name="Area" placeholder="Enter Area">
+                                        <span id="errorArea" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group px-3">
+                                    <label for="address">House Address:</label>
+                                    <input type="text" class="form-control" id="houseAddress" name="houseAddress"
+                                        placeholder="Enter House Address">
+                                        <span id="errorhouseAddress" class="text-danger"></span>
+
+                                </div>
+
+                                <div class="form-row px-3">
+                                    <div class="col-6">House No:</label>
+                                        <input type="text" class="form-control" id="houseNumber" name="houseNumber"
+                                            placeholder="Enter House Number">
+                                            <span id="errorhouseNumber" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="text-center mb-2">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+            <script type="text/javascript"></script>
+
+            <script>
+                function validation(){
+                    const name=document.getElementById('Name').value.trim();
+                    const email=document.getElementById('Email').value.trim()
+                    const mobile = document.getElementById('Mobile').value.trim();
+                    const pincode=document.getElementById('Pincode').value.trim()
+                    const state=document.getElementById('State').value.trim()
+                    const district=document.getElementById('District').value.trim()
+                    const city=document.getElementById('City').value.trim()
+                    const area=document.getElementById('Area').value.trim()
+                    const houseAddress=document.getElementById('houseAddress').value.trim()
+                    const houseNo=document.getElementById('houseNumber').value.trim()
+
+
+
+
+                    document.getElementById('errorName').innerText = '';
+                    document.getElementById('errorEmail').innerText = '';
+                    document.getElementById('errorMobile').innerText = '';
+                    document.getElementById('errorPincode').innerText = '';
+                    document.getElementById('errorState').innerText = '';
+                    document.getElementById('errorDistrict').innerText = '';
+                    document.getElementById('errorCity').innerText = '';
+                    document.getElementById('errorArea').innerText = '';
+                    document.getElementById('errorhouseAddress').innerText = '';
+                    document.getElementById('errorhouseNumber').innerText = '';
+
+                    let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+                    let emailRegex = /^(?!\s)[^\s@]+@[^\s@]+\.(?:com)$/i;
+                    const mobileRegex = /^\d{10}$/;
+                    let pincodeRegex = /^.{6,}$/;
+                    let stateRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+                    let cityRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+
+                    let districtRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+                    let areaRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+                    let houseAddressRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+                    let houseNoRegex =  /^.{6,}$/;
+
+                    if(name===''){
+                        errorName.innerText='name cannot be empty';
+                        return false;
+                    }else if(!nameRegex.test(name)){
+                        errorName.innerText='name can only contain letters and spaces';
+                        return false;
+                    }else if(name.charAt(0)===''){
+                        errorName.innerText='please remove the space'
+                        return false
+                    }
+
+                    if (email === "") {
+                        errorEmail.innerText = "Email cannot be empty";
+                        return false;
+                    } else if (!emailRegex.test(email)) {
+                        errorEmail.innerText = " enter a valid email address";
+                        return false;
+                    }
+
+                    if (mobile === "") {
+                        errorMobile.innerText = "Mobile number cannot be empty";
+                        return false;
+                    } else if (!mobileRegex.test(mobile)) {
+                        errorMobile.innerText = "Please enter a valid 10-digit mobile number";
+                        return false;
+                    }
+
+
+                    if (pincode === "") {
+                        errorPincode.innerText = "Pincode cannot be empty";
+                        return false;
+                    } else if (!pincodeRegex.test(pincode)) {
+                        errorPincode.innerText = "Pincode must be at least 5 characters";
+                        return false;
+                    }
+
+                    if ( state=== "") {
+                        errorState.innerText = "State cannot be empty";
+                        return false;
+                    } else if (stateRegex !== state) {
+                        errorState.innerText = "only enter characters";
+                        return false;
+                    }
+
+                    if ( district=== "") {
+                        errorDistrict.innerText = "district cannot be empty";
+                        return false;
+                    } else if (!districtRegex.test(district)) {
+                        errorDistrict.innerText = "only enter characters";
+                        return false;
+                    }
+
+                    if ( city=== "") {
+                        errorCity.innerText = "Email cannot be empty";
+                        return false;
+                    } else if (!cityRegex.test(city)) {
+                        errorCity.innerText = "only enter characters";
+                        return false;
+                    }
+
+                    if (area === "") {
+                        errorArea.innerText = "Email cannot be empty";
+                        return false;
+                    } else if (!areaRegex.test(area)) {
+                        errorArea.innerText = " only enter characterss";
+                        return false;
+                    }
+
+                    if (houseAddress === "") {
+                        errorhouseAddress.innerText = "Email cannot be empty";
+                        return false;
+                    } else if (!houseAddressRegex.test(houseAddress)) {
+                        errorhouseAddress.innerText = "only enter characters";
+                        return false;
+                    }
+                    if (houseNo === "") {
+                        errorhouseNumber.innerText = "Email cannot be empty";
+                        return false;
+                    } else if (!houseNoRegex.test(houseNo)) {
+                        errorhouseNumber.innerText = "only enter numbers";
+                        return false;
+                    }                 
+                    
+                    return true;  
+                }
+
+
+
+
+                document.getElementById('addAddressBtn').addEventListener('click', function () {
+                    $('#addAddressModal').modal('show');
+                });
+               
+                document.addEventListener('DOMContentLoaded',function(){
+                    const deleteBtn=document.querySelectorAll('.delete-btn')
+                    deleteBtn.forEach(button=>{
+                        button.addEventListener('click',function(event){
+                            event.preventDefault();
+                            const addressId=this.getAttribute('data-address-id')
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    icon:'question',
+                                    showCancelButton:true,
+                                    confirmButtonColor:'#3085d6',
+                                    cancelButtonColor:'#d33',
+                                    confirmButtonText:`Yes`
+                                })
+                                .then((result) => {
+                                if (result.isConfirmed) {
+                                    fetch('/deleteAddress', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            addressId: addressId
+                                        })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    
+                                        if (data.success) {
+                                            Swal.fire(
+                                                'Deleted!',
+                                                'Your address has been deleted.',
+                                                'success',
+                                                
+                                            ).then(() => {
+                                                window.location.reload();
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                    
+                                    });
+                                }
+                            });
+                        })
+                    })
+                })  
+
+                function editAddress(addressId){
+                    var editAddressUrl='/editAddresspage?addressId='+addressId;
+                    window.location.href=editAddressUrl
+                }
+
+
+
+                // document.addEventListener('DOMContentLoaded',function(){
+                //     const editBtn=document.querySelectorAll('.edit-btn')
+                //     editBtn.forEach(button=>{
+                //         button.addEventListener('click',function(event){
+                //             event.preventDefault();
+                //             const addressId=this.getAttribute('data-address-id')
+                //             fetch('/editAddress', {
+                //                 method: 'POST',
+                //                 headers: {
+                //                     'Content-Type': 'application/json'
+                //                 },
+                //                 body: JSON.stringify({
+                //                     addressId: addressId
+                //                 })
+                //             })
+                //             .then(response => response.json())
+                //             .then(data => {
+                            
+                //                 if (data.success) {
+                //                     Swal.fire(
+                //                         'Edit',
+                //                         'Your address editing successfull.',
+                //                         'success',
+                                        
+                //                     ).then(() => {
+                //                         window.location.reload();
+                //                     });
+                //                 }
+                //             })
+                //             .catch(error => {
+                //                 console.error('Error:', error);
+                            
+                //             });
+                //         })
+                //     })
+                // })
+            </script>
+          
+           
+            <%-include('../layouts/footbar') %>
+                <%-include('../layouts/footer') %>

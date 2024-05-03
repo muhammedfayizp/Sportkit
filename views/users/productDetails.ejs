@@ -1,0 +1,148 @@
+<%-include('../layouts/header')%>
+<%-include('../layouts/navbar')%>
+
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container d-flex align-items-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/product">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="">Details</a></li>
+            </ol>
+
+            <nav class="product-pager ml-auto" aria-label="Product">
+                <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
+                    <i class="icon-angle-left"></i>
+                    <span>Prev</span>
+                </a>
+
+                <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
+                    <span>Next</span>
+                    <i class="icon-angle-right"></i>
+                </a>
+            </nav><!-- End .pager-nav -->
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="product-details-top">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-gallery product-gallery-vertical">
+                            <div class="row">
+                                <figure class="product-main-image">
+                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product image">
+
+                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                        <i class="icon-arrows"></i>
+                                    </a>
+                                </figure><!-- End .product-main-image -->
+
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product side">
+                                    </a>
+
+                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product cross">
+                                    </a>
+
+                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[1].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product with model">
+                                    </a>
+
+                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[2].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product back">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="product-details">
+                            <h1 class="product-title"><%= products.name %></h1><!-- End .product-title -->
+
+                            <div class="ratings-container">
+                                <div class="ratings">
+                                    <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                </div><!-- End .ratings -->
+                                <a class="ratings-text" href="#product-review-link" id="review-link"></a>
+                            </div><!-- End .rating-container -->
+
+                            <div class="product-price">
+                               <%= products.price%>
+                            </div><!-- End .product-price -->
+
+                            <div class="product-content mt-4 mb-5">
+                                <h3>Description</h3>
+                                <p><%= products.description %> </p>
+                            </div><!-- End .product-content -->
+
+                            <div class="product-details-action">
+                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+
+                                <div class="details-action-wrapper">
+                                    <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                    <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                </div><!-- End .details-action-wrapper -->
+                            </div><!-- End .product-details-action -->
+
+                            <div class="product-details-footer">
+                                <div class="social-icons social-icons-sm">
+                                    <span class="social-label">Share:</span>
+                                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                </div>
+                            </div><!-- End .product-details-footer -->
+                        </div><!-- End .product-details -->
+                    </div><!-- End .col-md-6 -->
+                </div><!-- End .row -->
+            </div><!-- End .product-details-top -->  
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+
+<script>
+    let subImage=document.querySelectorAll('.product-gallery-item')
+    subImage.forEach((sub)=>{
+        sub.addEventListener('click',function(event){   
+            event.preventDefault();
+            const mainImage=document.getElementById('product-zoom')
+            mainImage.setAttribute('src',this.getAttribute('data-image'))
+            mainImage.setAttribute('data-zoom-image',this.getAttribute('data-zoom-image'))
+            subImage.forEach((image)=>{
+                image.classList.remove('active');
+            });
+            this.classList.add('active')
+        })
+    })
+    new Zoom(document.getElementById('product-zoom'))
+</script>
+
+//image zooming//
+<link href="css/zoom.css" rel="stylesheet">
+<script src="js/zoom.js"></script>
+<script>
+    window.onload=function () {
+        const imageZoom=document.querySelector('#product-main-image')
+        new Drift(imageZoom,{
+            peneContainer:document.querySelector('#product-main-image'),
+            inlinePane:false,
+            inlineOffsetY:-85,
+            containInline: false,
+            hoverBoundingBox: true,
+            touchBoundingBox: true,
+            hoverDelay: 150,
+        })
+    }
+</script>
+
+
+<%-include('../layouts/footbar') %>
+<%-include('../layouts/footer') %>

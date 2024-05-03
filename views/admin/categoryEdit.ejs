@@ -1,0 +1,38 @@
+<%-include('../layouts/adminHeader')%>
+<%-include('../layouts/adminSidebar')%>
+
+  <!--Edit modal content-->
+  <div class="pc-container" style="background-color: rgb(234, 230, 230);">
+            <div class="pcoded-content">
+                    <form class="pl-3 pr-3" id="editCategoryForm" action="/admin/editCategory" method="post">
+                        <div class="form-group">
+                            <label for="editCategoryName">Edit Category Name</label>
+                            <div class="alert alert-danger mt-2" id="editFlashMessage" style="display: none;"></div>
+                            <input class="form-control" type="text" id="editCategoryName" name="editName" required placeholder="Enter New Category Name">
+
+                            <label for="username">Status</label>
+                            <select class="custom-select mr-sm-2 mt-2" name="statusOpt">
+                                <option value="LISTED">LISTED</option>
+                                <option value="UNLISTED">UNLISTED</option>
+                            </select>
+                            <input type="hidden" value="<%= categeoryDetail._id %>" name="id">
+                            <div class="invalid-feedback" id="editCategoryNameError">Category Name should not contain blank
+                                spaces.
+                            </div>
+                        </div>
+                            <% if(errmsg){ %>
+                                <p style="color: rgb(128, 0, 0); background-color: #ffffff;">
+                                    <%= errmsg %>
+                                </p>
+                                <% } %>
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary" type="submit" id="editSubmitBtn">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div> 
+        </div> 
+    </div> 
+</div>
+
+<%-include('../layouts/adminFooter')%>

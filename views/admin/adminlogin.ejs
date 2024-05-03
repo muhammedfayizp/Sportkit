@@ -1,0 +1,73 @@
+<%-include('../layouts/adminHeader')%>
+
+<div class="main-wrapper">
+
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+
+    <div class="auth-wrapper d-flex no-block justify-content-center align-items-center position-relative" style="background-color: #D1DBFF;">
+        <div class="auth-box row">
+            <div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(/admin/assets/images/big/img5.jpg);">
+            </div>
+            <div class="col-lg-5 col-md-7 bg-white">
+                <div class="p-3">
+                    <h2 class="mt-3 text-center">Admin Sign In</h2>
+                    <form class="mt-4"  action="/admin/adminLogin" method="POST" onsubmit=" return validation()">
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label class="text-dark" for="uname">Email</label>
+                                    <input class="form-control" id="uname" type="email" name="adminEmail" placeholder="Enter your email">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label class="text-dark" for="pwd">Password</label>
+                                    <input class="form-control" id="pwd" type="password" name="password"
+                                        placeholder="Enter your password">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-lg-12 text-center">
+                                <button type="submit" class="btn btn-block btn-dark">Login</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function validation(){
+        const errorEmail=document.getElementById('errorEmail')
+        const errorPassword=document.getElementById('errorPassword')
+
+        errorEmail.innerText='';
+        errorPassword.innerText='';
+
+        if (email === "") {
+            errorEmail.innerText = "Email cannot be empty";
+            return false;
+        } else if (!emailRegex.test(email)) {
+            errorEmail.innerText = " enter a valid email address";
+            return false;
+        }
+
+        if (password === "") {
+            errorPassword.innerText = "Password cannot be empty";
+            return false;
+        } else if (!passwordRegex.test(password)) {
+            errorPassword.innerText = "Password must be at least 5 characters";
+            return false;
+        }
+    }
+</script>
+
+<%-include('../layouts/adminFooter')%>

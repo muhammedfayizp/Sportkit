@@ -1,0 +1,248 @@
+<%-include('../layouts/navbar')%>
+<%-include('../layouts/header')%>
+
+<style>
+    /* Import Google font - Poppins */
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+    /* body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4070f4;
+    } */
+    :where(.container-2, form, .input-field, header) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+    }
+    .container-2 {
+        background: #fff;
+        width: fit-content;
+        padding: 30px 65px;
+        border-radius: 12px;
+        row-gap: 20px;
+        /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
+    }
+    .container-2 header {
+        height: 65px;
+        width: 65px;
+        background: #4070f4;
+        color: #fff;
+        font-size: 2.5rem;
+        border-radius: 50%;
+    }
+    .container-2 h4 {
+        font-size: 1.25rem;
+        color: #333;
+        font-weight: 500;
+    }
+    form .input-field {
+        flex-direction: row;
+        column-gap: 10px;
+    }
+    .input-field input {
+        height: 45px;
+        width: 42px;
+        border-radius: 6px;
+        outline: none;
+        font-size: 1.125rem;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+    .input-field input:focus {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+    .input-field input::-webkit-inner-spin-button,
+    .input-field input::-webkit-outer-spin-button {
+        display: none;
+    }
+    form button {
+        margin-top: 25px;
+        width: 100%;
+        color: #fff;
+        font-size: 1rem;
+        border: none;
+        padding: 9px 0;
+        cursor: pointer;
+        border-radius: 6px;
+        /* pointer-events: none; */
+        background: #6e93f7;
+        transition: all 0.2s ease;
+    }
+    form button.active {
+        background: #4070f4;
+        pointer-events: auto;
+    }
+    form button:hover {
+        background: #0e4bf1;
+    }
+
+    .error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.btn-outline-primary-2 {
+    border: 1px solid black; /* Black border */
+    color: black; /* Black text */
+    background-color: transparent; /* Transparent background */
+}
+</style>
+
+
+<main class="main">
+    <div class="row ">
+      
+            <div class="col-md-12" style="background-color:hsl(16, 82%, 66%);"><div class="container" style="width: 50%; height: 50%;">
+                <div class="form-tab">             
+                    <div class="container-2" style="width: 450px; height: 500px; margin-top: 50px; margin-bottom: 50px;">
+                        <ul class="nav nav-pills nav-fill"role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="otp-verification" data-toggle="tab" role="tab" aria-controls="register-2" aria-selected="true">Verify OTP</a>
+                            </li>
+                        </ul>
+                        <br>
+                        
+                        <h4 >Enter OTP Code</h4>
+                        <p id="errorMessage"></p>
+                        <form>
+                            <div class="input-field">
+                                <input name="digit1" type="text" pattern="\d" required style="border: 2px solid black;" />
+                                <input name="digit2" type="text" pattern="\d" required disabled style="border: 2px solid black;" />
+                                <input name="digit3" type="text" pattern="\d" required disabled style="border: 2px solid black;" />
+                                <input name="digit4" type="text" pattern="\d" required disabled style="border: 2px solid black;" />
+                                <input type="text" value="<%= email %>" id="email" hidden>
+                            </div>
+                            <p id="timer">Time remaining: <span id="countdown">60</span> seconds</p>
+                            <!-- <a href="/resendOTP?email=<%= email %>" id="resendOTP" class="text-black font-weight-bold" style="display: none;" hidden>Resend OTP</a> -->
+                            <button id="verifyOTP" class="btn btn-outline-primary-2" onclick="verify(event)">Verify OTP</button>
+                        </form>
+                        
+                    </div>            
+                </div>           
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script>
+// ********** RESEND OTP ONLY VISIBLE AFTER 1 MINUTE **********
+const countdownElement = document.getElementById('countdown');
+const resendOTPLink = document.getElementById('resendOTP');
+let countdownTime = 60;
+
+function updateCountdown() {
+    countdownElement.textContent = countdownTime;
+
+    if (countdownTime <= 0) {
+        resendOTPLink.style.display = 'inline'; 
+        clearInterval(countdownInterval);
+    } else {
+        countdownTime--;
+    }
+}
+
+const countdownInterval = setInterval(updateCountdown, 1000);
+
+</script>
+<script>
+    const inputs = document.querySelectorAll("input"),
+        button = document.querySelector("button");
+        
+
+    inputs.forEach((input, index1) => {
+        input.addEventListener("input", (e) => {
+            const currentInput = input,
+                nextInput = input.nextElementSibling,
+                prevInput = input.previousElementSibling;
+
+            currentInput.value = currentInput.value.replace(/\D/g, '');
+
+            if (nextInput && nextInput.hasAttribute("disabled") && currentInput.value !== "") {
+                nextInput.removeAttribute("disabled");
+                nextInput.focus();
+            }
+
+            if (e.inputType === "deleteContentBackward" && currentInput.value === "") {
+                if (prevInput) {
+                    currentInput.setAttribute("disabled", true);
+                    prevInput.focus();
+                }
+            }
+
+            button.classList.toggle("active", !inputs[3].disabled && inputs[3].value !== "");
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (!/\d/.test(e.key) && e.key !== 'Backspace') {
+                e.preventDefault();
+            }
+
+            if (e.key === "Backspace") {
+                const prevInput = input.previousElementSibling;
+                const currentLength = currentInput.value.length;
+
+                if (currentLength === 0 && prevInput) {
+                    currentInput.setAttribute("disabled", true);
+                    prevInput.focus();
+                }
+            }
+        });
+    });
+
+    window.addEventListener("load", () => inputs[0].focus());
+</script>
+
+
+<script>
+    function verify(event) {
+        event.preventDefault();
+    const form = document.getElementById('otpForm');
+    const email=document.getElementById('email').value
+    const digit1 = document.getElementsByName('digit1')[0].value;
+    const digit2 = document.getElementsByName('digit2')[0].value;
+    const digit3 = document.getElementsByName('digit3')[0].value;
+    const digit4 = document.getElementsByName('digit4')[0].value;
+    
+console.log(digit1,digit2,digit3,digit4);
+    
+fetch(`/verifyotp/${email}`, {
+    method: 'POST',
+    body: JSON.stringify({ digit1, digit2, digit3, digit4 }), 
+    headers: {
+        'Content-Type': 'application/json' 
+    },
+})
+
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/login'; 
+        } else {
+            alert('Invalid OTP'); 
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
+
+
+<%-include('../layouts/footbar') %>
+<%-include('../layouts/footer') %>
