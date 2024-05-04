@@ -10,26 +10,22 @@ const addressSchema=mongoose.Schema({
         name:{
             type:String
         },
-        email:{
-            type:String
-        },
         mobile:{
             type:Number
         },
         pincode:{
             type:Number
         },
-        state:{
-            type:String
-        },
         dist:{
             type:String
         },
-        city:{
+        state:{
             type:String
         },
-        area:{
-            type:String
+        
+        city:{
+            type:String,
+            required:true
         },
         houseName:{
             type:String

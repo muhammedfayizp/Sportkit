@@ -87,7 +87,7 @@ const loadAddress = async (req, res) => {
 const addressAdding = async (req, res) => {
     try {
 
-        const { Name, Email, Mobile, Pincode, State, District, City, Area, houseAddress, houseNumber } = req.body
+        const { Name, Email, Mobile, Pincode, State, District, City, houseAddress, houseNumber } = req.body
         const userId = req.session.user
         const userData = await Address.findOne({ UserId: userId })
         if (userData) {
@@ -97,8 +97,8 @@ const addressAdding = async (req, res) => {
                 mobile: Mobile,
                 pincode: Pincode,
                 state: State,
+                dist: District,
                 city: City,
-                area: Area,
                 houseName: houseAddress,
                 houseNo: houseNumber
             })
@@ -115,7 +115,6 @@ const addressAdding = async (req, res) => {
                     state: State,
                     dist: District,
                     city: City,
-                    area: Area,
                     houseName: houseAddress,
                     houseNo: houseNumber
                 }]
@@ -128,41 +127,67 @@ const addressAdding = async (req, res) => {
     }
 }
 
-const Addressdelete=async(req,res)=>{
+const Addressdelete = async (req, res) => {
     try {
 
         const userId = req.session.user
-        const {addressId}=req.body 
-        const addressRemoving=await Address.findOneAndUpdate({UserId:userId},{$pull:{address:{_id:addressId}}});
-        if(addressRemoving){
+        const { addressId } = req.body
+        const addressRemoving = await Address.findOneAndUpdate({ UserId: userId }, { $pull: { address: { _id: addressId } } });
+        if (addressRemoving) {
             return res.json({ success: true })
-        }else{
-            return res.json({ success:false })
+        } else {
+            return res.json({ success: false })
         }
 
-        } catch (error) {
+    } catch (error) {
         console.log(error);
     }
 }
 
-const loadEditAddress=async(req,res)=>{
+const loadEditAddress = async (req, res) => {
     try {
         const user = req.session.user
         const userData = await User.findOne({ _id: user })
-        const addressData = await Address.findOne({ UserId: user })
-        res.render('editAddress',{userData,addressData})
+        const addressId = req.query.addressId
+        const addressData = await Address.findOne({ 'address._id': addressId })
+        res.render('editAddress', { userData, addressData })
     } catch (error) {
         console.log(error);
     }
 }
 
-const AddressEdit=async(req,res)=>{
+const AddressEdit = async (req, res) => {
     try {
-        const userId = req.session.user
-        const {addressId}=req.body
-        const addressEditing=await Address.findByIdAndUpdate
+        const { Name, Mobile, Pincode, State, District, City, houseAddress, houseNumber } = req.body;
+        const addressId = req.query.addressId
+        const user = req.session.user
+        const addressData = await Address.findOne({ UserId: user, 'address._id': addressId })
+        if (!addressData) {
+            res.status(404).send("Address data not found");
+        }
+        const foundAddress = addressData.address.find((ads) => ads._id.toString() === addressId)
+        if (!foundAddress) {
+            res.status(404).send("Address not found");
+
+        }
+        const updateResult = await Address.updateOne(
+            { UserId: user, 'address._id': addressId },
+            { $set: {
+                'address.$.name': Name,
+                'address.$.mobile': Mobile,
+                'address.$.pincode': Pincode,
+                'address.$.state': State,
+                'address.$.dist': District,
+                'address.$.city': City,
+                'address.$.houseName': houseAddress,
+                'address.$.houseNo': houseNumber
+            } }
+        );
+        res.redirect('/addressList')
+
     } catch (error) {
         console.log(error);
+        res.status(500).send("Internal Server Error");
     }
 }
 
