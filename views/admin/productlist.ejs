@@ -19,9 +19,14 @@
             </div>
         </div>
     </div>
-  <div class="container" style="display: flex; justify-content: right;margin-top: 25px;">
+  <div class="container" style="display: flex; justify-content: right;margin-top:45px;">
         <a href="/admin/addProduct" class="btn btn-dark ">Add Product+</a>
     </div>
+    <% if(success){ %>
+                    <p style="color: green; background-color: #ffffff;">
+                        <%= success %>
+                    </p>
+                    <% } %>
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -53,7 +58,7 @@
                                                 <%= productId.name %>
                                             </td>
                                             <td>
-                                                <%= productId.price %>
+                                                $<%= productId.price %>
                                             </td>
                                             <td>
                                                 <%= productId.category.name %>
@@ -62,7 +67,7 @@
                                                 <%= productId.quantity %>
                                             </td>
                                             <td>
-                                               <img src="/IMAGES/<%= productId.Inputimage[3].filename %>" alt="" srcset="" style="width: 68px;">
+                                               <img src="/IMAGES/<%= productId.Inputimage[0].filename %>" alt="" srcset="" style="width: 68px;">
                                             </td>
                                             <td>
                                                 <% if (productId.is_delete===true) { %>
@@ -84,11 +89,7 @@
                         </div>
                     </div>
                 
-                <% if(success){ %>
-                    <p style="color: green; background-color: #ffffff;">
-                        <%= success %>
-                    </p>
-                    <% } %>
+                
                 </div>
 
                 <script>

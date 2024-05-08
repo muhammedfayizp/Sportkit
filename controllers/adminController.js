@@ -42,7 +42,7 @@ const verifyadminLogin= async (req, res) => {
                 if (userData.is_admin === 0) {
                     let errormsg='you have no access'
                     req.flash('errormsg',errormsg)
-                    res.redirect('/admin/',);
+                    res.redirect('/admin/');
                 } else {
                     req.session.admin = userData._id;
                     res.redirect("/admin/dashboard");

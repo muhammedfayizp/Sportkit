@@ -9,6 +9,11 @@
 
     }
 </style>
+<% if (successmsg) { %>
+    <div class=" text-center"  style="color: rgb(1, 102, 12); background: white;">
+        <%= successmsg %>
+    </div>
+ <%   }     %>
 <div class="form-box">
     <div class="form-tab">
         <ul class="nav nav-pills nav-fill" role="tablist">
@@ -35,9 +40,9 @@
                         <input type="password" class="form-control" id="singin-password" name="password">
                         <span id="errorPassword" class="text-danger"></span>
                     </div><!-- End .form-group -->
-                    <% if (errms) { %>
+                    <% if (errormsg) { %>
                         <div class="alert alert-danger text-center" role="alert" style="color: red; background: white;">
-                            <%= errms %>
+                            <%= errormsg %>
                         </div>
                      <%   }     %>
                     <div class="form-footer">
@@ -45,11 +50,6 @@
                             <span>LOG IN</span>
                             <i class="icon-long-arrow-right"></i>
                         </button>
-
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="signin-remember">
-                            <label class="custom-control-label" for="signin-remember">Remember Me</label>
-                        </div><!-- End .custom-checkbox -->
 
                         <a href="#" class="forgot-link">Forgot Your Password?</a>
                     </div><!-- End .form-footer -->

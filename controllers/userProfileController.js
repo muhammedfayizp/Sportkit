@@ -16,8 +16,7 @@ const loadUserProfile = async (req, res) => {
     try {
         const user = req.session.user
         const userData = await User.findById({ _id: user })
-        const success = req.flash('success')
-        res.render('userProfile', { userData, success })
+        res.render('userProfile', { userData})
 
     } catch (error) {
         console.log(error);

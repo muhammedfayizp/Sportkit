@@ -20,7 +20,9 @@ const loadHome=async(req,res)=>{
     try {
         const user=req.session.user
         const userData=await User.findOne({_id:user})
-        res.render('home',{userData,user})
+        const products=await Product.find({is_delete:true})
+
+        res.render('home',{userData,products})
     } catch (error) {
         console.log(error);
     }
@@ -28,8 +30,8 @@ const loadHome=async(req,res)=>{
 
 const loadLogin=async(req,res)=>{
     try {
-        let errms = req.flash('errms')
-        res.render('login',{errms})
+        let errormsg = req.flash('errormsg')
+        res.render('login',{errormsg})
     } catch (error) {
         console.log(error); 
     }
@@ -89,8 +91,7 @@ const insertUser = async (req, res) => {
         const { fname, mobile,email, password, confirmPassword } = req.body
         const exist = await User.findOne({ email: req.body.email })
         if (exist) {
-            let message = 'Email already Exists..';
-            req.flash('errormsg', message);
+            req.flash('errormsg', 'Email already Exists');
             res.redirect('/register');
         } else {
             const spassword = await securePassword(password)
@@ -108,8 +109,7 @@ const insertUser = async (req, res) => {
                 
                 if (newUser) {
                     await sendOTPMail(email, res);
-                    let sucmsg = 'Successfully created your Account. Please check your email for OTP verification.';
-                    req.flash('success', sucmsg);
+                    req.flash('successmsg', 'Successfully created your Account. Please check your email for OTP verification.');
                     res.redirect('/otp');
                 } else {
                     res.redirect('/register');
@@ -222,18 +222,15 @@ const verifylogin = async (req, res) => {
                 req.session.user =userData._id;
                 res.redirect('/')
                 }else{
-                    let mes='admin has blocked you'
-                    req.flash('errms',mes)
+                    req.flash('errormsg','admin has blocked you')
                     res.redirect('/login')
                 }
             } else {
-                let message = 'Email or password incorrect..';
-                req.flash('errmsg', message);
+                req.flash('errormsg', 'Email or password incorrect');
                 res.redirect('/login');
             }
         } else {
-            let message = 'Email or password incorrect..';
-            req.flash('errmsg', message);
+            req.flash('errormsg', 'Email or password incorrect');
             res.redirect('/login');
         }
     } catch (error) {

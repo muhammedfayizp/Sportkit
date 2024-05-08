@@ -92,7 +92,7 @@
                                 <div class="product product-7 text-center">
                                     <figure class="product-media">
                                         <a href="/productDetails?id=<%= product._id %>">
-                                            <img src="/IMAGES/<%= product.Inputimage[3].filename%>" alt="Product image" class="product-image">
+                                            <img src="/IMAGES/<%= product.Inputimage[0].filename%>" alt="Product image" class="product-image">
                                         </a>
                                         
                                         <div class="product-action-vertical">
@@ -102,13 +102,13 @@
                                         </div><!-- End .product-action-vertical -->
 
                                         <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                            <a onclick="addtocart('<%= product._id%>')" class="btn-product btn-cart"><span>add to cart</span></a>
                                         </div><!-- End .product-action -->
                                     </figure><!-- End .product-media -->
 
                                     <div class="product-body">
 
-                                        <h3 class="product-title"><a href="/productDetails"><%= product.name %></a></h3><!-- End .product-title -->
+                                        <h3 class="product-title"><a href="/productDetails?id=<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                         <div class="product-price mt-2">
                                             $<%= product.price %>
                                         </div><!-- End .product-price -->
@@ -206,14 +206,53 @@
                                 </div><!-- End .widget-body -->
                             </div><!-- End .collapse -->
                         </div><!-- End .widget -->
-
-                        
                     </div><!-- End .sidebar sidebar-shop -->
                 </aside><!-- End .col-lg-3 -->
             </div><!-- End .row -->
         </div><!-- End .container -->
     </div><!-- End .page-content -->
 </main><!-- End .main -->
+
+<script>
+    function addtocart(productId){
+        const quantity=1;
+        fetch(`/addToCart?productId=${productId}&quantity=${quantity}`,{
+            method:'POST'})
+            .then(response=>response.json())
+            .then(data=>{
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Success',
+                        text:'successfully product added to cart',
+                        showConfiremButton:true,
+                        timer:2500,
+                    })
+                    .then(()=>{
+                        window.location.reload()
+                    });
+                }else{
+                    Swal.fire({
+                        icon:'error',
+                        title:'Error',
+                        text:'failed to add product to cart',
+                        showConfiremButton:false,
+                        timer:2500
+                    })
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+                Swal.fire({
+                    icon:'error',
+                    title:'Error',
+                    text:'an error occurred whiel adding product to cart',
+                    showConfiremButton:false,
+                    timer:2500
+                })
+            })
+    }
+</script>
 
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

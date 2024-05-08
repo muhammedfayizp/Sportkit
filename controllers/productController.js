@@ -121,7 +121,27 @@ const productEditing=async(req,res)=>{
             req.flash('errmsg','The Product Already Existed')
             res.redirect('/admin/productEdit')
         }else{
-            await Product.findByIdAndUpdate({_id:productId},{$set:{name:newName}})
+            const product = await Product.findById(productId);
+            const imageFile=req.files['Inputimage'];
+            if(imageFile.length!==4){
+                req.flash('errmsg','should be insert 4 image')
+                return res.redirect('/admin/addProduct')
+            }
+            const Inputimage=imageFile.map(file=>({
+                filename:file.filename,
+                path:'/uploads'+file.filename
+            }))
+            
+            await Product.findByIdAndUpdate({_id:productId},
+                {$set:{
+                    name:newName,
+                    price:req.body.price,
+                    quantity:req.body.quantity,
+                    category:req.body.category, 
+                    description:req.body.description,
+                    Inputimage
+                }
+            })
             req.flash('success','product updating successfull')
             return res.redirect('/admin/productList')
         }

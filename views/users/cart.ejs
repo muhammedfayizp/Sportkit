@@ -1,0 +1,184 @@
+<%-include('../layouts/header')%>
+    <%-include('../layouts/navbar')%>
+        <main class="main">
+            <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+                </div><!-- End .container -->
+            </div><!-- End .page-header -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="">Shopping Cart</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+
+            <div class="page-content">
+                <div class="cart">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <table class="table table-cart table-mobile">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th></th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <% if(cartData && cartData.length > 0) { %> 
+                                            <% cartData.forEach(products => { %> 
+                                                <tr>
+                                                    <td class="product-col">
+                                                        <div class="product">
+                                                            <figure class="product-media">
+                                                                <a href="#">
+                                                                    <img src="/IMAGES/<%= products.productId.Inputimage[0].filename %>" alt="product image">
+                                                                </a>
+                                                            </figure>
+                                                            
+                                                        </div>
+                                                    </td>
+                                                    <td><%= products.productId.name %></td>
+                                                    <td class="price-col">$<%= products.price %></td>
+                                                    <td class="quantity-col">
+                                                        <div class="cart-product-quantity">
+                                                            <input type="number" id="quantity" class="form-control" value="<%= products.quantity %>" min="1" max="<%= products.productId.quantity %>" step="1" data-decimals="0" required data-product-id="<%= products.productId._id %>">
+                                                        </div>
+                                                    </td>
+                                                    <td class="total-col" data-product-id="<%= products.productId._id %>">$<%= products.totalAmount %></td>
+                                                    <td class="remove-col"><button class="btn-remove" onclick="removeCart('<%= products.productId._id %>')"><i class="icon-close"></i></button></td>
+                                                    <% console.log('hadsf',products.productId._id)%>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5">Your cart is empty.</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table><!-- End .table table-wishlist -->
+
+                                <div class="cart-bottom">
+                                    <div class="cart-discount">
+                                        <form action="#">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" required placeholder="coupon code">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                                                </div><!-- .End .input-group-append -->
+                                            </div><!-- End .input-group -->
+                                        </form>
+                                    </div><!-- End .cart-discount -->
+                                </div><!-- End .cart-bottom -->
+                            </div><!-- End .col-lg-9 -->
+                            <aside class="col-lg-3">
+                                <div class="summary summary-cart">
+                                    <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+
+                                    <table class="table table-summary">
+                                        <tbody>
+                                            <tr class="summary-total">
+                                                <td>Total:</td>
+                                                <td class="cart-total">$<%= totalCartPrice %></td>
+                                            </tr><!-- End .summary-total -->
+                                        </tbody>
+                                    </table><!-- End .table table-summary -->
+
+                                    <a href="/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                </div><!-- End .summary -->
+
+                                <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                            </aside><!-- End .col-lg-3 -->
+                        </div><!-- End .row -->
+                    </div><!-- End .container -->
+                </div><!-- End .cart -->
+            </div><!-- End .page-content -->
+        </main><!-- End .main -->
+
+        <script>
+            
+            document.querySelectorAll('.cart-product-quantity input').forEach(input => {
+                input.addEventListener('change', updateQuantity);
+            });
+
+            function updateQuantity(event) {
+                const input = event.target;
+                const productId = input.dataset.productId;
+                const newQuantity = input.value;
+
+                fetch('/update-quantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId, newQuantity }),
+                })
+            .then(response => response.json())
+            .then(data => {
+                    updateUI(data);
+                })
+            .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+
+            function updateUI(data) {
+                const totalPriceElement = document.querySelector(`.total-col[data-product-id="${data.productId}"]`);
+                const cartTotalElement = document.querySelector('.cart-total');
+
+                if (totalPriceElement && cartTotalElement) {
+                    totalPriceElement.textContent = `$${data.totalPrice}`;
+                    cartTotalElement.textContent = `$${data.cartTotal}`;
+                }
+            }
+            
+            function removeCart(productId){
+                Swal.fire({
+                    title:'Are you sure ?',
+                    icon:'question',
+                    text:'you want remove product from the cart',
+                    showCancelButton:true,
+                    confirmButtonText:`Yes`,
+                    timer:2500,
+                }).then((result)=>{
+                    if(result.isConfirmed){
+                        fetch(`/removeCart?productId=${productId}`,{method:'POST'})
+                        .then(response=>response.json())
+                        .then(data=>{
+                            if(data.success){
+                                Swal.fire({
+                                    title:'successfull',
+                                    icon:'success',
+                                    text:'you product removed from cart'
+                                }).then((result)=>{
+                                    window.location.reload()
+                                })
+                            }else{
+                                Swal.fire({
+                                    title:'Error',
+                                    icon:'error',
+                                    text:'you product removed from cart'
+                                })
+                            }
+                        }).catch(error=>{
+                            console.log('Fetch error:',error);
+                            window.location.reload()
+                        })
+                    }
+                })
+            }
+
+        </script>
+
+
+        <%-include('../layouts/footbar') %>
+            <%-include('../layouts/footer') %>  
