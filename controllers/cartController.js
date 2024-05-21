@@ -98,9 +98,11 @@ const quantityUpdate = async (req, res) => {
 const removeProduct=async(req,res)=>{
     try {
         const userId=req.session.user
+        const userData = await Cart.findOne({ UserId: userId });
         const {productId}=req.query
         const productRemoveing=await Cart.findOneAndUpdate({UserId:userId},{$pull:{products:{productId:productId}}})
         if(productRemoveing){
+            
             return res.json({success:true})
         }else{
             return res.json({success:false})

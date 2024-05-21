@@ -31,7 +31,7 @@ const userSchema=mongoose.Schema({
         default: 0
     }
 
-},{versionKey:false})
+})
 
 
 module.exports=mongoose.model('User',userSchema)

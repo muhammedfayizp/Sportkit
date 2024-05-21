@@ -15,7 +15,8 @@ const securePass = async (passoword) => {
 
 const loadAdminLogin=async(req,res)=>{
     try {
-        res.render('adminlogin')
+        const errormsg=req.flash('errormsg')
+        res.render('adminlogin',{errormsg})
     } catch (error) {
         console.log(error);
     }
@@ -79,11 +80,11 @@ const loadblock=async(req,res)=>{
         const userid=req.query.userid
         const userdata=await User.findOne({_id:userid})
         const isblocked=userdata.is_verified
-        if(isblocked==0){
-            await User.findByIdAndUpdate(userid,{$set:{is_verified:1}})
+        if(isblocked==1){
+            await User.findByIdAndUpdate(userid,{$set:{is_verified:0}})
             return res.json({success:true})
         }else{
-            await User.findByIdAndUpdate(userid,{$set:{is_verified:0}})
+            await User.findByIdAndUpdate(userid,{$set:{is_verified:1}})
             return res.json({success:true})
         }
     } catch (error) {
@@ -91,6 +92,15 @@ const loadblock=async(req,res)=>{
     }
 }
 
+const adminLogout=async(req,res)=>{
+    try {
+        console.log('hello');
+        req.session.admin=null
+        res.redirect('/admin/')
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports={
     loadAdminDashboard,
     loadAdminLogin,
@@ -98,4 +108,5 @@ module.exports={
     securePass,
     loadUserlist,
     loadblock,
+    adminLogout
 }

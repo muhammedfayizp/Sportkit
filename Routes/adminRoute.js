@@ -3,14 +3,17 @@ const admin_Route=express()
 const adminController=require('../controllers/adminController')
 const CategoryController=require('../controllers/categoryController')
 const productController=require('../controllers/productController')
+const adminAuth=require('../middleware/adminAuth')
 
 admin_Route.set('view engine','ejs')
 admin_Route.set('views','./views/admin')
 
 admin_Route.get('/', adminController.loadAdminLogin);
-admin_Route.post('/adminLogin', adminController.verifyadminLogin);
+admin_Route.post('/adminLogin',adminAuth.isLogout,adminController.verifyadminLogin);
+admin_Route.get('/adminlogout',adminAuth.isLogin,adminController.adminLogout)
 
-admin_Route.get('/dashboard', adminController.loadAdminDashboard);
+
+admin_Route.get('/dashboard',adminAuth.isLogin,adminController.loadAdminDashboard);
 admin_Route.get('/userlist',adminController.loadUserlist)
 
 admin_Route.get('/block',adminController.loadblock)
@@ -32,6 +35,8 @@ admin_Route.post('/addCategorys',CategoryController.addNewCategory)
 admin_Route.get('/categoryEdit',CategoryController.loadCategoryEdit)
 admin_Route.post('/editCategory',CategoryController.categoryEditing)
 
-
+admin_Route.get('*',(req,res)=>{
+    res.redirect('/admin/')
+})
 
 module.exports=admin_Route

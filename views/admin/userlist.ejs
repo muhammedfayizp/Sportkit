@@ -51,15 +51,11 @@
                                                         </td>
                                                        
                                                         <td>
-                                                            <% if (usersDa.is_verified===0) { %>
-                                                                <button type="button" class="btn btn-dark"
-                                                                    value="Block"
-                                                                    onclick="confirmAction('<%= usersDa._id %>')">Block</button>
-                                                                <% } else{ %>
-                                                                    <button type="button" class="btn btn-success"
-                                                                        value="Unblook"
-                                                                        onclick="confirmAction('<%= usersDa._id %>')">Unblock</button>
-                                                                    <% } %>
+                                                            <% if (usersDa.is_verified === 1) { %>
+                                                                <button type="button" style="width: 80px;" class="btn btn-dark" value="Block" onclick="confirmAction('<%= usersDa._id %>')">Block</button>
+                                                            <% } else { %>
+                                                                <button type="button" style="width: 80px;" class="btn btn-success" value="Unblock" onclick="confirmAction('<%= usersDa._id %>')">Unblock</button>
+                                                            <% } %>
                                                         </td>
                                                     </tr>
                                                     <% }); %>
@@ -84,7 +80,6 @@
                                 confirmButtonColor:'#3085d6',
                                 cancelButtonColor:'#d33',
                                 confirmButtonText:`Yes`,
-                                timer :1500
 
                             }).then((result)=>{
                                 if(result.isConfirmed){

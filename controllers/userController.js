@@ -18,11 +18,22 @@ const securePassword = async (password) => {
 
 const loadHome=async(req,res)=>{
     try {
-        const user=req.session.user
-        const userData=await User.findOne({_id:user})
         const products=await Product.find({is_delete:true})
+        const user=req.session.user
+        if(user){
+            const userData = await User.findById(user)
+            if(!userData.is_verified){
+                req.session.user = null
+                res.redirect('/login')
+            }else{
 
-        res.render('home',{userData,products})
+                res.render('home',{userData,products})
+            }
+
+        }else{
+            res.render('home',{products})
+        }
+        
     } catch (error) {
         console.log(error);
     }
@@ -30,8 +41,9 @@ const loadHome=async(req,res)=>{
 
 const loadLogin=async(req,res)=>{
     try {
+        const successmsg=req.flash('successmsg')
         let errormsg = req.flash('errormsg')
-        res.render('login',{errormsg})
+        res.render('login',{errormsg,successmsg})
     } catch (error) {
         console.log(error); 
     }
@@ -39,7 +51,8 @@ const loadLogin=async(req,res)=>{
 
 const loadRegister=async(req,res)=>{
     try {
-        res.render('registration')
+        let errormsg = req.flash('errormsg')
+        res.render('registration',{errormsg})
     } catch (error) {
         console.log(error);
     }
@@ -65,17 +78,57 @@ const loadAbuotUs=async(req,res)=>{
     }
 }
 
-const loadProduct=async(req,res)=>{
+const loadProduct = async (req, res) => {
     try {
-        const user=req.session.user
-        const userData=await User.findOne({_id:user})
-        const categories=await Category.find({is_Listed:true})
-        const products=await Product.find({is_delete:true})
-        res.render('allProduct',{categories,products,userData})
+        const user = req.session.user;
+        const userData = await User.findOne({ _id: user });
+        const categories = await Category.find({ is_Listed: true });
+        let allproducts = await Product.find({ is_delete: true });
+        // const categoryIds = categories.map(category => category._id);
+
+        const selectedCategory = req.query.filtered;
+        const priceType=req.query.selectedPrice
+        const selectedType=req.query.sortBy
+
+        const page = parseInt(req.query.page)||1;
+        const limit = 6;
+        const skip = (page-1)*limit;
+
+        let products = await Product.find({is_delete:true}).skip(skip).limit(limit);
+
+        const totalProduct = await Product.countDocuments(products);
+        const totalPages = Math.ceil(totalProduct / limit);
+        let prevPage = page - 1;
+        let nextPage = page + 1;
+        if (prevPage < 1) prevPage = 1;
+        if (nextPage > totalPages) nextPage = totalPages;
+
+        for (let product of allproducts) {
+            const productCategory = await Category.findById(product.category);
+            if (productCategory) {
+                product.categoryName = productCategory.name;
+            }
+        }
+    
+        if (selectedCategory) {
+            products = await Product.find({ category: selectedCategory, is_delete: true });
+        }else if(priceType==='high-to-low'){
+            products=await Product.find({is_delete:true}).sort({price:-1})
+        }else if(priceType==='low-to-high'){
+            products=await Product.find({is_delete:true}).sort({price:1})
+        }else if (selectedType==='asse') {
+            products=await Product.find({is_delete:true}).sort({name:1})
+        }else if(selectedType==='disse'){
+            products=await Product.find({is_delete:true}).sort({name:-1})
+        }
+
+       
+        res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
+        
     } catch (error) {
-        console.log(error);
+        console.error("Error loading products:", error);
     }
-}
+};
 const loadDetails=async(req,res)=>{
     try {
         const product=req.query.id
@@ -88,54 +141,46 @@ const loadDetails=async(req,res)=>{
 
 const insertUser = async (req, res) => {
     try {
-        const { fname, mobile,email, password, confirmPassword } = req.body
-        const exist = await User.findOne({ email: req.body.email })
+        const { fname, mobile, email, password, confirmPassword } = req.body;
+        const exist = await User.findOne({ email: email });
         if (exist) {
             req.flash('errormsg', 'Email already Exists');
-            res.redirect('/register');
+            return res.redirect('/register');
         } else {
-            const spassword = await securePassword(password)
-            if(password==confirmPassword){
+            const spassword = await securePassword(password);
+            if (password === confirmPassword) {
                 const newUser = {
                     name: fname,
                     mobile: mobile,
                     email: email,
                     password: spassword,
+
                     is_admin: 0,
                     is_verified: false
                 };
-              
-                req.session.user=newUser
-                
-                if (newUser) {
+                    req.session.user=newUser
+
                     await sendOTPMail(email, res);
-                    req.flash('successmsg', 'Successfully created your Account. Please check your email for OTP verification.');
-                    res.redirect('/otp');
-                } else {
-                    res.redirect('/register');
-                }
-            }else{
+                    return res.redirect('/otp');
+   
+            } else {
                 console.log('password not match');
-            }  
+                return res.redirect('/register');
+            }
         }
     } catch (error) {
         console.log(error);
+        res.status(500).send('Internal Server Error');
     }
-}
+};
 
-
-const sendOTPMail = async (email , res) => {
+const sendOTPMail = async (email , req,res) => {
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: true,
-            requireTLS: true,
-
             auth: {
                 user: 'muhammedfayizputhiyaparambil@gmail.com',
-                pass: 'amfr gibr vhxt hwca'
+                pass: 'nzio fgpe pyvy dypa'
             }
         });
 
@@ -152,19 +197,18 @@ const sendOTPMail = async (email , res) => {
         };
 
         await transporter.sendMail(mailOptions);
-
+        req.session.email = email;
         res.redirect(`/otp?email=${email}`); 
 
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Internal Server Error'); 
+        // res.status(500).send('Internal Server Error'); 
     }
 }
 
 const loadOTP = async(req,res)=>{
     try {
         const email = req.session.user.email
-        console.log(email);
         res.render('otpVerification',{email : email})
     } catch (error) {
         console.log(error.message);
@@ -238,6 +282,21 @@ const verifylogin = async (req, res) => {
         res.status(500).send('Internal Server Error'); 
     }
 }
+
+const resendOtp=async(req,res)=>{
+    try {
+        const email = req.query.email;
+        if (!email) {
+            return res.status(400).send('Email is required');
+        }
+        await sendOTPMail(email, res);
+        res.redirect(`/otp?email=${email}`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
 const userLogout=async(req,res)=>{
     try {
         req.session.user=null
@@ -262,4 +321,5 @@ module.exports={
     loadOTP,
     loadDetails,
     userLogout,
+    resendOtp
 }

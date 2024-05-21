@@ -32,8 +32,8 @@
                     <div class="col-md-6">
                         <div class="product-gallery product-gallery-vertical">
                             <div class="row">
-                                <figure class="product-main-image">
-                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product image">
+                                <figure class="product-main-image" style="width: 400px;">
+                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product image">
 
                                     <a href="#" id="btn-product-gallery" class="btn-product-gallery">
                                         <i class="icon-arrows"></i>
@@ -41,20 +41,20 @@
                                 </figure><!-- End .product-main-image -->
 
                                 <div id="product-zoom-gallery" class="product-image-gallery">
-                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product side">
-                                    </a>
-
-                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product cross">
+                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product side">
                                     </a>
 
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[1].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product with model">
+                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product cross">
                                     </a>
 
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[2].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product back">
+                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product with model">
+                                    </a>
+
+                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product back">
                                     </a>
                                 </div>
                             </div>
@@ -107,6 +107,7 @@
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+<script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
 
 <script>
     let subImage=document.querySelectorAll('.product-gallery-item')
@@ -123,25 +124,21 @@
         })
     })
     new Zoom(document.getElementById('product-zoom'))
+
+
+    var options1 = {
+        width: 400,
+        zoomWidth: 500,
+        offset: {vertical: 0, horizontal: 10}
+    };
+    var options2 = {
+        fillContainer: true,
+        offset: {vertical: 0, horizontal: 10}
+    };
+
+    new ImageZoom(document.getElementById("product-zoom"), options2);
 </script>
 
-//image zooming//
-<link href="css/zoom.css" rel="stylesheet">
-<script src="js/zoom.js"></script>
-<script>
-    window.onload=function () {
-        const imageZoom=document.querySelector('#product-main-image')
-        new Drift(imageZoom,{
-            peneContainer:document.querySelector('#product-main-image'),
-            inlinePane:false,
-            inlineOffsetY:-85,
-            containInline: false,
-            hoverBoundingBox: true,
-            touchBoundingBox: true,
-            hoverDelay: 150,
-        })
-    }
-</script>
 
 
 <%-include('../layouts/footbar') %>

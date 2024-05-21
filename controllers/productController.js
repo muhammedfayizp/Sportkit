@@ -1,14 +1,17 @@
+
 const Product=require('../models/product_model')
 const Category=require('../models/category_model')
 const multer = require('multer')
 const path=require('path')
 const express=require('express')
+const { find, findById } = require('../models/cart_model')
 const app=express()
 
 const loadProductlist=async(req,res)=>{
     try {
         const productData=await Product.find().populate('category','name')
         let success=req.flash('success')
+
         res.render('productlist',{productData,success})
     } catch (error) {
         console.log(error);
@@ -34,9 +37,9 @@ const imglocation=multer.diskStorage({
          callback(null,Date.now()+'-'+file.originalname)
     }
 })
-const insert=multer({storage:imglocation}).fields([
-    {name:'Inputimage',maxCount:4},
-])
+const insert = multer({ storage: imglocation }).fields([
+    { name: 'Inputimage', maxCount: 4 },
+]);
 app.use(express.static(path.join(__dirname,'public')))
 
 
@@ -71,7 +74,7 @@ const insertProduct=async(req,res)=>{
                 Inputimage,
             })
             await newProduct.save()
-            req.flash('success','Product Adding Successfull')
+            req.flash('success','Product Added Successfully')
             res.redirect('/admin/productlist')
         })
     } catch (error) {
@@ -109,47 +112,41 @@ const loadProductEdit=async(req,res)=>{
     }
 }
 
-const productEditing=async(req,res)=>{
+const productEditing = async (req, res) => {
     try {
-        const productId=req.query.id;
-        const products=await Product.find()
-        const newName=req.body.name.toUpperCase()
-        const productExists=products.some(product=>{
-        return product.name.toUpperCase()===newName&&product._id.toString()!==productId
-        })
-        if(productExists){
-            req.flash('errmsg','The Product Already Existed')
-            res.redirect('/admin/productEdit')
-        }else{
-            const product = await Product.findById(productId);
-            const imageFile=req.files['Inputimage'];
-            if(imageFile.length!==4){
-                req.flash('errmsg','should be insert 4 image')
-                return res.redirect('/admin/addProduct')
-            }
-            const Inputimage=imageFile.map(file=>({
-                filename:file.filename,
-                path:'/uploads'+file.filename
-            }))
-            
-            await Product.findByIdAndUpdate({_id:productId},
-                {$set:{
-                    name:newName,
-                    price:req.body.price,
-                    quantity:req.body.quantity,
-                    category:req.body.category, 
-                    description:req.body.description,
-                    Inputimage
-                }
-            })
-            req.flash('success','product updating successfull')
-            return res.redirect('/admin/productList')
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
+        const productId = req.query.id;
+        const { name, price, quantity, category, description } = req.body;
 
+        const existProduct = await Product.findById(productId);
+
+        if (!existProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        existProduct.name = name;
+        existProduct.price = price;
+        existProduct.quantity = quantity;
+        existProduct.category = category;
+        existProduct.description = description;
+
+        if (req.files && req.files['Inputimage']) {
+            const imageFiles = req.files['Inputimage'].map(file => ({
+                filename: file.filename,
+                path: '/uploads/' + file.filename
+            }));
+
+            existProduct.Inputimage = imageFiles;
+        }
+
+        await existProduct.save();
+
+        req.flash('success', 'Product updating successful');
+        return res.redirect('/admin/productList');
+
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 module.exports={
     loadProductlist,

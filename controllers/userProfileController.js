@@ -14,9 +14,20 @@ const securePassword = async (password) => {
 
 const loadUserProfile = async (req, res) => {
     try {
-        const user = req.session.user
-        const userData = await User.findById({ _id: user })
-        res.render('userProfile', { userData})
+        const user=req.session.user
+        if(user){
+            const userData = await User.findById(user)
+            if(!userData.is_verified){
+                req.session.user = null
+                res.redirect('/login')
+            }else{
+
+                res.render('userProfile',{userData})
+            }
+
+        }else{
+            res.render('userProfile',{products})
+        }
 
     } catch (error) {
         console.log(error);
@@ -157,6 +168,7 @@ const loadEditAddress = async (req, res) => {
 
 const AddressEdit = async (req, res) => {
     try {
+        console.log('add edit');
         const { Name, Mobile, Pincode, State, District, City, houseAddress, houseNumber } = req.body;
         const addressId = req.query.addressId
         const user = req.session.user
