@@ -30,7 +30,7 @@
                         <form action="/placeOrder" method = 'POST' id="orderForm">                            <!-- Button to trigger modal -->
                             <h5 class="modal-title" id="billingModalLabel">Billing Address</h5>
                             <% if (errormsg) { %>
-                                <div class="alert alert-danger text-center" role="alert" style="color: red; background: white;">
+                                <div class="text-center"  style="color: red; background: white;">
                                     <%= errormsg %>
                                 </div>
                              <%   }     %>
@@ -405,7 +405,6 @@
             }
 
 
-
             function editAddress(addressId) {
                 var checkouteditAddressUrl = '/checkoutAdsedit?addressId=' + addressId;
                 window.location.href = checkouteditAddressUrl
@@ -428,9 +427,13 @@
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'successfull',
-                                    text: 'your order successfull'
-                                })
+                                    text: 'your order successfull',
+                                    timer:2500,
+                                }).then(() => {
+                                    window.location.href = '/'; 
+                                });
                             }
+                            
                         })
                         .catch((error) => {
                             console.error('Error:', error);

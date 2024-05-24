@@ -18,20 +18,20 @@ const securePassword = async (password) => {
 
 const loadHome=async(req,res)=>{
     try {
-        const products=await Product.find({is_delete:true})
         const user=req.session.user
+        const products=await Product.find({is_delete:true})
+        const categories=await Category.find({is_Listed:true})
         if(user){
             const userData = await User.findById(user)
             if(!userData.is_verified){
                 req.session.user = null
                 res.redirect('/login')
             }else{
-
-                res.render('home',{userData,products})
+                res.render('home',{userData,products,categories})
             }
 
         }else{
-            res.render('home',{products})
+            res.render('home',{products,categories})
         }
         
     } catch (error) {
@@ -41,9 +41,10 @@ const loadHome=async(req,res)=>{
 
 const loadLogin=async(req,res)=>{
     try {
+        const categories=await Category.find({is_Listed:true})
         const successmsg=req.flash('successmsg')
         let errormsg = req.flash('errormsg')
-        res.render('login',{errormsg,successmsg})
+        res.render('login',{errormsg,successmsg,categories})
     } catch (error) {
         console.log(error); 
     }
@@ -51,8 +52,9 @@ const loadLogin=async(req,res)=>{
 
 const loadRegister=async(req,res)=>{
     try {
+        const categories=await Category.find({is_Listed:true})
         let errormsg = req.flash('errormsg')
-        res.render('registration',{errormsg})
+        res.render('registration',{errormsg,categories})
     } catch (error) {
         console.log(error);
     }
@@ -62,7 +64,8 @@ const loadcontactUs=async(req,res)=>{
     try {
         const user=req.session.user
         const userData=await User.findOne({_id:user})
-        res.render('contact',{userData})
+        const categories=await Category.find({is_Listed:true})
+        res.render('contact',{userData,categories})
     } catch (error) {
         console.log(error);
     }
@@ -72,7 +75,8 @@ const loadAbuotUs=async(req,res)=>{
     try {
         const user=req.session.user
         const userData=await User.findOne({_id:user})
-        res.render('about',{userData})
+        const categories=await Category.find({is_Listed:true})
+        res.render('about',{userData,categories})
     } catch (error) {
         console.log(error);
     }
@@ -84,7 +88,6 @@ const loadProduct = async (req, res) => {
         const userData = await User.findOne({ _id: user });
         const categories = await Category.find({ is_Listed: true });
         let allproducts = await Product.find({ is_delete: true });
-        // const categoryIds = categories.map(category => category._id);
 
         const selectedCategory = req.query.filtered;
         const priceType=req.query.selectedPrice
@@ -133,7 +136,9 @@ const loadDetails=async(req,res)=>{
     try {
         const product=req.query.id
         const products=await Product.findById({_id:product})
-        res.render('productDetails',{products})
+        const categories=await Category.find({is_Listed:true})
+
+        res.render('productDetails',{products,categories})
     } catch (error) {
         console.log(error);
     }
@@ -209,7 +214,9 @@ const sendOTPMail = async (email , req,res) => {
 const loadOTP = async(req,res)=>{
     try {
         const email = req.session.user.email
-        res.render('otpVerification',{email : email})
+        const categories=await Category.find({is_Listed:true})
+
+        res.render('otpVerification',{email : email,categories})
     } catch (error) {
         console.log(error.message);
     }

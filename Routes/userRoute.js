@@ -44,7 +44,7 @@ user_Route.post('/pasChanghed',userProfileController.verifyPassword)
 user_Route.get('/addressList',userProfileController.loadAddress)
 user_Route.post('/addAddress',userProfileController.addressAdding)
 user_Route.post('/deleteAddress',userProfileController.Addressdelete)
-user_Route.get('/editAddresspage',userProfileController.loadEditAddress)
+user_Route.get('/editAddresspage',userProfileController.loadProfileEditAddress)
 user_Route.post('/editAddress',userProfileController.AddressEdit)
 
 user_Route.get('/cart',userAuth.isLogin,cartController.loadCart)
@@ -57,7 +57,12 @@ user_Route.post('/checkoutStock',checkoutController.checkStockInCart)
 user_Route.post('/addnewAddress',checkoutController.addressnewAdding)
 user_Route.get('/checkoutAdsedit',checkoutController.loadEditAddress)
 user_Route.post('/editAdd',checkoutController.checkoutAddressEdit)
-// user_Route.post('/placeOrder',checkoutController.placeOrder)
+user_Route.post('/placeOrder',checkoutController.placeOrder)
+
+user_Route.get('/orderHistoryList',userProfileController.loadOrderHistory)
+user_Route.get('/orderDetails',userProfileController.loadOrderDetails)
+user_Route.post('/cancelOrder',userProfileController.cancelOrder)
+
 
 
 

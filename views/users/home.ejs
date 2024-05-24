@@ -90,9 +90,19 @@
                                 <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
                             </div><!-- End .product-action-vertical -->
 
-                            <div class="product-action">
-                                <a onclick="addtocart('<%= product._id%>')" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
+                             
+                                            <% if(product.quantity>0){ %>
+                                        <div class="product-action">
+                                            <a onclick="addtocart('<%= product._id%>')" class="btn-product btn-cart"><span>add to cart</span></a>
+                                        </div>
+                                        <%} else { %>
+                                            <div class="product-action">
+                                                <a class="btn-product btn-cart"><span>out of stock</span></a>
+                                            </div>
+                                            <% } %><!-- End .product-action -->
+                                            
+                                            <a href="/login" class="btn-product btn-cart"><span>add to cart</span></a>
+                                            
                         </figure><!-- End .product-media -->
 
                         <div class="product-body">

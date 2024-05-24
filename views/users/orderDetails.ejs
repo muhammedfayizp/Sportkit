@@ -1,0 +1,193 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+<style type="text/css">
+    body {
+        background-color: #cad1dc;
+        color: #333639;
+    }
+
+    .img-account-profile {
+        height: 10rem;
+    }
+
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+
+    .card {
+        box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+    }
+
+    .card .card-header {
+        font-weight: 500;
+    }
+
+    .card-header:first-child {
+        border-radius: 0.35rem 0.35rem 0 0;
+    }
+
+    .card-header {
+        padding: 1rem 1.35rem;
+        margin-bottom: 0;
+        background-color: rgba(33, 40, 50, 0.03);
+        border-bottom: 1px solid rgba(7, 8, 9, 0.125);
+    }
+
+    
+
+    .nav-borders .nav-link.active {
+        color: #0061f2;
+        border-bottom-color: #0061f2;
+    }
+
+    .nav-borders .nav-link {
+        color: #69707a;
+        border-bottom-width: 0.125rem;
+        border-bottom-style: solid;
+        border-bottom-color: transparent;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    @media (max-width: 767.98px) {
+        .table thead {
+            display: none;
+        }
+
+        .table,
+        .table tr,
+        .table td {
+            display: block;
+            width: 100%;
+        }
+
+        .table tr {
+            margin-bottom: 1rem;
+        }
+
+        .table td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+        }
+
+        .table td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            width: 50%;
+            padding-left: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+<body>
+    <div class="container-xl px-4 mt-4">
+        <nav class="nav nav-borders">
+            <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
+            <a class="nav-link" href="/addressList" target="__blank">Address</a>
+            <a class="nav-link" href="" target="__blank">Wallet</a>
+            <a class="nav-link" href="" target="__blank">Offer</a>
+            <a class="nav-link active ms-0" href="/orderHistoryList" target="__blank">Order History</a>
+        </nav>
+        <hr class="mt-0 mb-4">
+        <div class="row">
+            <div class="col-md-6 col-xl-5 mb-4">
+                <div class="card">
+                    <div class="card-header text-center">Order Details</div>
+                    <div class="row g-2">
+                        <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12 mx-auto">
+
+                            <div class="card-body d-flex justify-content-center">
+                                <h6>Delivery Address</h6>
+                            </div>
+                            <div class="ml-4">
+                                <% if (orders && orders.length > 0) { %>
+                                    <% orders.forEach(order => { %>
+                                        <% if (order.addressDetails ) { %>
+                                            
+                                                <p> <%= order.addressDetails.name %></p>
+                                                <p><%= order.addressDetails.mobile %></p>
+                                                <p> <%= order.addressDetails.pincode %></p>
+                                                <p> <%= order.addressDetails.dist %></p>
+                                                <p> <%= order.addressDetails.state %></p>
+                                                <p><%= order.addressDetails.city %></p>
+                                                <p> <%= order.addressDetails.houseName %></p>
+                                                <p> <%= order.addressDetails.houseNo %></p>
+                                        <% } %>
+                                    <% }) %>
+                                <% } else { %>
+                                    <p>No orders found.</p>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-6">
+                            <div class="card-body d-flex justify-content-center">
+                                <h6>Order info</h6>
+                            </div>
+                            <div>
+                                <% if(orders&&orders.length > 0) {%>
+                                    <% if(orders.forEach(order=>{%>
+                                        <% if(order && userData) {%> 
+                                            <p><%= order.currentDate %></p>
+                                            <p>Order Id : <%= order.orderId%></p>
+                                            <p>payment-method : <%= order.PaymentMethod%></p>
+                                            <p>mobile : <%= userData.mobile %></p>
+                                            <p><%= userData.email %></p>
+                                        <%}%>    
+                                    <%}))%>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-7">
+                <div class="card justify-content-center">
+                    <div class="card-header">My Orders</div>
+                    <div class="card-body">
+                        <% if (orders && orders.length > 0) { %> 
+                            <% orders.forEach(order => { %>
+                                <div class=".dataTable-input">
+                                    <table class="table ">
+                                        <tbody>
+                                            <% order.items.forEach(item => { %>
+                                                <tr>
+                                                    <td>
+                                                        <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="width: 60px; height: 60px;">
+                                                    </td>
+                                                    <td data-label="Product Name"><%= item.productId.name %></td>
+                                                    <td data-label="Price" style="padding-left: 30px;">$<%= item.price %></td>
+                                                    <td data-label="Quantity">Qty: <%= item.quantity %></td>
+                                                    <td data-label="Payment Method"><%= order.PaymentMethod %></td>
+                                                    <td data-label="Status"><%= item.status %></td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr>
+                            <% }) %>
+                        <% } else { %>
+                            <p>Your order history is empty.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <%- include('../layouts/footbar') %>
+    <%- include('../layouts/footer') %>

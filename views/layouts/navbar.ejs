@@ -70,9 +70,9 @@
                             <% } %>
                                 <a href="wishlist.html" class="wishlist-link">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count">3</span>
-                                    <span class="wishlist-txt">My Wishlist</span>
+                                    <!-- <span class="wishlist-count"></span> -->
                                 </a>
+
                                     <a href="/cart">
                                         <i class="icon-shopping-cart"></i>
                                     </a>
@@ -83,25 +83,30 @@
 
     <div class="header-bottom sticky-header">
         <div class="container">
-            <div class="header-left">
+            <div class="header-center">
                 <nav class="main-nav">
                     <ul class="menu sf-arrows">
                         <li class="megamenu-container">
                             <a href="/">Home</a>
                         </li>
                         <li>
-                            <a href="category.html" class="sf-with-ul">category</a>
+                            <a  class="sf-with-ul">category</a>
 
                             <div class="megamenu megamenu-sm">
                                 <div class="col-md-12">
-                                    <div class="menu-title">Shop with sidebar</div><!-- End .menu-title -->
                                     <ul>
-                                        <li><a href="">Shop List</a></li>
-                                        <li><a href=""><span>Shop Market<span class="tip tip-new">New</span></span></a>
-                                        </li>
+                                        <% categories.forEach(category => { %>
+                                            <li>
+                                                <a href="<%= category.link %>">
+                                                    <span>
+                                                        <%= category.name %>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        <% }); %>
                                     </ul>
-                                </div><!-- End .col-md-6 -->
-                            </div><!-- End .megamenu megamenu-md -->
+                                </div><!-- End .col-md-12 -->
+                            </div><!-- End .megamenu megamenu-sm -->
                         </li>
                         <li>
                             <a href="/product">Product</a>

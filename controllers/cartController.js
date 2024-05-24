@@ -8,13 +8,15 @@ const loadCart = async (req, res) => {
     try {
         const user = req.session.user
         const userData = await User.findOne({ _id: user })
+        const categories=await Category.find({is_Listed:true})
+
         const populateCart = await Cart.findOne({ UserId: user }).populate({
             path: 'products.productId',
             model: 'Product'
           }).exec();
         const cartData = populateCart.products;
           const totalCartPrice = populateCart.cartTotal;
-          res.render('cart', {userData,cartData, totalCartPrice, cartId: populateCart._id });
+          res.render('cart', {userData,cartData, totalCartPrice, cartId: populateCart._id,categories});
            
     } catch (error) {
         console.log(error);
@@ -95,18 +97,39 @@ const quantityUpdate = async (req, res) => {
     }
 };
 
-const removeProduct=async(req,res)=>{
+const removeProduct = async (req, res) => {
     try {
-        const userId=req.session.user
+        const userId = req.session.user;
+        const { productId } = req.query;
         const userData = await Cart.findOne({ UserId: userId });
-        const {productId}=req.query
-        const productRemoveing=await Cart.findOneAndUpdate({UserId:userId},{$pull:{products:{productId:productId}}})
-        if(productRemoveing){
-            
-            return res.json({success:true})
-        }else{
-            return res.json({success:false})
+        if (userData && userData.products) {
+            const productToRemove = userData.products.find(product => product.productId.toString() === productId);
+
+            if (productToRemove) {
+                const updatedProducts = userData.products.filter(product => product.productId.toString() !== productId);
+                const updatedTotalPrice = userData.cartTotal - (productToRemove.price * productToRemove.quantity);
+
+                const updatedCart = await Cart.findOneAndUpdate(
+                    { UserId: userId },
+                    { 
+                        $set: { 
+                            products: updatedProducts, 
+                            cartTotal: updatedTotalPrice 
+                        } 
+                    },
+                    { new: true }
+                );
+
+                return res.json({ success: true, cart: updatedCart });
+            } else {
+                return res.json({ success: false, message: 'Product not found in cart' });
+            }
+                
         }
+
+        
+            
+        
     } catch (error) {
         console.log(error);
     }

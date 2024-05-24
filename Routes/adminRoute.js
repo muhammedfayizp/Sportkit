@@ -4,6 +4,7 @@ const adminController=require('../controllers/adminController')
 const CategoryController=require('../controllers/categoryController')
 const productController=require('../controllers/productController')
 const adminAuth=require('../middleware/adminAuth')
+const adminOrderController=require('../controllers/adminOrderController')
 
 admin_Route.set('view engine','ejs')
 admin_Route.set('views','./views/admin')
@@ -34,6 +35,10 @@ admin_Route.get('/categoryAdd',CategoryController.loadAddingCategory)
 admin_Route.post('/addCategorys',CategoryController.addNewCategory)
 admin_Route.get('/categoryEdit',CategoryController.loadCategoryEdit)
 admin_Route.post('/editCategory',CategoryController.categoryEditing)
+
+admin_Route.get ('/ordersList',adminOrderController.loadOrderList)
+admin_Route.get('/orderDetailsList',adminOrderController.loadOrderDetailList)
+admin_Route.post('/statusChange',adminOrderController.changeStatus)
 
 admin_Route.get('*',(req,res)=>{
     res.redirect('/admin/')
