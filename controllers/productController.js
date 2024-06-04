@@ -118,10 +118,7 @@ const productEditing = async (req, res) => {
         const { name, price, quantity, category, description } = req.body;
 
         const existProduct = await Product.findById(productId);
-
-        if (!existProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
+        const imageFiles = req.files;
 
         existProduct.name = name;
         existProduct.price = price;
@@ -129,24 +126,23 @@ const productEditing = async (req, res) => {
         existProduct.category = category;
         existProduct.description = description;
 
-        if (req.files && req.files['Inputimage']) {
-            const imageFiles = req.files['Inputimage'].map(file => ({
+        if (Array.isArray(imageFiles) && imageFiles.length > 0) {
+            const Inputimage = imageFiles.map(file => ({
                 filename: file.filename,
                 path: '/uploads/' + file.filename
             }));
-
-            existProduct.Inputimage = imageFiles;
+            existProduct.Inputimage = Inputimage;
         }
 
         await existProduct.save();
 
         req.flash('success', 'Product updating successful');
         return res.redirect('/admin/productList');
-
     } catch (error) {
         console.error(error);
     }
 };
+
 
 module.exports={
     loadProductlist,

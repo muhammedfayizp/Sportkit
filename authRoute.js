@@ -42,8 +42,7 @@ router.get('/auth/google/callback', async (req, res) => {
       await user.save()
       req.session.user=user._id
       }else{
-        let user= await User.findOne({email:profile.email})
-        req.session.user=user._id
+        req.session.user=existingUser._id
       }
     res.redirect('/');
   } catch (error) {

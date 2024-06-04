@@ -52,7 +52,11 @@
                         <input type="password" class="form-control" id="register-cpassword" name="confirmPassword">
                         <span id="errorConfirmPassword" class="text-danger"></span>
                     </div>
-
+                    <% if (errormsg) { %>
+                        <div class="text-center" style="color: red; background: white;">
+                            <%= errormsg %>
+                        </div>
+                     <%   }    %>
 
                     <div class="form-footer">
                         <button type="submit" class="btn btn-outline-primary-2">

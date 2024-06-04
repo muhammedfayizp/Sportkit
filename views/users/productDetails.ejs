@@ -2,6 +2,7 @@
 <%-include('../layouts/navbar')%>
 
 
+
 <main class="main">
     <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
         <div class="container d-flex align-items-center">
@@ -34,12 +35,8 @@
                             <div class="row">
                                 <figure class="product-main-image" style="width: 400px;">
                                     <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product image">
-
-                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                        <i class="icon-arrows"></i>
-                                    </a>
-                                </figure><!-- End .product-main-image -->
-
+                                </figure>
+                                
                                 <div id="product-zoom-gallery" class="product-image-gallery">
                                     <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
                                         <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product side">
@@ -61,7 +58,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="product-details">
                             <h1 class="product-title"><%= products.name %></h1><!-- End .product-title -->
 
@@ -73,7 +70,7 @@
                             </div><!-- End .rating-container -->
 
                             <div class="product-price">
-                               <%= products.price%>
+                               $ <%= products.price%>
                             </div><!-- End .product-price -->
 
                             <div class="product-content mt-4 mb-5">
@@ -82,11 +79,10 @@
                             </div><!-- End .product-content -->
 
                             <div class="product-details-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                <a onclick="addtocart('<%= products._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
 
-                                <div class="details-action-wrapper">
-                                    <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                    <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                <div class="product-details-action pt-3 pl-4">
+                                    <a onclick="addtoWishlist('<%= products._id %>')" class="btn-product btn-wishlist" title="Wishlist"><span>add to wishlist</span></a>
                                 </div><!-- End .details-action-wrapper -->
                             </div><!-- End .product-details-action -->
 
@@ -105,7 +101,7 @@
             </div><!-- End .product-details-top -->  
         </div><!-- End .container -->
     </div><!-- End .page-content -->
-</main><!-- End .main -->
+</main>
 
 <script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
 
@@ -136,10 +132,79 @@
         offset: {vertical: 0, horizontal: 10}
     };
 
+    new ImageZoom(document.getElementById("product-zoom"), options1);
     new ImageZoom(document.getElementById("product-zoom"), options2);
 </script>
 
 
+<script>
+    function addtocart(productId){
+        const quantity=1;
+        fetch(`/addToCart?productId=${productId}&quantity=${quantity}`,{
+            method:'post'})
+            .then(response=>response.json())
+            .then(data=>{
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Success',
+                        text:'successfully product added to cart',
+                        showConfiremButton:false,
+                        timer:2500,
+                    })
+                    .then(()=>{
+                        window.location.reload()
+                    });
+                }else{
+                    Swal.fire({
+                        icon:'error',
+                        title:'Error',
+                        text:'failed to add product to cart',
+                        showConfiremButton:false,
+                        timer:2500
+                    })
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+                Swal.fire({
+                    icon:'error',
+                    title:'Error',
+                    text:'an error occurred whiel adding product to cart',
+                    showConfiremButton:false,
+                    timer:2500
+                })
+            })
+    }
+</script>
+
+<script>
+    function addtoWishlist(productId){
+        fetch('/addToWishlist',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({productId})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            if(data.success){
+                Swal.fire(
+                    'Success',
+                    'successfully product added to wishlist',
+                    'success'
+                )
+            }else{
+                Swal.fire(
+                    'Failed',
+                    'your wishlist adding failed',
+                    'error'
+                )
+            }
+        })
+    }
+</script>
 
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

@@ -57,7 +57,7 @@
                         <div class="card-header">My Orders</div>
                             <% if (orders && orders.length > 0) { %> 
                                 <% orders.forEach(order => { %>
-                                    <div class="table-responsive">
+                                    <div>
                                         <table class="table table-cart table-mobile">
                                             <tbody>
                                                 <% order.items.forEach(item => { %>
@@ -66,11 +66,21 @@
                                                             <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="max-width: 60px; max-height: 60px;">
                                                         </td>
                                                         <td data-label="Product Name"><%= item.productId.name %></td>
-                                                        <td class="price-col" data-label="Price">$<%= item.price %></td>
+                                                        <td class="price-col" data-label="Price">$<%= order.totalAmount %></td>
                                                         <td data-label="Quantity">Qty : <%= item.quantity %></td>
                                                         <td data-label="Payment Method"><%= order.PaymentMethod %></td>
+                                                        
                                                     </tr>
                                                 <% }) %>
+                                                <%order.items.forEach(item=>{%>
+                                                    <% if(item.status == 'Delivered'&& order.approvel == 1) { %>
+                                                        <td colspan="5" class="text-center">
+                                                            <p>Reason : <%= item.reason %></p>
+                                                            <button class="btn btn-success" onclick="approvelfun('<%= order._id %>','<%= item.productId._id %>')">approve</button>
+                                                            <button class="btn btn-dark" onclick="declinefun('<%= order._id %>','<%= item.productId._id %>')">decline</button>
+                                                        </td>
+                                                    <% } %>
+                                                <%})%> 
                                             </tbody>
                                         </table>
                                     </div>
@@ -87,4 +97,77 @@
         </div>
     </div>        
 
+    <script>
+        function approvelfun(orderId,productId){
+            Swal.fire({
+                title:'Are You Sure ?',
+                icon:'question',
+                showCancelButton:true,
+                confirmButtonColor:'#3085d6',
+                cancelButtonColor:'#d33',
+                confirmButtonText:`Yes`
+            })
+            .then((result) => {
+                if(result.isConfirmed){
+                    fetch('/admin/returnApproved',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify({orderId,productId})
+                    })
+                    .then(response=>response.json())
+                    .then(data=>{
+                        if (data.success) {
+                            Swal.fire(
+                                'Approved',
+                                'Return request successfully approved',
+                                'success'
+                            )
+                            .then(()=>{
+                                window.location.reload()
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function declinefun(orderId,productId){
+            Swal.fire({
+                title:'Are You Sure ?',
+                icon:'question',
+                showCancelButton:true,
+                confirmButtonColor:'#3085d6',
+                cancelButtonColor:'#d33',
+                confirmButtonText:`Yes`
+            })
+            .then((result)=>{
+                if(result.isConfirmed){
+                    fetch('/admin/returnDeclined',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify({orderId,productId})
+                    })
+                    .then(response=>response.json())
+                    .then(data=>{
+                        if(data.success){
+                            Swal.fire(
+                                'Declined',
+                                'Return request has been declined',
+                                'success'
+                            )
+                            .then(()=>{
+                                window.location.reload()
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    </script>
     <%- include('../layouts/adminFooter') %>

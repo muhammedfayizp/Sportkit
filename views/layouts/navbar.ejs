@@ -1,130 +1,175 @@
 <style>
-.icon-shopping-cart {
-    font-size: 30px; 
-    padding-left: 20px;
-}
-</style>
-<header class="header header-6">
-    <div class="header-top">
-        <div class="container">
-            <div class="header-left">
-                <ul class="top-menu top-link-menu d-none d-md-block">
-                    <li>
-                        <ul>
-                            <li><a href="tel:#"><i class="icon-phone"></i>Call: +91 23456 45789</a></li>
-                        </ul>
-                    </li>
-                </ul><!-- End .top-menu -->
-            </div><!-- End .header-left -->
+    .mobile-menu-container {
+        height: 500px; /* Set your desired height */
+        overflow: hidden; /* Hide the scrollbar */
+    }
+    
+    .mobile-menu-wrapper {
+        height: 100%; /* Ensure the wrapper takes the full height of the container */
+        display: flex;
+        flex-direction: column;
+    }
+    
+    
+    
+    .social-icons {
+        margin-top: auto; /* Push social icons to the bottom */
+    }
+    </style>
 
-            <div class="header-right">
-                <div class="header-dropdown">
-                    <a href="#">USD</a>
-                    <div class="header-menu">
-                        <ul>
-                            <li><a href="#">Eur</a></li>
-                            <li><a href="#">Usd</a></li>
-                        </ul>
-                    </div><!-- End .header-menu -->
-                </div><!-- End .header-dropdown -->                
-            </div><!-- End .header-right -->
-        </div>
-    </div>
-    <div class="header-middle">
-        <div class="container">
-            <div class="header-left">
-                <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                    <form action="#" method="get">
-                        <div class="header-search-wrapper search-wrapper-wide">
-                            <label for="q" class="sr-only">Search</label>
-                            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                            <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..."
-                                required>
-                        </div><!-- End .header-search-wrapper -->
-                    </form>
-                </div><!-- End .header-search -->
-            </div>
-            <div class="header-center">
-                <a href="index.html" class="logo">
-                    <img src="user/assets/images/demos/demo-6/logo.png" alt="Molla Logo" width="150" height="40">
-                </a>
-            </div><!-- End .header-left -->
-            <nav class="header__menu mobile-menu">
+<div class="page-wrapper">
+    <!-- Header -->
+    <header class="header header-6">
+        <!-- Header Top -->
+        <div class="header-top">
+            <div class="container">
+                <div class="header-left">
+                    <ul class="top-menu top-link-menu d-none d-md-block">
+                        <li>
+                            <ul>
+                                <li><a href="tel:#"><i class="icon-phone"></i>Call: +91 23456 45789</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
                 <div class="header-right">
-                    <% if (locals.userData) { %>
-                        <div style="margin-right: 15px;">
-                            <a href="/userProfile">
-                                <i class="icon-user"></i>
-                            </a>
+                    <div class="header-dropdown">
+                        <a href="#">USD</a>
+                        <div class="header-menu">
+                            <ul>
+                                <li><a href="#">Eur</a></li>
+                                <li><a href="#">Usd</a></li>
+                            </ul>
                         </div>
-                        <a href="/logout">
-                            <i class="icons-signout"></i>
-                            <span>Logout</span>
-                        </a>
-
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header Middle -->
+        <div class="header-middle">
+            <div class="container">
+                <div class="header-left">
+                    <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+                        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                        <form action="#" method="get">
+                            <div class="header-search-wrapper search-wrapper-wide">
+                                <label for="q" class="sr-only">Search</label>
+                                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                                <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="header-center">
+                    <a class="logo">
+                        <img src="user/assets/images/demos/demo-6/logo.png" alt="Molla Logo" width="150" height="40">
+                    </a>
+                </div>
+                <nav class="header__menu mobile-menu">
+                    <div class="header-right">
+                        <% if (locals.userData) { %>
+                            <div style="margin-right: 15px;">
+                                <a href="/userProfile">
+                                    <i class="icon-user"></i>
+                                </a>
+                            </div>
+                            <a href="/logout">
+                                <i class="icons-signout"></i>
+                                <span>Logout</span>
+                            </a>
                         <% } else { %>
                             <div style="padding-left: 20px;">
                                 <a href="/login">Login</a>
                             </div>
-                            <% } %>
-                                <a href="wishlist.html" class="wishlist-link">
-                                    <i class="icon-heart-o"></i>
-                                    <!-- <span class="wishlist-count"></span> -->
-                                </a>
-
-                                    <a href="/cart">
-                                        <i class="icon-shopping-cart"></i>
-                                    </a>
+                        <% } %>
+                        <a href="/wishlist" class="wishlist-link">
+                            <i class="icon-heart-o" style="font-size: 20px;"></i>
+                        </a>
+                        <a href="/cart">
+                            <i class="icon-shopping-cart" style="font-size: 25px; padding-left: 20px;"></i>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <!-- Header Bottom -->
+        <div class="header-bottom sticky-header">
+            <div class="container">
+                <div class="header-center">
+                    <nav class="main-nav">
+                        <ul class="menu sf-arrows">
+                            <li class="megamenu-container">
+                                <a href="/">Home</a>
+                            </li>
+                            <li>
+                                <a class="sf-with-ul">Category</a>
+                                <div class="megamenu">
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <% categories.forEach(category => { %>
+                                                <li>
+                                                    <a href="<%= category.link %>">
+                                                        <span><%= category.name %></span>
+                                                    </a>
+                                                </li>
+                                            <% }); %>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="/product">Product</a></li>
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/contact">Contact</a></li>
+                        </ul>
+                    </nav>
+                    <button class="mobile-menu-toggler">
+                        <span class="sr-only">Toggle mobile menu</span>
+                        <i class="icon-bars"></i>
+                    </button>
                 </div>
-            </nav>
-        </div><!-- End .container -->
-    </div><!-- End .header-middle -->
+            </div>
+        </div>
+    </header>
 
-    <div class="header-bottom sticky-header">
-        <div class="container">
-            <div class="header-center">
-                <nav class="main-nav">
-                    <ul class="menu sf-arrows">
-                        <li class="megamenu-container">
-                            <a href="/">Home</a>
-                        </li>
-                        <li>
-                            <a  class="sf-with-ul">category</a>
-
-                            <div class="megamenu megamenu-sm">
-                                <div class="col-md-12">
-                                    <ul>
-                                        <% categories.forEach(category => { %>
-                                            <li>
-                                                <a href="<%= category.link %>">
-                                                    <span>
-                                                        <%= category.name %>
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        <% }); %>
-                                    </ul>
-                                </div><!-- End .col-md-12 -->
-                            </div><!-- End .megamenu megamenu-sm -->
-                        </li>
-                        <li>
-                            <a href="/product">Product</a>
-                        </li>
-                        <li>
-                            <a href="/about">about us</a>
-                        </li>
-                        <li>
-                            <a href="/contact">contact</a>
-                        </li>
-                    </ul><!-- End .menu -->
-                </nav><!-- End .main-nav -->
-
-                <button class="mobile-menu-toggler">
-                    <span class="sr-only">Toggle mobile menu</span>
-                    <i class="icon-bars"></i>
-                </button>
-            </div><!-- End .header-left -->
+<div class="mobile-menu-overlay"></div>
+<div class="mobile-menu-container">
+    <div class="mobile-menu-wrapper">
+        <span class="mobile-menu-close"><i class="icon-close"></i></span>
+        <form action="#" method="get" class="mobile-search">
+            <label for="mobile-search" class="sr-only">Search</label>
+            <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+        </form>
+        <nav class="mobile-nav">
+            <ul class="mobile-menu">
+                <li><a href="/">Home</a></li>
+                <li>
+                    <a class="sf-with-ul" style="color: #fff;">Category</a>
+                    <div class="megamenu">
+                        <div class="col-md-6">
+                            <ul>
+                                <% categories.forEach(category => { %>
+                                    <li>
+                                        <a href="<%= category.link %>">
+                                            <span><%= category.name %></span>
+                                        </a>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="/product">Product</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="social-icons">
+            <a class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+            <a class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+            <a class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+            <a class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
         </div>
     </div>
-</header>
+</div>
+

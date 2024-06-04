@@ -48,19 +48,22 @@
                                         <a href="/productDetails?id=<%= product._id %>">
                                             <img src="/IMAGES/<%= product.Inputimage[0].filename%>" alt="Product image" class="product-image">
                                         </a>
-                                        
+                                        <% if(userData) {%>
                                         <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                            <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                            <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                            <a onclick="addtoWishlist('<%= product._id %>')" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
                                         </div><!-- End .product-action-vertical -->
+                                        <% } else { %>
+                                            <div class="product-action-vertical">
+                                                <a href="/login" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                            </div>
+                                            <% } %>
                                         <% if(userData){ %>   
                                             <% if(product.quantity>0){ %>
-                                        <div class="product-action">
-                                            <a onclick="addtocart('<%= product._id%>')" class="btn-product btn-cart"><span>add to cart</span></a>
-                                        </div>
+                                            <div>
+                                                <a onclick="addtocart('<%= product._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
+                                            </div>  
                                         <%} else { %>
-                                            <div class="product-action">
+                                            <div>
                                                 <a class="btn-product btn-cart"><span>out of stock</span></a>
                                             </div>
                                             <% } %><!-- End .product-action -->
@@ -212,6 +215,34 @@
 </script>
 
 <script>
+    function addtoWishlist(productId){
+        fetch('/addToWishlist',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({productId})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            if(data.success){
+                Swal.fire(
+                    'Success',
+                    'successfully product added to wishlist',
+                    'success'
+                )
+            }else{
+                Swal.fire(
+                    'Failed',
+                    'your wishlist adding failed',
+                    'error'
+                )
+            }
+        })
+    }
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]');
         checkboxes.forEach(checkbox => {
@@ -238,6 +269,7 @@
         priceSort.forEach(checkbox=>{
             checkbox.addEventListener('change',(event)=>{
                 const priceSelectedType=event.target.value
+                console.log(priceSelectedType)
                 if(event.target.checked){
                     window.location.href=`/product?selectedPrice=${priceSelectedType}`
                 }else{

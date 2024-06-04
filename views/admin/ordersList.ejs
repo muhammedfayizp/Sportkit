@@ -95,12 +95,12 @@
                                                         </div>
                                                     </td>
                                                     <td data-label="Product Name"><%= item.productId.name %></td>
-                                                    <td data-label="Price" class="text-center">$<%= item.price %></td>
+                                                    <td data-label="Price" class="text-center">$<%= order.totalAmount %></td>
                                                     <td data-label="Quantity" class="text-center">Qty: <%= item.quantity %></td>
                                                     <td data-label="Payment Method" class="text-center"><%= order.PaymentMethod %></td>
-                                                    <% if(item.status === 'Cancelled') { %>
+                                                    <% if(item.status !== 'Cancelled') { %>
 
-                                                    <%} else{%>   
+                                                   
                                                     <td data-label="Status" class="text-center">
                                                         <select class="form-select" id="selectStatus<%= index %>" data-orderid="<%= order._id %>" data-productid="<%= item.productId._id %>">
                                                             <option value="Confirmed" <%= item.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>

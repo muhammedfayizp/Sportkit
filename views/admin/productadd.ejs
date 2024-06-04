@@ -107,7 +107,9 @@
                                                 <div class="col-md-6">
                                                     <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" onchange="previewImages()" accept="image/*" name="Inputimage">
                                                     <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
-                                                    <input type="hidden" id="deletedImages" name="deletedImages" value=""> <!-- Hidden input to store deleted image filenames -->
+                                                    <input type="hidden" id="deletedImages" name="deletedImages" value=""> 
+                                                    <canvas id="croppedImageCanvas" style="display: none;"></canvas> 
+
                                                 </div>
                                             </div>
                                         </div>
@@ -146,6 +148,28 @@
                     img.style.maxWidth = '100px';
                     img.style.maxHeight = '100px';
                     preview.appendChild(img)
+                    
+
+                    const cropper=new Cropper(img,{
+                        aspectRatio:1,
+                        viewMode:2,
+                        crop:function(event){
+                            const canvas=document.getElementById('croppedImageCanvas')
+                            const context=canvas.getContext('2d')
+                            canvas.width=event.detail.width;
+                            canvas.height=event.detail.height;
+                            context.drawImage(img,event.detail.x,event.detail.y,event.detail.width,event.detail.height,0,0,canvas.width,canvas.height)
+
+                            canvas.toBlob(blob => {
+                                const croppedImageInput = document.createElement('input');
+                                croppedImageInput.type = 'hidden';
+                                croppedImageInput.name = 'croppedImages';
+                                croppedImageInput.value = URL.createObjectURL(blob);
+                                preview.appendChild(croppedImageInput);
+                            }, 'image/jpeg');
+                        }
+
+                    })
                 }
                 reader.readAsDataURL(file)
             })

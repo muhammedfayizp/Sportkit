@@ -5,6 +5,7 @@ const Category=require('../models/category_model')
 const Product=require('../models/product_model')
 const Cart=require('../models/cart_model')
 const Order=require('../models/order_model')
+const Wallet=require('../models/wallet-model')
 
 const securePassword = async (password) => {
     try {
@@ -244,12 +245,7 @@ const loadOrderDetails = async (req, res) => {
         const orderId = req.query.orderId;
         const userData = await User.findOne({ _id: userId });
         const categories = await Category.find({ is_Listed: true });
-        const orders = await Order.find({ UserId: userId, _id: orderId })
-            .populate({
-                path: 'items.productId',
-                model: 'Product'
-            })
-            .exec();
+        const orders = await Order.find({ UserId: userId, _id: orderId }).populate('items.productId')
 
         res.render('orderDetails', { userData, categories, orders });
     } catch (error) {
@@ -259,28 +255,175 @@ const loadOrderDetails = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId, productId } = req.body;
+        const userId = req.session.user;
+        const walletData = await Wallet.findOne({ UserId: userId });
+        const order = await Order.findOne({ _id: orderId, 'items.productId': productId });
 
-        const deletedOrder = await Order.findByIdAndDelete(orderId);
-        if (!deletedOrder) {
-            return res.status(404).json({ success: false});
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
         }
-        
-        const productUpdates = [];
 
-        for (const item of deletedOrder.items) {
-            const product = await Product.findById(item.productId);
+        const item = order.items.find(item => item.productId.toString() === productId);
+        if (!item) {
+            return res.status(404).json({ success: false, message: "Product not found in the order" });
+        }
 
+        const product = await Product.findById(productId);
+        if (product) {
             product.quantity += item.quantity;
-            productUpdates.push(product.save());
+            await product.save();
+        }
+        order.items = order.items.filter(item => item.productId.toString() !== productId);
+
+        if (order.PaymentMethod !== 'cash-on-delivery') {
+            if (!walletData) {
+                const walletMoney = new Wallet({
+                    UserId: userId,
+                    balance: item.price * item.quantity,
+                    history: [{
+                        amount: item.price * item.quantity,
+                        transactionType: 'credit',
+                        method: 'Order Canceled',
+                        currentAmount: item.price * item.quantity
+                    }]
+                });
+                await walletMoney.save();
+            } else {
+                walletData.balance += item.price * item.quantity;
+                walletData.history.push({
+                    amount: item.price * item.quantity,
+                    transactionType: 'credit',
+                    method: 'Order Canceled',
+                    currentAmount: walletData.balance + item.price * item.quantity
+                });
+                await walletData.save();
+            }
         }
 
+        if (order.items.length === 0) {
+            await Order.findByIdAndDelete(orderId);
+        } else {
+            await order.save();
+        }
 
         return res.json({ success: true, message: 'Order canceled successfully' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+
+const returnOrder=async(req,res)=>{
+    try {
+        const returnData=req.body
+        console.log(returnData);
+        const order=await Order.findById(returnData.orderId)
+        if(!order){
+            return res.status(404).json({success:false,message:'order not found'})
+        }
+        const product=order.items.find(item=>item.productId.toString()===returnData.productId)
+        if(product){
+            product.reason=returnData.reason
+        }
+        order.approvel=1
+        
+        await order.save()  
+        res.json({success:true})
+    } catch (error) {
+        console.log(error);
+    }
+}
+const loadWallet=async(req,res)=>{
+    try {
+        const userId=req.session.user
+        const userData=await User.findOne({_id:userId})
+        const categories=await Category.find({is_Listed:true})
+        const walletData=await Wallet.findOne({UserId:userId})
+        let reverse=[]
+        if(walletData){
+            reverse=[...walletData.history].reverse()
+        }
+        const successmsg=req.flash('successmsg')
+        let errormsg = req.flash('errormsg')
+
+
+        res.render('wallet',{userData,categories,successmsg,walletData,reverse,errormsg})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const moneyAdding=async(req,res)=>{
+    try {
+       const userId=req.session.user
+       const {addamount,'payment-method': paymentMethod}=req.body 
+       const amount = Number(addamount)
+       const walletData=await Wallet.findOne({UserId:userId})
+       if(!walletData){
+            const addingWalletMoney=new Wallet({
+                UserId:userId,
+                balance:amount,
+                history:[{
+                    amount:amount,
+                    transactionType:'credit',
+                    method:paymentMethod,
+                    previousAmount:0,
+                    currentAmount:amount
+                }]
+            })
+            await addingWalletMoney.save()
+            req.flash('successmsg','your wallet money successfully added')
+            res.redirect('/wallet')
+       }else{
+        const previousAmount=walletData.balance
+        walletData.balance+=amount
+        walletData.history.push({
+            amount:amount,
+            method:paymentMethod,
+            transactionType:'credit',
+            previousAmount,
+            currentAmount:walletData.balance
+        })
+        await walletData.save()
+        req.flash('successmsg','your wallet money successfully added')
+        res.redirect('/wallet')
+
+       }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const moneyWithdrw=async(req,res)=>{
+    try {
+        const userId=req.session.user
+        const {withdrwAmount}=req.body
+        const withdrawalAmount=Number(withdrwAmount)
+        const walletData=await Wallet.findOne({UserId:userId})
+        if(walletData.balance<withdrawalAmount){
+            req.flash('errormsg','insufficient Balance')
+            res.redirect('/wallet')
+        }else{
+            const previousAmount=walletData.balance
+            walletData.balance-=withdrawalAmount
+            walletData.history.push({
+                amount:withdrawalAmount,
+                method:'Bank Transfer',
+                transactionType:'debit',
+                previousAmount,
+                currentAmount:walletData.balance
+            })
+            await walletData.save()
+            req.flash('successmsg','your wallet money withdrawal successfull')
+            res.redirect('/wallet')
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 
 module.exports = {
@@ -296,5 +439,9 @@ module.exports = {
     loadProfileEditAddress,
     loadOrderHistory,
     loadOrderDetails,
-    cancelOrder
+    cancelOrder,
+    returnOrder,
+    moneyAdding,
+    loadWallet,
+    moneyWithdrw
 }

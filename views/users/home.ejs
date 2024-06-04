@@ -5,175 +5,140 @@
 <main class="main">
     <div class="intro-slider-container">
         <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" data-owl-options='{
-                "dots": false,
-                "nav": false, 
-                "responsive": {
-                    "992": {
-                        "nav": true
-                    }
+            "dots": false,
+            "nav": false, 
+            "responsive": {
+                "992": {
+                    "nav": true
                 }
-            }'>
+            }
+        }'>
             <div class="intro-slide" style="background-image: url(user/assets/images/demos/demo-6/slider/slide-1.jpg);">
                 <div class="container intro-content" style="margin-right: 100px; width: 150px; margin-top: 20%">
-                    <h3 class="intro-subtitle text-white">SPORTS</h3><!-- End .h3 intro-subtitle -->
-                    <h1 class="intro-title text-white" style="font-size: 30px; letter-spacing: 3px;">Football <br> Equips</h1><!-- End .intro-title -->
-
-                    <a href="category.html" class="btn btn-outline-white-4">
-                        <span>Discover More</span>
-                    </a>
-                </div><!-- End .intro-content -->
-            </div><!-- End .intro-slide -->
-
-            
-        </div><!-- End .intro-slider owl-carousel owl-theme -->
-
-        <span class="slider-loader"></span><!-- End .slider-loader -->
-    </div><!-- End .intro-slider-container -->
+                    <h3 class="intro-subtitle text-white">SPORTS</h3>
+                    <h1 class="intro-title text-white" style="font-size: 30px; letter-spacing: 3px;">Football <br> Equips</h1>
+                    <a href="category.html" class="btn btn-outline-white-4"><span>Discover More</span></a>
+                </div>
+            </div>
+        </div>
+        <span class="slider-loader"></span>
+    </div>
 
     <div class="pt-2 pb-3">
         <div class="container">
             <div class="row">
                 <div class="col-sm-6">
                     <div class="banner banner-overlay">
-                        <a href="#">
-                            <img src="user/assets/images/demos/demo-6/banners/banner-1.png" alt="Banner">
-                        </a>
-
+                        <a href="#"><img src="user/assets/images/demos/demo-6/banners/banner-1.png" alt="Banner"></a>
                         <div class="banner-content banner-content-center">
-                            <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                            <h3 class="banner-title text-white"><a href="#"><strong>Women’s</strong></h3><!-- End .banner-title -->
+                            <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4>
+                            <h3 class="banner-title text-white"><a href="#"><strong>Women’s</strong></h3>
                             <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
-                        </div><!-- End .banner-content -->
-                    </div><!-- End .banner -->
-                </div><!-- End .col-sm-6 -->
-
+                        </div>
+                    </div>
+                </div>
                 <div class="col-sm-6">
                     <div class="banner banner-overlay">
-                        <a href="#">
-                            <img src="user/assets/images/demos/demo-6/banners/banner-2.png" alt="Banner">
-                        </a>
-
+                        <a href="#"><img src="user/assets/images/demos/demo-6/banners/banner-2.png" alt="Banner"></a>
                         <div class="banner-content banner-content-center">
-                            <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                            <h3 class="banner-title text-white"><a href="#"><strong>Men’s</strong></a></h3><!-- End .banner-title -->
+                            <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4>
+                            <h3 class="banner-title text-white"><a href="#"><strong>Men’s</strong></a></h3>
                             <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
-                        </div><!-- End .banner-content -->
-                    </div><!-- End .banner -->
-                </div><!-- End .col-sm-6 -->
-            </div><!-- End .row -->
+                        </div>
+                    </div>
+                </div>
+            </div>
             <hr class="mt-0 mb-0">
-        </div><!-- End .container -->
-    </div><!-- End .bg-gray -->
-
-
-    
-
-   
-
-    <div class="mb-6"></div><!-- End .mb-5 -->
+        </div>
+    </div>
 
     <div class="container">
-        <h2 class="title text-center mb-4">New Arrivals</h2><!-- End .title text-center -->
-
+        <h2 class="title text-center mb-4">New Arrivals</h2>
         <div class="products">
             <div class="row justify-content-center">
-                <% products.slice(0, 8).forEach(product=> { %>
-
+                <% products.slice(0, 8).forEach(product => { %>
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="product product-7 text-center">
                         <figure class="product-media">
                             <a href="/productDetails?id=<%= product._id %>">
-                                <img src="/IMAGES/<%= product.Inputimage[0].filename%>" alt="Product image" class="product-image">
+                                <img src="/IMAGES/<%= product.Inputimage[0].filename %>" alt="Product image" class="product-image">
                             </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                            </div><!-- End .product-action-vertical -->
-
-                             
-                                            <% if(product.quantity>0){ %>
-                                        <div class="product-action">
-                                            <a onclick="addtocart('<%= product._id%>')" class="btn-product btn-cart"><span>add to cart</span></a>
-                                        </div>
-                                        <%} else { %>
-                                            <div class="product-action">
-                                                <a class="btn-product btn-cart"><span>out of stock</span></a>
-                                            </div>
-                                            <% } %><!-- End .product-action -->
-                                            
-                                            <a href="/login" class="btn-product btn-cart"><span>add to cart</span></a>
-                                            
-                        </figure><!-- End .product-media -->
-
+                            <% if(userData) {%>
+                                <div class="product-action-vertical">
+                                    <a onclick="addtoWishlist('<%= product._id %>')" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                </div><!-- End .product-action-vertical -->
+                                <% } else { %>
+                                    <div class="product-action-vertical">
+                                        <a href="/login" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    </div>
+                                    <% } %>
+                            <% if(product.quantity > 0) { %>
+                                <div class="product-action">
+                                    <a onclick="addtocart('<%= product._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div>
+                            <% } else { %>
+                            <div >
+                                <a class="btn-product btn-cart"><span>out of stock</span></a>
+                            </div>
+                            <% } %>
+                            <a href="/login" class="btn-product btn-cart"><span>add to cart</span></a>
+                        </figure>
                         <div class="product-body">
-                            <h3 class="product-title"><a href="/productDetails?id=<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                                $<%= product.price %>
-                            </div><!-- End .product-price -->
-                        </div><!-- End .product-body -->
-                    </div><!-- End .product -->
-                </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                            <h3 class="product-title"><a href="/productDetails?id=<%= product._id %>"><%= product.name %></a></h3>
+                            <div class="product-price">$<%= product.price %></div>
+                        </div>
+                    </div>
+                </div>
                 <% }) %>
-            </div><!-- End .row -->
-        </div><!-- End .products -->
-    </div><!-- End .container -->
+            </div>
+        </div>
+    </div>
 
-    
-    <div class="blog-posts ">
+    <div class="blog-posts">
         <div class="container">
-            <h2 class="title text-center mb-4">vision of equips</h2>
-            <div class="owl-carousel owl-simple " data-toggle="owl" 
-                data-owl-options='{
-                    "nav": false, 
-                    "dots": true,
-                    "items": 3,
-                    "loop": false,
-                    "responsive": {
-                        "0": {
-                            "items":1
-                        },
-                        "600": {
-                            "items":2
-                        },
-                        "992": {
-                            "items":3
-                        }
+            <h2 class="title text-center mb-4">Vision of Equips</h2>
+            <div class="owl-carousel owl-simple" data-toggle="owl" data-owl-options='{
+                "nav": false, 
+                "dots": true,
+                "items": 3,
+                "loop": false,
+                "responsive": {
+                    "0": {
+                        "items":1
+                    },
+                    "600": {
+                        "items":2
+                    },
+                    "992": {
+                        "items":3
                     }
-                }'>
+                }
+            }'>
                 <article class="entry">
                     <figure class="entry-media">
                         <a href="single.html">
                             <img src="user/assets/images/demos/demo-6/blog/post-1.jpg" alt="image desc">
                         </a>
-                    </figure><!-- End .entry-media -->
-
-                    
-                </article><!-- End .entry -->
-
+                    </figure>
+                </article>
                 <article class="entry">
                     <figure class="entry-media">
                         <a href="single.html">
                             <img src="user/assets/images/demos/demo-6/blog/post-2.jpg" alt="image desc">
                         </a>
-                    </figure><!-- End .entry-media -->
-
-                    
-                </article><!-- End .entry -->
-
+                    </figure>
+                </article>
                 <article class="entry">
                     <figure class="entry-media">
                         <a href="single.html">
                             <img src="user/assets/images/demos/demo-6/blog/post-3.jpg" alt="image desc">
                         </a>
-                    </figure><!-- End .entry-media -->
-
-                    
-                </article><!-- End .entry -->
-            </div><!-- End .owl-carousel -->
-            
-        </div><!-- End .container -->
-    </div><!-- End .blog-posts -->
-</main><!-- End .main -->
+                    </figure>
+                </article>
+            </div>
+        </div>
+    </div>
+</main>
 <script>
     function addtocart(productId){
         const quantity=1;
@@ -212,6 +177,34 @@
                     timer:2500
                 })
             })
+    }
+</script>
+
+<script>
+    function addtoWishlist(productId){
+        fetch('/addToWishlist',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({productId})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            if(data.success){
+                Swal.fire(
+                    'Success',
+                    'successfully product added to wishlist',
+                    'success'
+                )
+            }else{
+                Swal.fire(
+                    'Failed',
+                    'your wishlist adding failed',
+                    'error'
+                )
+            }
+        })
     }
 </script>
 

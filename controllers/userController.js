@@ -3,6 +3,7 @@ const nodemailer=require('nodemailer')
 const UserOTPverification=require('../models/userOTPverifivcation')
 const Category=require('../models/category_model')
 const Product=require('../models/product_model')
+const Wishlist=require('../models/wishlist_model')
 
 
 const bcrypt = require('bcrypt');
@@ -16,26 +17,26 @@ const securePassword = async (password) => {
 };
 
 
-const loadHome=async(req,res)=>{
+const loadHome = async (req, res) => {
     try {
-        const user=req.session.user
-        const products=await Product.find({is_delete:true})
-        const categories=await Category.find({is_Listed:true})
-        if(user){
-            const userData = await User.findById(user)
-            if(!userData.is_verified){
-                req.session.user = null
-                res.redirect('/login')
-            }else{
-                res.render('home',{userData,products,categories})
-            }
+        const user = req.session.user;
+        const products = await Product.find({ is_delete: true });
+        const categories = await Category.find({ is_Listed: true });
+        let userData = null;
 
-        }else{
-            res.render('home',{products,categories})
+        if (user) {
+            userData = await User.findById(user);
+            if (!userData.is_verified) {
+                req.session.user = null;
+                res.redirect('/login');
+                return;
+            }
         }
-        
+
+        res.render('home', { userData, products, categories });
     } catch (error) {
         console.log(error);
+        res.status(500).send("Internal Server Error");
     }
 }
 
@@ -207,7 +208,6 @@ const sendOTPMail = async (email , req,res) => {
 
     } catch (error) {
         console.log(error.message);
-        // res.status(500).send('Internal Server Error'); 
     }
 }
 
@@ -313,6 +313,90 @@ const userLogout=async(req,res)=>{
     }
 }
 
+const loadWishlist=async(req,res)=>{
+    try {
+        const userId=req.session.user
+        const userData=await User.findOne({_id:userId})
+        const categories=await Category.find({is_Listed:true})
+        const populateWishlist = await Wishlist.findOne({UserId:userId}).populate('items.productId').exec();
+        if (!populateWishlist) {
+            res.render('wishlist', { userData, wishlistData: [], categories });
+            return;
+        }
+        const wishlistData=populateWishlist.items
+        res.render('wishlist', { userData,categories,wishlistData });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addToWishlist = async (req, res) => {
+    try {
+        if (req.session.user) {
+            const userId = req.session.user;
+            const userWishlist = await Wishlist.findOne({ UserId: userId });
+            const productId = req.body.productId;
+            const product = await Product.findById(productId);
+
+            if (userWishlist) {
+                const exist = userWishlist.items.some(item => item.productId.equals(productId));
+                if (!exist) {
+                    userWishlist.items.push({ productId: product._id });
+                    await userWishlist.save();
+                    res.json({ success: true });
+                } else {
+                    res.json({ success: false });
+                }
+            } else {
+                const newWishlist = new Wishlist({
+                    UserId: userId,
+                    items: [{ productId: product._id }]
+                });
+                await newWishlist.save();
+                res.json({ success: true });
+            }
+        } else {
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+const productRemove = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { productId } = req.query;
+        const userWishlist = await Wishlist.findOne({ UserId: userId });
+        if (userWishlist && userWishlist.items) {
+            const productToRemove = userWishlist.items.find(product => product.productId.toString() === productId);
+
+            if (productToRemove) {
+                const updatedProducts = userWishlist.items.filter(product => product.productId.toString() !== productId);
+
+                const updatedWishlist = await Wishlist.findOneAndUpdate(
+                    { UserId: userId },
+                    {
+                        $set: {
+                            items: updatedProducts,
+                        }
+                    },
+                    { new: true }
+                );
+                return res.json({ success: true, wishlist: updatedWishlist });
+            } else {
+                return res.json({ success: false, message: 'Product not found in cart' });
+            }
+
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
 module.exports={
     loadHome,
     securePassword,
@@ -328,5 +412,9 @@ module.exports={
     loadOTP,
     loadDetails,
     userLogout,
-    resendOtp
+    resendOtp,
+    loadWishlist,
+    addToWishlist,
+    productRemove,
+    
 }

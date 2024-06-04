@@ -8,16 +8,17 @@ const loadCart = async (req, res) => {
     try {
         const user = req.session.user
         const userData = await User.findOne({ _id: user })
-        const categories=await Category.find({is_Listed:true})
+        const categories = await Category.find({ is_Listed: true })
 
-        const populateCart = await Cart.findOne({ UserId: user }).populate({
-            path: 'products.productId',
-            model: 'Product'
-          }).exec();
+        const populateCart = await Cart.findOne({ UserId: user }).populate('products.productId')
+        if (!populateCart) {
+            res.render('cart', { userData, cartData: [], totalCartPrice: 0, cartId: null, categories });
+            return;
+        }
         const cartData = populateCart.products;
-          const totalCartPrice = populateCart.cartTotal;
-          res.render('cart', {userData,cartData, totalCartPrice, cartId: populateCart._id,categories});
-           
+        const totalCartPrice = populateCart.cartTotal;
+        res.render('cart', { userData, cartData, totalCartPrice, cartId: populateCart._id, categories });
+
     } catch (error) {
         console.log(error);
     }
@@ -29,47 +30,47 @@ const productaddingtocart = async (req, res) => {
             const productId = req.query.productId;
             const quantity = req.query.quantity
             const userId = req.session.user;
-            const userCart = await Cart.findOne({UserId:userId})
+            const userCart = await Cart.findOne({ UserId: userId })
             const product = await Product.findById(productId)
-        if (!userCart) {
-            const productPrice = quantity * product.price;
-            const cart = new Cart({
-                UserId: userId,
-                products: [
-                    {
-                        productId: product._id,
-                        quantity: quantity,
-                        price: product.price,
-                        totalAmount: productPrice
-                    }
-                ],
-                cartTotal: productPrice
-            });
-            cart.cartTotal = cart.products.reduce(
-                (accu, curr) => (accu = curr.totalAmount), 0
+            if (!userCart) {
+                const productPrice = quantity * product.price;
+                const cart = new Cart({
+                    UserId: userId,
+                    products: [
+                        {
+                            productId: product._id,
+                            quantity: quantity,
+                            price: product.price,
+                            totalAmount: productPrice
+                        }
+                    ],
+                    cartTotal: productPrice
+                });
+                cart.cartTotal = cart.products.reduce(
+                    (accu, curr) => (accu = curr.totalAmount), 0
+                )
+                await cart.save()
+                res.json({ success: true })
+            }
+            const exist = userCart.products.find((products) => String(products.productId) == productId)
+            if (exist) {
+                exist.quantity += parseInt(quantity);
+                exist.totalAmount = exist.quantity * product.price;
+            } else {
+                const productPrice = quantity * product.price
+                userCart.products.push({
+                    productId: product._id,
+                    quantity: quantity,
+                    price: product.price,
+                    totalAmount: productPrice
+                })
+            }
+            userCart.cartTotal = userCart.products.reduce(
+                (accu, curr) => accu + curr.totalAmount, 0
             )
-            await cart.save()
+            await userCart.save()
             res.json({ success: true })
         }
-        const exist = userCart.products.find((products) => String(products.productId) == productId)
-        if(exist){
-            exist.quantity+=parseInt(quantity);
-            exist.totalAmount=exist.quantity*product.price;
-        }else{
-            const productPrice=quantity*product.price
-            userCart.products.push({
-                productId:product._id,
-                quantity:quantity,
-                price:product.price,
-                totalAmount:productPrice
-            })
-        }
-        userCart.cartTotal=userCart.products.reduce(
-            (accu,curr)=>accu+curr.totalAmount,0
-        )
-        await userCart.save()
-        res.json({success:true})
-    }
     } catch (error) {
         console.log(error);
     }
@@ -82,7 +83,7 @@ const quantityUpdate = async (req, res) => {
         const userId = req.session.user;
         const cart = await Cart.findOne({ UserId: userId });
         const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
-        if (productIndex!== -1) {
+        if (productIndex !== -1) {
             cart.products[productIndex].quantity = newQuantity;
             cart.products[productIndex].totalAmount = newQuantity * cart.products[productIndex].price;
             cart.cartTotal = cart.products.reduce((total, product) => total + product.totalAmount, 0);
@@ -111,11 +112,11 @@ const removeProduct = async (req, res) => {
 
                 const updatedCart = await Cart.findOneAndUpdate(
                     { UserId: userId },
-                    { 
-                        $set: { 
-                            products: updatedProducts, 
-                            cartTotal: updatedTotalPrice 
-                        } 
+                    {
+                        $set: {
+                            products: updatedProducts,
+                            cartTotal: updatedTotalPrice
+                        }
                     },
                     { new: true }
                 );
@@ -124,12 +125,8 @@ const removeProduct = async (req, res) => {
             } else {
                 return res.json({ success: false, message: 'Product not found in cart' });
             }
-                
-        }
 
-        
-            
-        
+        }
     } catch (error) {
         console.log(error);
     }

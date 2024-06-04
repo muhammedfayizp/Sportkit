@@ -4,16 +4,21 @@ const Product = require('../models/product_model')
 const Cart = require('../models/cart_model')
 const Address=require('../models/userAddress_model')
 const Order=require('../models/order_model')
+const Wallet=require('../models/wallet-model')
 
 const loadCheckout=async(req,res)=>{
     try {
         const errormsg=req.flash('errormsg')
         const userId=req.session.user
         const userData = await User.findOne({ _id: userId })
-        const cartData=await Cart.findOne({UserId:userId})
+        const populateCart = await Cart.findOne({ UserId: userId }).populate('products.productId')
         const categories=await Category.find({is_Listed:true})
         const addressData=await Address.findOne({UserId:userId})
-        res.render('checkout',{userData,cartData,addressData,errormsg,categories})
+
+        const totalCartPrice = populateCart.cartTotal;
+        const cartData = populateCart ? populateCart.products : [];
+
+        res.render('checkout',{userData,cartData,totalCartPrice,addressData,errormsg,categories})
     } catch (error) {
         console.log(error);
     }
@@ -157,25 +162,26 @@ const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
         const { paymentMethodType, addressId } = req.body;
+        const cartData = await Cart.findOne({ UserId: userId });
+        const addressData = await Address.findOne({ 'address._id': addressId });
+        const walletData = await Wallet.findOne({ UserId: userId });
 
         if (!addressId) {
             req.flash('errormsg', 'please select an address');
             return res.redirect('/checkout');
         }
 
-        const addressData = await Address.findOne({'address._id': addressId});
         const addressDetails = addressData.address.find(address => address._id.equals(addressId));
         if (!addressDetails) {
             req.flash('errormsg', 'Address not found');
             return res.redirect('/checkout');
         }
 
-        const cartData = await Cart.findOne({ UserId: userId });
         if (!cartData || !Array.isArray(cartData.products)) {
             return res.status(400).json({ message: "Cart not found or items are undefined" });
         }
 
-        const orderId = orderIdgenerate(); 
+        const orderId = orderIdgenerate();
         const newOrder = new Order({
             UserId: userId,
             items: cartData.products.map(item => ({
@@ -184,7 +190,6 @@ const placeOrder = async (req, res) => {
                 status: 'Confirmed',
                 reason: '',
                 price: item.price,
-                // categoryId: item.categoryId,
             })),
             totalAmount: cartData.cartTotal,
             addressDetails: {
@@ -202,9 +207,30 @@ const placeOrder = async (req, res) => {
             currentDate: new Date()
         });
 
-        await newOrder.save();
-        await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
-        res.json({ success: true });
+        if (paymentMethodType === 'cash-on-delivery') {
+            await newOrder.save();
+            await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
+            res.json({ success: true });
+        } else if (paymentMethodType === 'Wallet') {
+            if (!walletData) {
+                return res.json({ success: false, message: 'you have no wallet' });
+            } else if (cartData.cartTotal > walletData.balance) {
+                return res.json({ success: false, message: 'insufficient balance' });
+            } else {
+                const withdrawalAmount=cartData.cartTotal
+                walletData.balance -= cartData.cartTotal;
+                walletData.history.push({
+                    amount:withdrawalAmount,
+                    method:'Purchase',
+                    transactionType:'debit',
+                    currentAmount:walletData.balance
+                })
+                await walletData.save();
+                await newOrder.save();
+                await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
+                res.json({ success: true });
+            }
+        }
 
         for (let item of cartData.products) {
             const eachProduct = await Product.findById(item.productId);
@@ -219,6 +245,7 @@ const placeOrder = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 
 

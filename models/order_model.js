@@ -27,11 +27,7 @@
                 price: {
                     type: Number,
                 },
-                // categoryId: {
-                //     type: mongoose.Schema.Types.ObjectId,
-                //     ref: 'Category',
-                //     required: true,
-                // }
+               
             }
         ],
         totalAmount: {
@@ -87,7 +83,12 @@
         currentDate: {
             type: Date,
             default: () => Date.now()
+        },
+        approvel:{
+            type:Number,
+            default:0
         }
+
     })
 
     module.exports = mongoose.model('Order', orderSchema)
