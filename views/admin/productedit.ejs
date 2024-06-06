@@ -8,7 +8,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Edit Product Details</h4>
-                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST">
+                        <% if (errmsg.length > 0) { %>
+                            <div class="alert alert-danger"><%= errmsg %></div>
+                        <% } %>
+                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" onsubmit=" return validation()">
                             <div class="form-body">
                                 <div class="form-group">
                                     <div class="row">
@@ -61,10 +64,12 @@
                                                     <div class="col-md-11">
                                                         <div class="form-group mb-4">
                                                             <select class="custom-select mr-sm-2" id="category" name="category">
-                                                                <option selected>Choose...</option>
-                                                                <% categories.forEach((category)=> { %>
+                                                                <option value="Choose...">Choose...</option>
+                                                                <% categories.forEach((category) => { %>
                                                                     <option value="<%= category._id %>"
-                                                                    ><%= category.name %></option>
+                                                                        <%= category._id.equals(productDetail.category) ? 'selected' : '' %>>
+                                                                        <%= category.name %>
+                                                                    </option>
                                                                 <% }); %>
                                                             </select>
                                                             <div id="categoryContainer" class="text-danger"></div>
@@ -158,5 +163,20 @@ document.getElementById('Inputimage').addEventListener('change', function() {
 
     
 </script>
+<script>
+    function validation() {
+        const category = document.getElementById('category').value;
+        const errorCategory = document.getElementById('categoryContainer');
 
+        errorCategory.innerText = '';
+
+        if (category === "Choose...") {
+            errorCategory.innerText = "Please select a valid category.";
+            return false;
+        }
+
+        return true;
+    }
+</script>
+    
 <%-include('../layouts/adminFooter')%>

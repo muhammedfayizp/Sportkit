@@ -4,6 +4,7 @@ const UserOTPverification=require('../models/userOTPverifivcation')
 const Category=require('../models/category_model')
 const Product=require('../models/product_model')
 const Wishlist=require('../models/wishlist_model')
+const Offer=require('../models/productOffer_model')
 
 
 const bcrypt = require('bcrypt');
@@ -125,7 +126,24 @@ const loadProduct = async (req, res) => {
         }else if(selectedType==='disse'){
             products=await Product.find({is_delete:true}).sort({name:-1})
         }
+        
+        const offerData=await Offer.find({is_active:true}).populate('productId')
+        for(let offer of offerData){
+            var productId=offer.productId
+        }       
+        const productOffer=await Offer.findOne({productId:productId})
+        
+        if(productOffer){
+        for(let eachProduct of offerData){
+            let productPrice=eachProduct.productId.price
+            let discount=productOffer.discount
 
+                const offerPrice=eachProduct.productId.price-(eachProduct.productId.price*discount/100)
+                productPrice=Math.floor(Math.min(productPrice, offerPrice));
+                await Product.findByIdAndUpdate(productId,{$set:{offerPrice:productPrice,productDiscount:productOffer.discount?discount:null}})
+            }
+            
+        }
        
         res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
         

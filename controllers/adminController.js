@@ -2,6 +2,9 @@ const User=require('../models/user_model')
 const bcrypt = require("bcrypt");
 const Swal=require('sweetalert2')
 
+const Product=require('../models/product_model')
+const productOffer=require('../models/productOffer_model')
+
 
 const securePass = async (passoword) => {
     try {
@@ -67,8 +70,6 @@ const verifyadminLogin= async (req, res) => {
 
 const loadAdminDashboard = async (req, res) => {
     try {
-        // const userData = await User.findById({ _id: req.session.admin });
-        // const userData1 = await User.find({ is_admin: 1 })
         res.render('dashboard');
     } catch (error) {
         console.log(error.message);
@@ -94,13 +95,58 @@ const loadblock=async(req,res)=>{
 
 const adminLogout=async(req,res)=>{
     try {
-        console.log('hello');
         req.session.admin=null
         res.redirect('/admin/')
     } catch (error) {
         console.log(error);
     }
 }
+
+
+const productOfferLoad=async(req,res)=>{
+    try {
+        const products=await Product.find()
+        const offer=await productOffer.find().populate('productId')
+        res.render('productOffer',{products,offer})
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addProductOffer=async(req,res)=>{
+    try {
+        const {productId,offerAmount,expDate}=req.body
+        const addOffer=new productOffer({
+            productId:productId,
+            discount:offerAmount,
+            expiryDate:expDate
+        })
+        await addOffer.save()
+        res.json({success:true})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const offerStatus=async(req,res)=>{
+    try {
+        const {offerId}=req.body
+        const offerData=await productOffer.findOne({_id:offerId})
+        const isActive=offerData.is_active
+        if(isActive==0){
+            await productOffer.findByIdAndUpdate(offerId,{$set:{is_active:1}})
+            return res.json({success:true})
+        }else{
+            await productOffer.findByIdAndUpdate(offerId,{$set:{is_active:0}})
+            return res.json({success:true})
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 module.exports={
     loadAdminDashboard,
     loadAdminLogin,
@@ -108,5 +154,9 @@ module.exports={
     securePass,
     loadUserlist,
     loadblock,
-    adminLogout
+    adminLogout,
+    productOfferLoad,
+    addProductOffer,
+    offerStatus
+    
 }

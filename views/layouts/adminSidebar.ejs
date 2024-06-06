@@ -1,3 +1,20 @@
+<style>
+	.dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+</style>
+
 
 <body class="">
 	<div class="loader-bg">
@@ -47,19 +64,24 @@
                         <a href="/admin/ordersList" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="shopping-bag"></i></span><span class="pc-mtext">Orders</span></a>
                     </li>
                     <li class="pc-item">
-                        <a href="/admin/categorylist" class="pc-link" style="color: rgb(114, 111, 111);">
-                            <span class="pc-micon"><i data-feather="list"></i></span>
-                            <span class="pc-mtext">Categories</span>
-                        </a>
+                        <a href="/admin/categorylist" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="list"></i></span><span class="pc-mtext">Categories</span></a>
                     </li>
-                    <li class="pc-item">
-                        <a href="" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="tag"></i></span><span class="pc-mtext">Coupons</span></a>
-                    </li>
+					
+					<li class="pc-item">
+						<a href="#" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="tag"></i></span><span class="pc-mtext">Coupons</span></a>
+					</li>
+					<li class="pc-item"><a href="#" class="pc-link" id="offerLink" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="percent"></i></span><span class="pc-mtext">Offer</span></a>
+						<div class="dropdown-content" style="display:none;">
+							<a href="/admin/productOffer">Product Offer</a>
+							<a href="#">Category Offer</a>
+							<a href="#">Referral Offer</a>
+						</div>
+					</li>
                 </ul>
             </div>
 		</div>
 	</nav>
-
+	
 	<header class="pc-header ">
 		<div class="header-wrapper">
 			<div class="mr-auto pc-mob-drp">
@@ -109,3 +131,16 @@
 
 		</div>
 	</header>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var dropdownContent = document.querySelector('.dropdown-content');
+			var offerLink = document.getElementById('offerLink');
+
+			offerLink.addEventListener('click', function(event) {
+				event.preventDefault();
+
+				dropdownContent.style.display = dropdownContent.style.display === 'none'? 'block' : 'none';
+			});
+		});
+	</script>

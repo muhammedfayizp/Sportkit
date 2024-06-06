@@ -48,13 +48,17 @@
                                                         </div>
                                                     </td>
                                                     <td><%= products.productId.name %></td>
-                                                    <td class="price-col">$<%= products.price %></td>
+                                                    <% if(products.productId.offerPrice) { %>
+                                                    <td class="price-col">₹<%= products.productId.offerPrice %></td>
+                                                    <% } else { %>
+                                                        <td class="price-col">₹<%= products.price %></td>
+                                                        <% } %>
                                                     <td class="quantity-col">
                                                         <div class="cart-product-quantity">
                                                             <input type="number" id="quantity" class="form-control" value="<%= products.quantity %>" min="1" max="<%= products.productId.quantity %>" step="1" data-decimals="0" required data-product-id="<%= products.productId._id %>">
                                                         </div>
                                                     </td>
-                                                    <td class="total-col" data-product-id="<%= products.productId._id %>">$<%= products.totalAmount %></td>
+                                                    <td class="total-col" data-product-id="<%= products.productId._id %>">₹<%= products.totalAmount %></td>
                                                     <td class="remove-col"><button class="btn-remove" onclick="removeCart('<%= products.productId._id %>')"><i class="icon-close"></i></button></td>
                                                 </tr>
                                             <% }) %>
@@ -74,7 +78,7 @@
                                         <tbody>
                                             <tr class="summary-total">
                                                 <td>Total:</td>
-                                                <td class="cart-total">$<%= totalCartPrice %></td>
+                                                <td class="cart-total">₹<%= totalCartPrice %></td>
                                             </tr><!-- End .summary-total -->
                                         </tbody>
                                     </table><!-- End .table table-summary -->

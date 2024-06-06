@@ -34,6 +34,12 @@
         is_delete:{
             type:Boolean,
             default:true
+        },
+        offerPrice:{
+            type:Number,
+        },
+        productDiscount:{
+            type:Number
         }
     })
 

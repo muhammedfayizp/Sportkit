@@ -270,7 +270,7 @@ input[type="radio"]:hover {
                                     <div class='d-flex align-items-center justify-content-end flex-grow-1'> <!-- Make the second div fill the remaining space -->
                                         <% if(walletData) { %>
                                         <span class="text-white fw-bold m-0">Balance : </span>
-                                            <span class="text-white fw-bold m-0"> $ <%= walletData.balance %></span>
+                                            <span class="text-white fw-bold m-0"> ₹ <%= walletData.balance %></span>
                                         <% } %>
                                         <% if (errormsg) { %>
                                             <div class="text-center" style="color: red; background: white;">
@@ -367,7 +367,7 @@ input[type="radio"]:hover {
                                                 </tbody>
                                             </table>
                                             <% if(walletData) { %>
-                                            <p>Total Amount : $<%= walletData.balance %></p>
+                                            <p>Total Amount : ₹<%= walletData.balance %></p>
                                             <% } %>
                                         </div>
                                     </div>

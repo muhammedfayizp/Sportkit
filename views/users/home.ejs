@@ -1,6 +1,14 @@
 <%-include('../layouts/header')%>
 <%-include('../layouts/navbar')%>
 
+<style>
+    .offer-price {
+        color: red;
+    }
+    .original-price {
+        text-decoration: line-through;
+    }
+</style>
 
 <main class="main">
     <div class="intro-slider-container">
@@ -60,6 +68,9 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="product product-7 text-center">
                         <figure class="product-media">
+                            <% if(product.productDiscount) { %>
+                                <span class="product-label label-new"><%= product.productDiscount %>%</span>
+                            <% } %>
                             <a href="/productDetails?id=<%= product._id %>">
                                 <img src="/IMAGES/<%= product.Inputimage[0].filename %>" alt="Product image" class="product-image">
                             </a>
@@ -72,6 +83,7 @@
                                         <a href="/login" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
                                     </div>
                                     <% } %>
+                                    <% if(userData){%>
                             <% if(product.quantity > 0) { %>
                                 <div class="product-action">
                                     <a onclick="addtocart('<%= product._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
@@ -81,11 +93,24 @@
                                 <a class="btn-product btn-cart"><span>out of stock</span></a>
                             </div>
                             <% } %>
+                            <%} else { %>
                             <a href="/login" class="btn-product btn-cart"><span>add to cart</span></a>
+                            <% }%>
                         </figure>
                         <div class="product-body">
                             <h3 class="product-title"><a href="/productDetails?id=<%= product._id %>"><%= product.name %></a></h3>
-                            <div class="product-price">$<%= product.price %></div>
+
+                           <% if (product.offerPrice) { %>
+                                <div class="product-price mt-2">
+                                    <span class="offer-price pr-1">₹<%= product.offerPrice %></span> 
+                                    <span>was</span>
+                                    <span class="original-price pl-1"> ₹<%= product.price %></span>
+                                </div><!-- End .product-price -->
+                            <% } else { %>
+                                <div class="product-price mt-2">
+                                    ₹<%= product.price %>
+                                </div><!-- End .product-price -->
+                            <% } %>
                         </div>
                     </div>
                 </div>

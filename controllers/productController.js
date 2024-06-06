@@ -117,6 +117,12 @@ const productEditing = async (req, res) => {
         const productId = req.query.id;
         const { name, price, quantity, category, description } = req.body;
 
+        if (!category || category === "") {
+            req.flash('errmsg', 'Please select a valid category.');
+            return res.redirect(`/admin/editProduct?id=${productId}`);
+        }
+
+
         const existProduct = await Product.findById(productId);
         const imageFiles = req.files;
 
@@ -137,7 +143,7 @@ const productEditing = async (req, res) => {
         await existProduct.save();
 
         req.flash('success', 'Product updating successful');
-        return res.redirect('/admin/productList');
+        return res.redirect('/admin/productlist');
     } catch (error) {
         console.error(error);
     }
