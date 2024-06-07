@@ -30,10 +30,10 @@
                         <form action="/placeOrder" method = 'POST' id="orderForm">                            <!-- Button to trigger modal -->
                             <h5 class="modal-title" id="billingModalLabel">Billing Address</h5>
                             <% if (errormsg) { %>
-                                <div class="text-center"  style="color: red; background: white;">
+                                <div class="text-center" style="color: red; background: white;">
                                     <%= errormsg %>
                                 </div>
-                             <%   }     %>
+                             <%   }    %>
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-8">
@@ -116,7 +116,11 @@
                                                             <% cartData.forEach(product => { %>
                                                                 <tr>
                                                                     <td><a><%= product.productId.name %></a></td>
-                                                                    <td>₹<%= product.productId.price %></td>
+                                                                    <% if(product.productId.finalPrice) { %>
+                                                                    <td>₹<%= product.productId.finalPrice %></td>
+                                                                    <% } else { %>
+                                                                        <td>₹<%= product.productId.price %></td>
+                                                                        <% } %>
                                                                 </tr>
                                                                 <% subtotal += product.totalAmount; %>
                                                                 <% }); %>
@@ -425,44 +429,44 @@
                         },
                         body: body,
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'successfull',
-                                    text: 'your order successfull',
-                                    timer:2500,
-                                }).then(() => {
-                                    window.location.href = '/'; 
-                                });
-                            }else if (data.message='you have no wallet') {
-                                Swal.fire({
-                                    icon:'error',
-                                    title:'no wallet',
-                                    text:'you have no wallet'
-                                })
-                            }else if(data.message='insufficient balance'){
-                                Swal.fire({
-                                    icon:'error',
-                                    title:'insufficient balance',
-                                    text:'you dont have enough balance in your wallet'
-                                })
-                            }
-                            
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Successful',
+                                text: 'Your order was placed successfully!',
+                            }).then(() => {
+                                window.location.href = '/';
+                            });
+                        } else if (data.message === 'no_wallet') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'No Wallet',
+                                text: 'You have no wallet',
+                            });
+                        } else if (data.message === 'insufficient_balance') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Insufficient Balance',
+                                text: `You don't have enough balance in your wallet.`,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
                 }
+
                 document.querySelector('#orderForm').addEventListener('submit', (event) => {
-                event.preventDefault();
-                const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-                console.log('Selected Payment Method:', paymentMethod);
-                const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
-                placeOrder(paymentMethod, selectedAddress);
-                })
-            })
+                    event.preventDefault();
+                    const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+                    console.log('Selected Payment Method:', paymentMethod);
+                    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
+                    placeOrder(paymentMethod, selectedAddress);
+                });
+            });
+
         </script>
         <%-include('../layouts/footbar') %>
             <%-include('../layouts/footer') %>

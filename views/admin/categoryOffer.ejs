@@ -8,11 +8,11 @@
                         <div class="row align-items-center">
                             <div class="col-md-6">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Offer</h5>
+                                    <h5 class="m-b-10">Category Offer</h5>
                                 </div>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                                    <li class="breadcrumb-item">Product-offers</li>
+                                    <li class="breadcrumb-item">Dashboard</li>
+                                    <li class="breadcrumb-item">category-offers</li>
                                 </ul>
                             </div>
                         </div>
@@ -35,11 +35,11 @@
                                 <!-- Your form or content for the new offer goes here -->
                                 <form>
                                     <div class="form-group">
-                                        <label for="product-name">Product Name</label>
-                                        <select class="form-control" id="product-name">
-                                          <option value="" disabled selected>Select Product</option>
-                                          <% products.forEach(product=>{%>
-                                          <option id="product-name" value="<%= product._id %>"><%= product.name %></option>
+                                        <label for="category-name">Category Name</label>
+                                        <select class="form-control" id="category-name">
+                                          <option value="" disabled selected>Select Category</option>
+                                          <% category.forEach(categories=>{%>
+                                          <option id="category-name" value="<%= categories._id %>"><%= categories.name %></option>
                                           <%}) %>
                                         </select>
                                       </div>
@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" onclick="offeradding()" class="btn btn-primary">Save Offer</button>
+                                    <button type="button" onclick="catgofferadding()" class="btn btn-primary">Save Offer</button>
                                 </div>    
                             </form>
                         
@@ -71,7 +71,7 @@
                                 <h4 class="card-title">Offers</h4>
                                 <div class="table-responsive">
                                     <table id="zero_config" class="table table-striped table-bordered no-wrap">
-                                        <% if(offer&&offer.length>0) { %>
+                                        <% if(CatgOffer&&CatgOffer.length>0) { %>
                                         <thead>
                                             <tr>
                                                 <th scope="col">ID</th>
@@ -83,13 +83,13 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% offer.forEach((item,index)=>{%>
+                                            <% CatgOffer.forEach((item,index)=>{%>
                                             <tr>
                                                 <td>
                                                     <%= index+1 %>
                                                 </td>
                                                 <td>
-                                                    <%= item.productId.name %>
+                                                    <%= item.categoryId.name %>
                                                 </td>
                                                 <td>
                                                     <%= item.discount %>%
@@ -112,7 +112,7 @@
                                         </tbody>
                                             <% } else { %>
                                             <tr>
-                                                <td colspan="5">product offer not available</td>
+                                                <td colspan="5">category offer not available</td>
                                             </tr>
                                             <% } %>
                                         
@@ -125,37 +125,37 @@
                 </div>        
 
                         <script>
-                            function offeradding(){
-                                let productId=$("#product-name").val()
-                                let offerAmount=$('#offer-amount').val()
-                                let expDate=$('#offer-Expiry-Date').val()
+                            function catgofferadding() {
+                                let categoryId = $("#category-name").val();
+                                let offerAmount = $('#offer-amount').val();
+                                let expDate = $('#offer-Expiry-Date').val();
 
-                                fetch('/admin/addOffer',{
-                                    method:'post',
-                                    headers:{
-                                        'Content-Type':'application/json'
+                                fetch('/admin/addCategOffer', {
+                                    method: 'post',
+                                    headers: {
+                                        'Content-Type': 'application/json'
                                     },
-                                    body:JSON.stringify({
-                                        productId,
+                                    body: JSON.stringify({
+                                        categoryId,
                                         offerAmount,
                                         expDate
                                     })
-                                }).then(response=>response.json())
-                                .then(data=>{
-                                    if(data.success){
+                                }).then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
                                         Swal.fire(
-                                            'success',
-                                            'offer amount successfuly added',
+                                            'Success',
+                                            'Offer amount successfully added',
                                             'success'
-                                        ).then(()=>{
-                                            window.location.reload()
-                                        })
+                                        ).then(() => {
+                                            window.location.reload();
+                                        });
                                     }
-                                })
+                                });
                             }
                         </script>
                         <script>
-                            function changeOfferStatus(offerId){
+                            function changeOfferStatus(catgofferId){
                                 Swal.fire({
                                     title:'are you sure',
                                     icon:'question',
@@ -165,13 +165,13 @@
                                     confirmButtonText:`Yes`,
                                 }).then(result=>{
                                     if(result.isConfirmed){
-                                        fetch('/admin/changeStatus',{
+                                        fetch('/admin/changeCatgStatus',{
                                             method:'post',
                                             headers:{
                                                 'Content-Type':'application/json'
                                             },
                                             body:JSON.stringify({
-                                                offerId
+                                                catgofferId
                                             })
                                         })
                                         .then(response => response.json())

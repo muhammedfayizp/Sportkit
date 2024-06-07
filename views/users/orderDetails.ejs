@@ -98,7 +98,7 @@
             <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
             <a class="nav-link" href="/addressList" target="__blank">Address</a>
             <a class="nav-link" href="/wallet" target="__blank">Wallet</a>
-            <a class="nav-link" href="" target="__blank">Offer</a>
+            <a class="nav-link" href="" target="__blank">Coupons</a>
             <a class="nav-link active ms-0" href="/orderHistoryList" target="__blank">Order History</a>
         </nav>
         <hr class="mt-0 mb-4">
@@ -175,6 +175,7 @@
                                                     <td data-label="Status"><%= item.status %></td>
                                                 </tr>
                                                 <tr>    
+                                                    <% if(item.status!=='Return') { %>
                                                     <% if (item.status !== 'Delivered') { %>
                                                         <td>
                                                             <button onclick="cancelOrder('<%= order._id %>', '<%= item.productId._id %>')" class="btn btn-primary">Cancel</button>
@@ -183,6 +184,7 @@
                                                         <td>
                                                             <button class="btn btn-primary return-button" data-orderid="<%= order._id %>" data-productid="<%= item.productId._id %>">Return</button>
                                                         </td>
+                                                    <% } %>
                                                     <% } %>
                                                 </tr>
                                             <% }) %>

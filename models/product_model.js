@@ -35,10 +35,10 @@
             type:Boolean,
             default:true
         },
-        offerPrice:{
+        finalPrice:{
             type:Number,
         },
-        productDiscount:{
+        discount:{
             type:Number
         }
     })

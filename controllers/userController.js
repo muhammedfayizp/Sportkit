@@ -4,7 +4,8 @@ const UserOTPverification=require('../models/userOTPverifivcation')
 const Category=require('../models/category_model')
 const Product=require('../models/product_model')
 const Wishlist=require('../models/wishlist_model')
-const Offer=require('../models/productOffer_model')
+const itemsOffer=require('../models/productOffer_model')
+const CatgOffer=require('../models/categoryOffer_model')
 
 
 const bcrypt = require('bcrypt');
@@ -127,30 +128,40 @@ const loadProduct = async (req, res) => {
             products=await Product.find({is_delete:true}).sort({name:-1})
         }
         
-        const offerData=await Offer.find({is_active:true}).populate('productId')
-        for(let offer of offerData){
-            var productId=offer.productId
-        }       
-        const productOffer=await Offer.findOne({productId:productId})
-        
-        if(productOffer){
-        for(let eachProduct of offerData){
-            let productPrice=eachProduct.productId.price
-            let discount=productOffer.discount
-
-                const offerPrice=eachProduct.productId.price-(eachProduct.productId.price*discount/100)
-                productPrice=Math.floor(Math.min(productPrice, offerPrice));
-                await Product.findByIdAndUpdate(productId,{$set:{offerPrice:productPrice,productDiscount:productOffer.discount?discount:null}})
-            }
+        for(let eachProduct of products){
+            const productId=eachProduct._id
+            let bestOfferPrice=eachProduct.price
+            let topDiscount = null;
+              
+            const productOffer=await itemsOffer.findOne({productId:productId,is_active:true})
             
-        }
-       
+            if(productOffer){
+                const offerPrice=eachProduct.price-(eachProduct.price*productOffer.discount/100)
+                bestOfferPrice=Math.floor(Math.min(bestOfferPrice, offerPrice));
+                topDiscount = productOffer.discount;
+
+            }
+
+            const categoryId=eachProduct.category._id
+            const categoryOffer=await CatgOffer.findOne({categoryId:categoryId,is_active:true})
+            if(categoryOffer){
+                const offerPrice=eachProduct.price-(eachProduct.price*categoryOffer.discount/100)
+                const newBestOfferPrice = Math.floor(Math.min(bestOfferPrice, offerPrice));
+                if (newBestOfferPrice < bestOfferPrice) {
+                    bestOfferPrice = newBestOfferPrice;
+                    topDiscount = categoryOffer.discount;
+                }
+            }
+
+            await Product.findByIdAndUpdate(productId,{finalPrice: bestOfferPrice,discount: topDiscount});
+        } 
         res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
         
     } catch (error) {
         console.error("Error loading products:", error);
     }
 };
+
 const loadDetails=async(req,res)=>{
     try {
         const product=req.query.id

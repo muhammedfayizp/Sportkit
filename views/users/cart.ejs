@@ -48,8 +48,8 @@
                                                         </div>
                                                     </td>
                                                     <td><%= products.productId.name %></td>
-                                                    <% if(products.productId.offerPrice) { %>
-                                                    <td class="price-col">₹<%= products.productId.offerPrice %></td>
+                                                    <% if(products.productId.finalPrice) { %>
+                                                    <td class="price-col">₹<%= products.productId.finalPrice %></td>
                                                     <% } else { %>
                                                         <td class="price-col">₹<%= products.price %></td>
                                                         <% } %>

@@ -44,6 +44,12 @@ admin_Route.post('/returnDeclined',adminOrderController.returnDecline)
 admin_Route.get('/productOffer',adminAuth.isLogin,adminController.productOfferLoad)
 admin_Route.post('/addOffer',adminAuth.isLogin,adminController.addProductOffer)
 admin_Route.post('/changeStatus',adminController.offerStatus)
+
+admin_Route.get('/categoryOffer',adminAuth.isLogin,adminController.loadCategoryOffer)
+admin_Route.post('/addCategOffer', adminAuth.isLogin, adminController.addCategOffer);
+admin_Route.post('/changeCatgStatus',adminController.catgOfferStatus)
+
+
 admin_Route.get('*',(req,res)=>{
     res.redirect('/admin/') 
 })

@@ -33,14 +33,14 @@ const productaddingtocart = async (req, res) => {
             const userCart = await Cart.findOne({ UserId: userId })
             const product = await Product.findById(productId)
             if (!userCart) {
-                const productPrice = quantity * product.price;
+                const productPrice = quantity * product.finalPrice;
                 const cart = new Cart({
                     UserId: userId,
                     products: [
                         {
                             productId: product._id,
                             quantity: quantity,
-                            price: product.price,
+                            price: product.finalPrice,
                             totalAmount: productPrice
                         }
                     ],
@@ -55,13 +55,13 @@ const productaddingtocart = async (req, res) => {
             const exist = userCart.products.find((products) => String(products.productId) == productId)
             if (exist) {
                 exist.quantity += parseInt(quantity);
-                exist.totalAmount = exist.quantity * product.price;
+                exist.totalAmount = exist.quantity * product.finalPrice;
             } else {
-                const productPrice = quantity * product.price
+                const productPrice = quantity * product.finalPrice
                 userCart.products.push({
                     productId: product._id,
                     quantity: quantity,
-                    price: product.price,
+                    price: product.finalPrice,
                     totalAmount: productPrice
                 })
             }

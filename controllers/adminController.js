@@ -4,6 +4,8 @@ const Swal=require('sweetalert2')
 
 const Product=require('../models/product_model')
 const productOffer=require('../models/productOffer_model')
+const Category=require('../models/category_model')
+const categoryOffer=require('../models/categoryOffer_model') 
 
 
 const securePass = async (passoword) => {
@@ -146,6 +148,48 @@ const offerStatus=async(req,res)=>{
     }
 }
 
+const loadCategoryOffer=async(req,res)=>{
+    try {
+        const category=await Category.find()
+        const CatgOffer=await categoryOffer.find().populate('categoryId')
+        res.render('categoryOffer',{category,CatgOffer})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addCategOffer = async (req, res) => {
+    try {
+        const { categoryId, offerAmount, expDate } = req.body;
+        console.log(categoryId, offerAmount, expDate);
+        const addCategoryOffer = new categoryOffer({
+            categoryId: categoryId,
+            discount: offerAmount,
+            expiryDate: expDate
+        });
+        await addCategoryOffer.save();
+        res.json({ success: true });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const catgOfferStatus=async(req,res)=>{
+    try {
+        const {catgofferId}=req.body
+        const offerData=await categoryOffer.findOne({_id:catgofferId})
+        const isActive=offerData.is_active
+        if(isActive==0){
+            await categoryOffer.findByIdAndUpdate(catgofferId,{$set:{is_active:1}})
+            return res.json({success:true})
+        }else{
+            await categoryOffer.findByIdAndUpdate(catgofferId,{$set:{is_active:0}})
+            return res.json({success:true})
+        } 
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 module.exports={
     loadAdminDashboard,
@@ -157,6 +201,8 @@ module.exports={
     adminLogout,
     productOfferLoad,
     addProductOffer,
-    offerStatus
-    
+    offerStatus,
+    loadCategoryOffer,
+    addCategOffer,
+    catgOfferStatus
 }

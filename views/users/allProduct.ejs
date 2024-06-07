@@ -54,8 +54,8 @@
                             <div class="col-6 col-md-4 col-lg-4">
                                 <div class="product product-7 text-center">
                                     <figure class="product-media">
-                                        <% if(product.productDiscount) { %>
-                                            <span class="product-label label-new"><%= product.productDiscount %>%</span>
+                                        <% if(product.discount) { %>
+                                            <span class="product-label label-new"><%= product.discount %>%</span>
                                         <% } %>
                                         <a href="/productDetails?id=<%= product._id %>">
                                             <img src="/IMAGES/<%= product.Inputimage[0].filename%>" alt="Product image" class="product-image">
@@ -87,9 +87,9 @@
                                     <div class="product-body">
 
                                         <h3 class="product-title"><a href="/productDetails?id=<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
-                                        <% if (product.offerPrice) { %>
+                                        <% if (product.finalPrice!==product.price) { %>
                                             <div class="product-price mt-2">
-                                                <span class="offer-price pr-1">₹<%= product.offerPrice %></span> 
+                                                <span class="offer-price pr-1">₹<%= product.finalPrice %></span> 
                                                 <span>was</span>
                                                 <span class="original-price pl-1"> ₹<%= product.price %></span>
                                             </div><!-- End .product-price -->

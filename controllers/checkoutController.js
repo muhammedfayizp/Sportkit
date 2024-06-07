@@ -8,7 +8,7 @@ const Wallet=require('../models/wallet-model')
 
 const loadCheckout=async(req,res)=>{
     try {
-        const errormsg=req.flash('errormsg')
+        let errormsg = req.flash('errormsg')
         const userId=req.session.user
         const userData = await User.findOne({ _id: userId })
         const populateCart = await Cart.findOne({ UserId: userId }).populate('products.productId')
@@ -178,7 +178,7 @@ const placeOrder = async (req, res) => {
         }
 
         if (!cartData || !Array.isArray(cartData.products)) {
-            return res.status(400).json({ message: "Cart not found or items are undefined" });
+            return res.status(400).json({ message: "Cart not found" });
         }
 
         const orderId = orderIdgenerate();
@@ -210,25 +210,25 @@ const placeOrder = async (req, res) => {
         if (paymentMethodType === 'cash-on-delivery') {
             await newOrder.save();
             await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
-            res.json({ success: true });
+            return res.json({ success: true });
         } else if (paymentMethodType === 'Wallet') {
             if (!walletData) {
-                return res.json({ success: false, message: 'you have no wallet' });
+                return res.json({ success: false, message: 'no_wallet' });
             } else if (cartData.cartTotal > walletData.balance) {
-                return res.json({ success: false, message: 'insufficient balance' });
+                return res.json({ success: false, message: 'insufficient_balance' });
             } else {
-                const withdrawalAmount=cartData.cartTotal
+                const withdrawalAmount = cartData.cartTotal;
                 walletData.balance -= cartData.cartTotal;
                 walletData.history.push({
-                    amount:withdrawalAmount,
-                    method:'Purchase',
-                    transactionType:'debit',
-                    currentAmount:walletData.balance
-                })
+                    amount: withdrawalAmount,
+                    method: 'Purchase',
+                    transactionType: 'debit',
+                    currentAmount: walletData.balance
+                });
                 await walletData.save();
                 await newOrder.save();
                 await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
-                res.json({ success: true });
+                return res.json({ success: true });
             }
         }
 
@@ -242,9 +242,9 @@ const placeOrder = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 
 
