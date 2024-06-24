@@ -1,6 +1,61 @@
 <%-include('../layouts/header')%>
     <%-include('../layouts/navbar')%>
 
+    <style>
+        .discount-container {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    border-radius: 10px;
+}
+
+.checkout-discount form {
+    display: inline-block;
+}
+
+.form-control {
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.text-truncate span {
+    color: #007bff;
+    cursor: pointer;
+}
+
+.action-buttons button {
+    margin-left: 10px;
+    padding: 10px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#checkout-discount-input{
+    margin-top: 17px;
+    width: 340px;
+}
+
+#apply-coupon {
+    background-color: #28a745;
+    color: white;
+}
+
+#apply-coupon:hover {
+    background-color: #218838;
+}
+
+#remove-coupon {
+    background-color: #dc3545;
+    color: white;
+}
+
+#remove-coupon:hover {
+    background-color: #c82333;
+}
+    </style>
+
         <main class="main">
             <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
                 <div class="container">
@@ -20,14 +75,20 @@
             <div class="page-content">
                 <div class="checkout">
                     <div class="container">
-                        <div class="checkout-discount">
-                            <form action="#">
-                                <input type="text" class="form-control" required id="checkout-discount-input">
-                                <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click
-                                        here to enter your code</span></label>
-                            </form>
-                        </div><!-- End .checkout-discount -->
-                        <form action="/placeOrder" method = 'POST' id="orderForm">                            <!-- Button to trigger modal -->
+                        <div class="discount-container">
+                            <div class="checkout-discount">
+                                <form id="coupon-form">
+                                    <input type="text" class="form-control" required id="checkout-discount-input">
+                                    <label for="checkout-discount-input" class="text-truncate">Have a coupon? 
+                                        <span>Click here to enter your code</span></label>
+                                </form>
+                            </div>
+                            <div class="action-buttons">
+                                <button type="submit" form="coupon-form" id="apply-coupon">Apply</button>
+                                <button type="reset" form="coupon-form" id="remove-coupon">Remove</button>
+                            </div>
+                        </div>
+                        <form action="/placeOrder" method = 'POST' id="orderForm">
                             <h5 class="modal-title" id="billingModalLabel">Billing Address</h5>
                             <% if (errormsg) { %>
                                 <div class="text-center" style="color: red; background: white;">
@@ -120,22 +181,37 @@
                                                                     <td>₹<%= product.productId.finalPrice %></td>
                                                                     <% } else { %>
                                                                         <td>₹<%= product.productId.price %></td>
-                                                                        <% } %>
+                                                                    <% } %>
                                                                 </tr>
                                                                 <% subtotal += product.totalAmount; %>
-                                                                <% }); %>
-                                                                <tr class="summary-subtotal">
-                                                                    <td>Subtotal:</td>
-                                                                    <td>₹<%= subtotal %></td>
-                                                                </tr><!-- End .summary-subtotal -->
-                                                                
-                                                            <tr>
-                                                                <td>Shipping:</td>
-                                                                <td>Free shipping</td>
-                                                            </tr>
+                                                            <% }); %>
+                                                            <tr class="summary-subtotal">
+                                                                <td>Subtotal:</td>
+                                                                <td>₹<%= subtotal %></td>
+                                                            </tr><!-- End .summary-subtotal -->
+                                                            <% if(deliveryCharge 
+                                                            
+                                                                > 0) { %>  
+                                                                <tr>
+                                                                    <td>Shipping:</td>
+                                                                    <td>₹<%= deliveryCharge %></td>
+                                                                </tr>
+                                                            <% } else { %>
+                                                                <tr>
+                                                                    <td>Shipping:</td>
+                                                                    <td><%= deliveryCharge > 0 ? '₹' + deliveryCharge : 'Free shipping' %></td>
+                                                                </tr>
+                                                            <% } %>
+
+                                                            <% if(discount) { %>
+                                                                <tr>
+                                                                    <td>Coupon (<%= discount %>%):</td>
+                                                                    <td>-₹<%= discountAmount %></td>
+                                                                </tr>
+                                                            <% } %>
                                                             <tr class="summary-total">
                                                                 <td>Total:</td>
-                                                                <td>₹<%= totalCartPrice %></td>
+                                                                <td id="cart-total-price">₹<%= deliveryCharge? (totalCartPrice + deliveryCharge) : totalCartPrice %></td>
                                                             </tr><!-- End .summary-total -->
                                                         <% } else { %>
                                                             <tr>
@@ -143,6 +219,7 @@
                                                             </tr>
                                                         <% } %>
                                                     </tbody>
+                                                    
                                                     
                                                 </table>
                                                 <div class="accordion-summary" id="accordion-payment">
@@ -305,6 +382,8 @@
             </div><!-- End .checkout -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script>
             function validation() {
                 const name = document.getElementById('Name').value.trim();
@@ -420,8 +499,8 @@
 
 
             document.addEventListener('DOMContentLoaded', () => {
-                function placeOrder(paymentMethodType, addressId) {
-                    const body = JSON.stringify({ paymentMethodType, addressId });
+                function placeOrder(paymentMethodType, addressId,status) {
+                    const body = JSON.stringify({ paymentMethodType, addressId ,status});
                     fetch('/placeOrder', {
                         method: 'POST',
                         headers: {
@@ -439,7 +518,15 @@
                             }).then(() => {
                                 window.location.href = '/';
                             });
-                        } else if (data.message === 'no_wallet') {
+                        } else if(data.message==='not_available'){
+                            Swal.fire(
+                                'error',
+                                'cash on delivery not available for purchases above 2500',
+                                'error'
+                            )
+                        
+                        
+                        }else if (data.message === 'no_wallet') {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'No Wallet',
@@ -458,15 +545,113 @@
                     });
                 }
 
+                let totalCartPrice = $('#cart-total-price').text().replace('₹','').trim();
+                    function razorPay(paymentMethodType, addressId) {
+                        let cartTotal = totalCartPrice * 100; 
+                        fetch('/razorpay', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                cartTotal
+                            })
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let options = {
+                                    "key": data.key_id,
+                                    "amount": data.amount,
+                                    "currency": "INR",
+                                    "name": "Sportkit",
+                                    "order_id": data.orderid,
+                                    "handler": function (response) {
+                                        placeOrder(paymentMethodType, addressId,'Success');
+                                    },
+                                    "prefill": {
+                                        "name": data.name,
+                                        "email": data.email
+                                    }
+                                };
+
+                                let razorpayObject = new Razorpay(options);
+                                razorpayObject.on('payment.failed', (response) => {
+                                    placeOrder(paymentMethodType, addressId,'Failed');
+                                });
+                                razorpayObject.open();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                    }
+
+
+
                 document.querySelector('#orderForm').addEventListener('submit', (event) => {
                     event.preventDefault();
-                    const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-                    console.log('Selected Payment Method:', paymentMethod);
-                    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
-                    placeOrder(paymentMethod, selectedAddress);
+                    const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
+                    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+
+                    if (!selectedAddress) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Address',
+                            text: 'Please select an address ',
+                        });
+                        return;
+                    }
+
+                    if (!paymentMethod) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Payment Method',
+                            text: 'Please select a payment',
+                        });
+                        return;
+                    }
+
+                    if(paymentMethod.value === 'online-payment'){
+                        razorPay(paymentMethod.value, selectedAddress.value);
+                    } else {
+                        placeOrder(paymentMethod.value, selectedAddress.value);
+                    }
                 });
             });
+        </script>
 
+        <script>
+            document.getElementById('apply-coupon').addEventListener('click', function(event) {
+                event.preventDefault()
+                let couponNumber = document.getElementById('checkout-discount-input').value;
+                fetch('/couponVerify',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify({
+                        couponNumber
+                    })
+                }).then(response=>response.json())
+                .then(data=>{
+                    if(data.success){
+                        Swal.fire(
+                            'success',
+                            'your coupon successfully applied',
+                            'success'
+                        ).then(()=>{
+                            window.location.reload()
+                        })
+                    }else{
+                        Swal.fire(
+                            'error',
+                            'coupon not found',
+                            'error'
+                        )
+                    }
+                })
+
+            });
         </script>
         <%-include('../layouts/footbar') %>
             <%-include('../layouts/footer') %>

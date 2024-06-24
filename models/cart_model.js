@@ -28,6 +28,11 @@ const cartSchema = new mongoose.Schema ({
     cartTotal : {
         type : Number,
         required : true
+    },
+    deliveryCharge:{
+        type:Number,
+        required:false,
+        default:0
     }
    
 })

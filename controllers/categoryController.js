@@ -1,12 +1,15 @@
 const Category = require('../models/category_model')
+const categoryOffer = require('../models/categoryOffer_model')
+
 
 
 
 const loadCategory = async (req, res) => {
     try {
-        const categoriesData = await Category.find()
+        const categoriesData = await Category.find().populate('offers');
+        console.log(categoriesData);
         let success = req.flash('success')
-        res.render('categoryList', { success, categoriesData })
+        res.render('categoryList', { success, categoriesData, })
     } catch (error) {
         console.log(error);
     }

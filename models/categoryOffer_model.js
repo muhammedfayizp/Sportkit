@@ -22,5 +22,5 @@ const categoryOfferSchema=new mongoose.Schema({
         default:false
     }
 })
-categoryOfferSchema.index({expiry:1},{expireAfterSeconds:0})
+categoryOfferSchema.index({expiryDate:1},{expireAfterSeconds:0})
 module.exports=mongoose.model('CategoryOffer',categoryOfferSchema)

@@ -26,6 +26,10 @@
                     aria-controls="register" aria-selected="false">Register</a>
             </li>
         </ul>
+        <div class="mt-5 mb-2">
+            <span>Log in with your data that you entered during</span><br>
+            <span>your registration </span>
+        </div>
         <div class="tab-content" id="tab-content-5">
             <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
                 <form action="/verifylogin" method="post" onsubmit=" return validation()">
@@ -51,22 +55,16 @@
                             <i class="icon-long-arrow-right"></i>
                         </button>
 
-                        <a href="#" class="forgot-link">Forgot Your Password?</a>
+                        <a href="/forgot" class="forgot-link">Forgot Your Password?</a>
                     </div><!-- End .form-footer -->
                 </form>
                 <div class="form-choice">
                     <p class="text-center">or sign in with</p>
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <a href="/auth/google" class="btn btn-login btn-g">
                                 <i class="icon-google"></i>
                                 Login With Google
-                            </a>
-                        </div><!-- End .col-6 -->
-                        <div class="col-sm-6">
-                            <a href="#" class="btn btn-login btn-f">
-                                <i class="icon-facebook-f"></i>
-                                Login With Facebook
                             </a>
                         </div><!-- End .col-6 -->
                     </div><!-- End .row -->

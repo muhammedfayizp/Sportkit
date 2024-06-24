@@ -104,7 +104,6 @@
                                                     <td data-label="Status" class="text-center">
                                                         <select class="form-select" id="selectStatus<%= index %>" data-orderid="<%= order._id %>" data-productid="<%= item.productId._id %>">
                                                             <option value="Confirmed" <%= item.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
-                                                            <option value="Shipped" <%= item.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                                                             <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                                             <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
 

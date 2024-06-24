@@ -54,6 +54,9 @@ const productaddingtocart = async (req, res) => {
             }
             const exist = userCart.products.find((products) => String(products.productId) == productId)
             if (exist) {
+                if(exist.quantity>=product.quantity){
+                    return res.json({success:false,message:'out of stock'})
+                }
                 exist.quantity += parseInt(quantity);
                 exist.totalAmount = exist.quantity * product.finalPrice;
             } else {

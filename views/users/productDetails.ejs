@@ -1,7 +1,18 @@
 <%-include('../layouts/header')%>
 <%-include('../layouts/navbar')%>
 
+<style>
+    .product-gallery-item {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+}
 
+.product-gallery-item:hover {
+    border-color: #333;
+}
+</style>
 
 <main class="main">
     <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
@@ -36,20 +47,20 @@
                                 <figure class="product-main-image" style="width: 400px;">
                                     <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product image">
                                 </figure>
-                                
+                                                    
                                 <div id="product-zoom-gallery" class="product-image-gallery">
                                     <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
                                         <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product side">
                                     </a>
-
+                                        
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[1].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
                                         <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product cross">
                                     </a>
-
+                                        
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[2].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
                                         <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product with model">
                                     </a>
-
+                                        
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
                                         <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product back">
                                     </a>
@@ -57,6 +68,7 @@
                             </div>
                         </div>
                     </div>
+                    
 
                     <div class="col-md-6">
                         <div class="product-details">
@@ -70,22 +82,30 @@
                             </div><!-- End .rating-container -->
 
                             <div class="product-price">
-                               $ <%= products.price%>
+                               ₹ <%= products.price%>
                             </div><!-- End .product-price -->
 
                             <div class="product-content mt-4 mb-5">
                                 <h3>Description</h3>
                                 <p><%= products.description %> </p>
                             </div><!-- End .product-content -->
-
-                            <div class="product-details-action">
-                                <a onclick="addtocart('<%= products._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
-
-                                <div class="product-details-action pt-3 pl-4">
-                                    <a onclick="addtoWishlist('<%= products._id %>')" class="btn-product btn-wishlist" title="Wishlist"><span>add to wishlist</span></a>
-                                </div><!-- End .details-action-wrapper -->
-                            </div><!-- End .product-details-action -->
-
+                            <% if(userData) {%>
+                                <div class="product-details-action">
+                                    <a onclick="addtocart('<%= products._id %>')" class="btn-product btn-cart"><span>add to cart</span></a>
+                                
+                                    <div class="product-details-action pt-3 pl-4">
+                                        <a onclick="addtoWishlist('<%= products._id %>')" class="btn-product btn-wishlist"><span>add to wishlist</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div>
+                            <% } else { %>
+                                <div class="product-details-action">
+                                    <a href="/login" class="btn-product btn-cart"><span>add to cart</span></a>
+    
+                                    <div class="product-details-action pt-3 pl-4">
+                                        <a href="/login" class="btn-product btn-wishlist" ><span>add to wishlist</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div><!-- End .product-details-action -->
+                                <% } %>
                             <div class="product-details-footer">
                                 <div class="social-icons social-icons-sm">
                                     <span class="social-label">Share:</span>
@@ -104,37 +124,6 @@
 </main>
 
 <script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
-
-<script>
-    let subImage=document.querySelectorAll('.product-gallery-item')
-    subImage.forEach((sub)=>{
-        sub.addEventListener('click',function(event){   
-            event.preventDefault();
-            const mainImage=document.getElementById('product-zoom')
-            mainImage.setAttribute('src',this.getAttribute('data-image'))
-            mainImage.setAttribute('data-zoom-image',this.getAttribute('data-zoom-image'))
-            subImage.forEach((image)=>{
-                image.classList.remove('active');
-            });
-            this.classList.add('active')
-        })
-    })
-    new Zoom(document.getElementById('product-zoom'))
-
-
-    var options1 = {
-        width: 400,
-        zoomWidth: 500,
-        offset: {vertical: 0, horizontal: 10}
-    };
-    var options2 = {
-        fillContainer: true,
-        offset: {vertical: 0, horizontal: 10}
-    };
-
-    new ImageZoom(document.getElementById("product-zoom"), options1);
-    new ImageZoom(document.getElementById("product-zoom"), options2);
-</script>
 
 
 <script>
@@ -155,6 +144,12 @@
                     .then(()=>{
                         window.location.reload()
                     });
+                }else if(data.message=='out of stock'){
+                    Swal.fire(
+                        'error',
+                        'out of stock',
+                        'error'
+                    )
                 }else{
                     Swal.fire({
                         icon:'error',
@@ -204,6 +199,41 @@
             }
         })
     }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $("#product-zoom").elevateZoom({
+            zoomType: "inner",
+            cursor: "crosshair",
+            zoomWindowFadeIn: 500,
+            zoomWindowFadeOut: 750
+        });
+
+        $(".product-gallery-item").on("click", function(e) {
+            e.preventDefault();
+            var ezoom = $('#product-zoom').data('elevateZoom');
+            ezoom.swaptheimage($(this).data('image'), $(this).data('zoom-image'));
+            $(".product-gallery-item").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const galleryItems = document.querySelectorAll('.product-gallery-item');
+
+    galleryItems.forEach(item => {
+        item.addEventListener('mouseover', function() {
+            const imageUrl = item.getAttribute('data-image');
+            const zoomImageUrl = item.getAttribute('data-zoom-image');
+
+            document.getElementById('product-zoom').src = imageUrl;
+            document.getElementById('product-zoom').setAttribute('data-zoom-image', zoomImageUrl);
+        });
+    });
+});
 </script>
 
 <%-include('../layouts/footbar') %>

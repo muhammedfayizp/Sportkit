@@ -29,7 +29,11 @@ const userSchema=mongoose.Schema({
     is_verified:{
         type: Number,
         default: 0
-    }
+    },
+    coupon:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Coupon',
+    }]
 
 })
 

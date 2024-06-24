@@ -155,6 +155,18 @@ const loadProduct = async (req, res) => {
 
             await Product.findByIdAndUpdate(productId,{finalPrice: bestOfferPrice,discount: topDiscount});
         } 
+
+        const input=req.query.input
+
+        if(input){
+            const reg=new RegExp(input,'i')
+            let searchedProducts=await Product.find({name:reg})
+            if(searchedProducts){
+                products=searchedProducts
+            }
+            
+        }
+
         res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
         
     } catch (error) {
@@ -164,11 +176,13 @@ const loadProduct = async (req, res) => {
 
 const loadDetails=async(req,res)=>{
     try {
+        const user=req.session.user
         const product=req.query.id
         const products=await Product.findById({_id:product})
         const categories=await Category.find({is_Listed:true})
+        const userData=await User.findOne({_id:user})
 
-        res.render('productDetails',{products,categories})
+        res.render('productDetails',{products,categories,userData})
     } catch (error) {
         console.log(error);
     }
@@ -425,6 +439,97 @@ const productRemove = async (req, res) => {
 }
 
 
+const loadForgotPage=async(req,res)=>{
+    try {
+        const successmsg=req.flash('successmsg')
+        let errormsg = req.flash('errormsg')
+        const categories=await Category.find({is_Listed:true})
+        res.render('forgotPassword',{categories,successmsg,errormsg})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const verifyMail=async(req,res)=>{
+    try {
+        const {email}=req.body
+        const userData=await User.findOne({email:email})
+        if(userData){
+            req.session.user={email:email}
+            await sendOTPMail(email,res)
+            return res.redirect('/resetPassOtp')
+        }else{
+            req.flash('errormsg','Invalid Email address')
+            return res.redirect('/forgot')
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const loadResetPassOtp=async(req,res)=>{
+    try {
+        const successmsg=req.flash('successmsg')
+        let errormsg = req.flash('errormsg')
+        const email=req.session.user.email
+        const categories=await Category.find({is_Listed:true})
+        res.render('resetPassOtp',{email:email,successmsg,errormsg,categories})
+    } catch (error) {
+        console.log(error); 
+    }
+}
+
+const verifyResetPassOtp=async(req,res)=>{
+    try {
+        const digit1=req.body.digit1;
+        const digit2=req.body.digit2;
+        const digit3=req.body.digit3
+        const digit4=req.body.digit4
+        const otp=''+digit1+digit2+digit3+digit4
+
+        const otpVerify=await UserOTPverification.findOne({otp:otp})
+        if(!otpVerify){
+            res.json({success:false})
+            return
+        }
+        res.json({success:true})
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const loadResetPassword=async(req,res)=>{
+    try {
+        const successmsg=req.flash('successmsg')
+        let errormsg = req.flash('errormsg')
+        const categories=await Category.find({is_Listed:true})
+        res.render('resetPassword',{successmsg,errormsg,categories})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const verifyRePassword = async (req, res) => {
+    try {
+        const { password, confirmPassword } = req.body;
+        if (password !== confirmPassword) {
+            return res.status(400).send('Passwords do not match');
+        }
+        const email = req.session.user.email;
+        const spassword = await securePassword(password);
+    
+        await User.findOneAndUpdate({ email: email },{$set:{password:spassword}});        
+        req.session.user =null
+        res.redirect('/login')
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('Internal Server Error');
+    }
+};
+
+
 
 module.exports={
     loadHome,
@@ -445,5 +550,10 @@ module.exports={
     loadWishlist,
     addToWishlist,
     productRemove,
-    
+    loadForgotPage,
+    verifyMail,
+    loadResetPassOtp,
+    verifyResetPassOtp,
+    loadResetPassword,
+    verifyRePassword
 }

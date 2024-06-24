@@ -4,13 +4,13 @@ const Product=require('../models/product_model')
 
 const loadOrderList=async(req,res)=>{
     try {
-        const orders = await Order.find()
+        let orders = await Order.find()
         .populate({
             path: 'items.productId',
             model: 'Product'
         })
-        
         .exec();
+        orders=[...orders].reverse()
         res.render('ordersList',{orders})
 } catch (error) {
         console.log(error);

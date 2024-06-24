@@ -1,20 +1,66 @@
 <style>
+    
     .mobile-menu-container {
-        height: 500px; /* Set your desired height */
-        overflow: hidden; /* Hide the scrollbar */
-    }
-    
-    .mobile-menu-wrapper {
-        height: 100%; /* Ensure the wrapper takes the full height of the container */
-        display: flex;
-        flex-direction: column;
-    }
-    
-    
-    
-    .social-icons {
-        margin-top: auto; /* Push social icons to the bottom */
-    }
+    height: 500px; /* Set your desired height */
+    overflow: hidden; /* Hide the scrollbar */
+    margin-left: 79px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001; /* Ensure the mobile menu is above other elements */
+    transform: translateX(-100%); /* Initially hide the menu */
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu-container.active {
+    transform: translateX(0); /* Show the menu */
+}
+
+.mobile-menu-wrapper {
+    height: 100%; /* Ensure the wrapper takes the full height of the container */
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; /* Hide by default */
+    z-index: 1000; /* Ensure the overlay is below the menu but above other elements */
+}
+
+.header-bottom .main-nav .menu > li {
+    position: relative;
+}
+
+.header-bottom .main-nav .menu > li .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+}
+
+.header-bottom .main-nav .menu > li:hover .dropdown-menu {
+    display: block;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: #007bff;
+    background-color: #007bff;
+}
+
+.custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+
     </style>
 
 <div class="page-wrapper">
@@ -51,7 +97,7 @@
                 <div class="header-left">
                     <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                         <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                        <form action="#" method="get">
+                        <form id="search-form" action="#" method="get">
                             <div class="header-search-wrapper search-wrapper-wide">
                                 <label for="q" class="sr-only">Search</label>
                                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
@@ -101,19 +147,20 @@
                             <li class="megamenu-container">
                                 <a href="/">Home</a>
                             </li>
-                            <li>
-                                <a class="sf-with-ul">Category</a>
-                                <div class="megamenu">
-                                    <div class="col-md-6">
-                                        <ul>
+                            <li class="dropdown">
+                                <a class="sf-with-ul dropdown-toggle" id="dropdownMenuButton">Category</a>
+                                <div class="dropdown-menu" id="widget-1">
+                                    <div class="widget-body">
+                                        <div class="filter-items filter-items-count">
                                             <% categories.forEach(category => { %>
-                                                <li>
-                                                    <a href="<%= category.link %>">
-                                                        <span><%= category.name %></span>
-                                                    </a>
-                                                </li>
-                                            <% }); %>
-                                        </ul>
+                                            <div class="filter-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="<%= category._id %>" name="checkbox" value="<%= category._id %>">
+                                                    <label class="custom-control-label" for="<%= category._id %>"><%= category.name %></label>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
@@ -131,45 +178,104 @@
         </div>
     </header>
 
-<div class="mobile-menu-overlay"></div>
-<div class="mobile-menu-container">
-    <div class="mobile-menu-wrapper">
-        <span class="mobile-menu-close"><i class="icon-close"></i></span>
-        <form action="#" method="get" class="mobile-search">
-            <label for="mobile-search" class="sr-only">Search</label>
-            <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
-            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-        </form>
-        <nav class="mobile-nav">
-            <ul class="mobile-menu">
-                <li><a href="/">Home</a></li>
-                <li>
-                    <a class="sf-with-ul" style="color: #fff;">Category</a>
-                    <div class="megamenu">
-                        <div class="col-md-6">
-                            <ul>
-                                <% categories.forEach(category => { %>
-                                    <li>
-                                        <a href="<%= category.link %>">
-                                            <span><%= category.name %></span>
-                                        </a>
-                                    </li>
-                                <% }); %>
-                            </ul>
+    <div class="mobile-menu-overlay"></div>
+    <div class="mobile-menu-container">
+        <div class="mobile-menu-wrapper">
+            <span class="mobile-menu-close"><i class="icon-close"></i></span>
+            <form action="#" method="get" class="mobile-search">
+                <label for="mobile-search" class="sr-only">Search</label>
+                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+            </form>
+            <nav class="mobile-nav ">
+                <ul class="mobile-menu ml-3">
+                    <li><a href="/">Home</a></li>
+                    <li>
+                        <a class="sf-with-ul" style="color: #000;">Category</a>
+                        <div class="megamenu">
+                            <div class="col-md-6">
+                                <ul>
+                                    <% categories.forEach(category => { %>
+                                        <li>
+                                            <a href="<%= category.link %>">
+                                                <span><%= category.name %></span>
+                                            </a>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <li><a href="/product">Product</a></li>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </nav>
-        <div class="social-icons">
-            <a class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-            <a class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-            <a class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-            <a class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+                    </li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="social-icons">
+                <a class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                <a class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                <a class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                <a class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+            </div>
         </div>
     </div>
-</div>
+</div>  
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggler = document.querySelector('.mobile-menu-toggler');
+        const mobileMenuContainer = document.querySelector('.mobile-menu-container');
+        const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        const mobileMenuClose = document.querySelector('.mobile-menu-close');
+
+        mobileMenuToggler.addEventListener('click', function () {
+            mobileMenuContainer.classList.add('active');
+            mobileMenuOverlay.style.display = 'block';
+        });
+
+        mobileMenuClose.addEventListener('click', function () {
+            mobileMenuContainer.classList.remove('active');
+            mobileMenuOverlay.style.display = 'none';
+        });
+
+        mobileMenuOverlay.addEventListener('click', function () {
+            mobileMenuContainer.classList.remove('active');
+            mobileMenuOverlay.style.display = 'none';
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                const selectedCategory = event.target.value;
+                if (event.target.checked) {
+                    window.location.href = `/product?filtered=${selectedCategory}`;
+                } else {
+                    window.location.href = `/product`;
+                }
+                checkboxes.forEach(box => {
+                    if (box !== event.target) {
+                        box.checked = false;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+<!-- search-->
+<script>
+    document.addEventListener('DOMContentLoaded',function(){
+        document.getElementById('search-form').addEventListener('submit',function(event){
+            event.preventDefault()
+            const input=document.getElementById('q').value 
+            if(input){
+                window.location.href=`/product?input=${input}`
+            }
+        })
+    })
+</script>

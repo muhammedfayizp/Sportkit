@@ -2,9 +2,11 @@ const express=require('express')
 const axios=require('axios')
 const router=express()
 const User=require('./models/user_model')
+require("dotenv").config();
 
-const CLIENT_ID='391118335342-7ar1tutkogvd7s3jude7as8t3m5ml1pa.apps.googleusercontent.com'
-const CLIENT_SECRET='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'
+
+const CLIENT_ID=process.env.CLIENT_ID
+const CLIENT_SECRET=process.env.CLIENT_SECRET
 const REDIRECT_URI='http://localhost:3010/auth/google/callback'
 
 router.get('/auth/google', (req, res) => {

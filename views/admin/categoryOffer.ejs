@@ -22,48 +22,46 @@
                     <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Offer+</a>
                 </div>
                 <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">New Offer</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Your form or content for the new offer goes here -->
-                                <form>
-                                    <div class="form-group">
-                                        <label for="category-name">Category Name</label>
-                                        <select class="form-control" id="category-name">
-                                          <option value="" disabled selected>Select Category</option>
-                                          <% category.forEach(categories=>{%>
-                                          <option id="category-name" value="<%= categories._id %>"><%= categories.name %></option>
-                                          <%}) %>
-                                        </select>
-                                      </div>
-                                    <div class="form-group">
-                                        <label for="offer-amount">Offer Amount</label>
-                                        <input type="number" class="form-control" id="offer-amount"
-                                            placeholder="Enter Offer Amount">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="offer-Expiry-Date">Offer Expiry Date</label>
-                                        <input type="date" class="form-control" id="offer-Expiry-Date"
-                                            placeholder="Enter Expiry Date"></input>
-                                    </div>
-                                    <!-- Add more form fields as needed -->
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">New Offer</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="offerForm">
+                                <div class="form-group">
+                                    <label for="category-name">Category Name</label>
+                                    <select class="form-control" id="category-name">
+                                        <option value="" disabled selected>Select Category</option>
+                                        <% category.forEach(categories => { %>
+                                        <option id="category-name" value="<%= categories._id %>"><%= categories.name %></option>
+                                        <% }) %>
+                                    </select>
+                                    <div id="category-name-error" style="color: red; margin-top: 10px;"></div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" onclick="catgofferadding()" class="btn btn-primary">Save Offer</button>
-                                </div>    
+                                <div class="form-group">
+                                    <label for="offer-amount">Offer Amount</label>
+                                    <input type="number" class="form-control" id="offer-amount" placeholder="Enter Offer Amount">
+                                    <div id="offer-amount-error" style="color: red; margin-top: 10px;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="offer-Expiry-Date">Offer Expiry Date</label>
+                                    <input type="date" class="form-control" id="offer-Expiry-Date" placeholder="Enter Expiry Date">
+                                    <div id="offer-expiry-date-error" style="color: red; margin-top: 10px;"></div>
+                                </div>
                             </form>
-                        
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" onclick="catgofferadding()" class="btn btn-primary">Save Offer</button>
                         </div>
                     </div>
                 </div>
+            </div>
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -185,4 +183,50 @@
                             }
                         </script>
 
+
+                        <script>
+                            function catgofferadding() {
+                                const categoryName = document.getElementById('category-name').value;
+                                const offerAmount = document.getElementById('offer-amount').value;
+                                const offerExpiryDate = document.getElementById('offer-Expiry-Date').value;
+
+                                const categoryNameError = document.getElementById('category-name-error');
+                                const offerAmountError = document.getElementById('offer-amount-error');
+                                const offerExpiryDateError = document.getElementById('offer-expiry-date-error');
+
+                                categoryNameError.innerHTML = '';
+                                offerAmountError.innerHTML = '';
+                                offerExpiryDateError.innerHTML = '';
+
+                                let isValid = true;
+
+                                if (!categoryName) {
+                                    categoryNameError.innerHTML = 'Please select a category.';
+                                    isValid = false;
+                                }
+
+                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0||Number(offerAmount)>=60) {
+                                    offerAmountError.innerHTML = 'Please enter a valid offer amount greater than zero.';
+                                    isValid = false;
+                                    if(Number(offerAmount)>=60){
+                                        offerAmountError.innerHTML='offer should be less than 60'
+                                    }
+                                }
+
+                                if (!offerExpiryDate) {
+                                    offerExpiryDateError.innerHTML = 'Please select an expiry date.';
+                                    isValid = false;
+                                } else {
+                                    const today = new Date().toISOString().split('T')[0];
+                                    if (offerExpiryDate < today) {
+                                        offerExpiryDateError.innerHTML = 'Expiry date cannot be in the past.';
+                                        isValid = false;
+                                    }
+                                }
+
+                                if (isValid) {
+                                    document.getElementById('offerForm').submit();
+                                }
+                            }
+                        </script>
                         <%-include('../layouts/adminFooter')%>

@@ -31,23 +31,30 @@ admin_Route.post('/editProduct',adminAuth.isLogin,productController.productEditi
 
 admin_Route.get('/categoryList',adminAuth.isLogin,CategoryController.loadCategory)
 admin_Route.get('/categoryAdd',adminAuth.isLogin,CategoryController.loadAddingCategory)
-admin_Route.post('/addCategorys',CategoryController.addNewCategory)
+admin_Route.post('/addCategorys',adminAuth.isLogin,CategoryController.addNewCategory)
 admin_Route.get('/categoryEdit',adminAuth.isLogin,CategoryController.loadCategoryEdit)
-admin_Route.post('/editCategory',CategoryController.categoryEditing)
+admin_Route.post('/editCategory',adminAuth.isLogin,CategoryController.categoryEditing)
 
 admin_Route.get ('/ordersList',adminAuth.isLogin,adminOrderController.loadOrderList)
 admin_Route.get('/orderDetailsList',adminAuth.isLogin,adminOrderController.loadOrderDetailList)
-admin_Route.post('/statusChange',adminOrderController.changeStatus)
-admin_Route.post('/returnApproved',adminOrderController.returnApproev)
-admin_Route.post('/returnDeclined',adminOrderController.returnDecline)
+admin_Route.post('/statusChange',adminAuth.isLogin,adminOrderController.changeStatus)
+admin_Route.post('/returnApproved',adminAuth.isLogin,adminOrderController.returnApproev)
+admin_Route.post('/returnDeclined',adminAuth.isLogin,adminOrderController.returnDecline)
 
 admin_Route.get('/productOffer',adminAuth.isLogin,adminController.productOfferLoad)
 admin_Route.post('/addOffer',adminAuth.isLogin,adminController.addProductOffer)
-admin_Route.post('/changeStatus',adminController.offerStatus)
+admin_Route.post('/changeStatus',adminAuth.isLogin,adminController.offerStatus)
 
 admin_Route.get('/categoryOffer',adminAuth.isLogin,adminController.loadCategoryOffer)
-admin_Route.post('/addCategOffer', adminAuth.isLogin, adminController.addCategOffer);
-admin_Route.post('/changeCatgStatus',adminController.catgOfferStatus)
+admin_Route.post('/addCategOffer',adminAuth.isLogin, adminController.addCategOffer);
+admin_Route.post('/changeCatgStatus',adminAuth.isLogin,adminController.catgOfferStatus)
+
+admin_Route.get('/couponPage',adminAuth.isLogin,adminController.loadCouponPage)
+admin_Route.post('/addCoupon',adminAuth.isLogin,adminController.couponAdding)
+admin_Route.post('/statusChecked',adminAuth.isLogin,adminController.statusChecked);
+
+admin_Route.get('/sales',adminAuth.isLogin,adminController.loadSalesReport)
+admin_Route.post('/chart',adminController.chartController)
 
 
 admin_Route.get('*',(req,res)=>{

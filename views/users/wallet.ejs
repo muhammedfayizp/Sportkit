@@ -233,7 +233,7 @@ input[type="radio"]:hover {
         <a class="nav-link " href="/userProfile" target="__blank">Profile</a>
         <a class="nav-link" href="/addressList" target="__blank">Address</a>
         <a class="nav-link active ms-0" href="/wallet" target="__blank">Wallet</a>
-        <a class="nav-link" href="" target="__blank">Coupons</a>
+        <a class="nav-link" href="/coupon" target="__blank">Coupons</a>
         <a class="nav-link" href="/orderHistoryList" target="__blank">Order History</a>
     </nav>
     <hr class="mt-0 mb-4">
@@ -252,7 +252,7 @@ input[type="radio"]:hover {
                 <div class="card-header">Wallet</div>
                 <div class="card-body">
                     <div class="d-md-flex justify-content-between align-items-center mb-4">
-                        <div class="debit-card card-2 mb-3 mb-md-0" style="max-width: 650px;"> <!-- Use max-width instead of width -->
+                        <div class="debit-card card-2 mb-3 mb-md-0" style="max-width: 650px;">
                             <div class="d-flex flex-column h-100">
                                 <label class="d-block">
                                     <div class="d-flex position-relative">
@@ -263,11 +263,11 @@ input[type="radio"]:hover {
                                         </div>
                                     </div>
                                 </label>
-                                <div class="d-flex justify-content-between"> <!-- Remove fixed width -->
-                                    <div class="mt-auto fw-bold d-flex align-items-center" style="min-width: 150px;"> <!-- Use min-width instead of width -->
+                                <div class="d-flex justify-content-between"> 
+                                    <div class="mt-auto fw-bold d-flex align-items-center" style="min-width: 150px;"> 
                                         <p class="m-0">9891 1320 9685 5343</p>
                                     </div>
-                                    <div class='d-flex align-items-center justify-content-end flex-grow-1'> <!-- Make the second div fill the remaining space -->
+                                    <div class='d-flex align-items-center justify-content-end flex-grow-1'>
                                         <% if(walletData) { %>
                                         <span class="text-white fw-bold m-0">Balance : </span>
                                             <span class="text-white fw-bold m-0"> ₹ <%= walletData.balance %></span>
@@ -292,37 +292,37 @@ input[type="radio"]:hover {
                                 <button class="btn btn-add-money mb-2" id="addMoneybtn" data-toggle="modal" data-target="#addMoneyModal">Add money</button>
                             </div>
                              <% } %>
-                        <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Add your form here -->
-                                        <form method="post" action="/walletMoney">
-                                            <div class="form-group px-4">
-                                                <label for="amount">Amount</label>
-                                                <input type="text" class="form-control" id="amount" name="addamount" placeholder="Enter amount">
-                                            </div>
-                                            <div class="form-group px-4">
-                                                <label for="payment-method">Payment Method</label>
-                                                <select class="form-control" id="payment-method" name="payment-method">
-                                                    <option name="credit-card" value="credit-card">Credit Card</option>
-                                                    <option name="google-pay" value="google-pay">G-pay</option>
-                                                    <option name="paypal" value="paypal">PayPal</option>
-                                                    <option name="bank-transfer" value="bank-transfer">Bank Transfer</option>
-                                                </select>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </form>
+                             <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" action="/walletMoney">
+                                                <div class="form-group px-4">
+                                                    <label for="amount">Amount</label>
+                                                    <input type="text" class="form-control" id="amount" name="addamount" placeholder="Enter amount">
+                                                    <div id="addMoneyError" style="color: red; margin-top: 10px;"></div>
+                                                </div>
+                                                <div class="form-group px-4">
+                                                    <label for="payment-method">Payment Method</label>
+                                                    <select class="form-control" id="payment-method" name="payment-method">
+                                                        <option name="credit-card" value="credit-card">Credit Card</option>
+                                                        <option name="google-pay" value="google-pay">G-pay</option>
+                                                        <option name="paypal" value="paypal">PayPal</option>
+                                                        <option name="bank-transfer" value="bank-transfer">Bank Transfer</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     
                         <!-- Transactions Modal -->
                         <div class="modal fade" id="transactionsModal" tabindex="-1" role="dialog" aria-labelledby="transactionsModalLabel" aria-hidden="true" >
@@ -387,11 +387,11 @@ input[type="radio"]:hover {
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <!-- Add your form or content here -->
                                         <form method="post" action="/withdrawal">
                                             <div class="form-group px-4">
                                                 <label for="withdrawalAmount">Withdrawal Amount</label>
                                                 <input type="text" class="form-control" id="withdrawalAmount" name="withdrwAmount" placeholder="Enter amount">
+                                                <div id="withdrawalError" style="color: red; margin-top: 10px;"></div>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                         </form>
@@ -408,14 +408,38 @@ input[type="radio"]:hover {
                 </div>
             </div>
         </div>
-        
-        
-        
     </div>
 </div>
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form[action="/walletMoney"]').addEventListener('submit', function(event) {
+            const amount = document.getElementById('amount').value;
+            const errormsg = document.getElementById('addMoneyError');
+            errormsg.innerHTML = '';
 
+            if (!amount || isNaN(amount) || Number(amount) <= 0|| Number(amount) >= 10000) {
+                event.preventDefault();
+                errormsg.innerHTML = 'Please enter a valid amount';
+                if(Number(amount)>=10000){
+                    errormsg.innerHTML='Amount must be less than 10000'
+                }
+            }
+        });
+
+        document.querySelector('form[action="/withdrawal"]').addEventListener('submit', function(event) {
+            const withdrawalAmount = document.getElementById('withdrawalAmount').value;
+            const errormsg = document.getElementById('withdrawalError');
+            errormsg.innerHTML = '';
+
+            if (!withdrawalAmount || isNaN(withdrawalAmount) || Number(withdrawalAmount) <= 0) {
+                event.preventDefault();
+                errormsg.innerHTML = 'Please enter a valid withdrawal amount';
+            }
+        });
+    });
+</script>
 
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

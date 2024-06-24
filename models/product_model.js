@@ -40,7 +40,16 @@
         },
         discount:{
             type:Number
+        },
+        offers:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'productOffer'
+        }],
+        soldProductCount:{
+            type:Number,
         }
+
+
     })
 
     function arraylimit(val){

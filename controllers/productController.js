@@ -9,7 +9,8 @@ const app=express()
 
 const loadProductlist=async(req,res)=>{
     try {
-        const productData=await Product.find().populate('category','name')
+        let productData=await Product.find().populate('category','name').populate('offers')
+        productData=[...productData].reverse()
         let success=req.flash('success')
 
         res.render('productlist',{productData,success})
@@ -29,18 +30,21 @@ const loadAddProduct=async(req,res)=>{
 }
 
 
-const imglocation=multer.diskStorage({
-    destination:function(req,file,callback){
-       callback(null,'public/IMAGES');
+const imglocation = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, 'public/IMAGES');
     },
-    filename:function(req,file,callback){
-         callback(null,Date.now()+'-'+file.originalname)
+    filename: function (req, file, callback) {
+        callback(null, Date.now() + '-' + file.originalname);
     }
-})
+});
+
 const insert = multer({ storage: imglocation }).fields([
     { name: 'Inputimage', maxCount: 4 },
 ]);
-app.use(express.static(path.join(__dirname,'public')))
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 const insertProduct=async(req,res)=>{
@@ -81,6 +85,10 @@ const insertProduct=async(req,res)=>{
         console.log(error,'error while adding product');
     }
 } 
+
+
+
+
 
 const loadproductListUnlist=async (req,res)=>{
     try {
@@ -123,8 +131,8 @@ const productEditing = async (req, res) => {
         }
 
 
-        const existProduct = await Product.findById(productId);
-        const imageFiles = req.files;
+        let existProduct = await Product.findById(productId);
+        let imageFiles = req.files;
 
         existProduct.name = name;
         existProduct.price = price;
@@ -133,9 +141,9 @@ const productEditing = async (req, res) => {
         existProduct.description = description;
 
         if (Array.isArray(imageFiles) && imageFiles.length > 0) {
-            const Inputimage = imageFiles.map(file => ({
+            let Inputimage = imageFiles.map(file => ({
                 filename: file.filename,
-                path: '/uploads/' + file.filename
+                path: '/uploads' + file.filename
             }));
             existProduct.Inputimage = Inputimage;
         }

@@ -1,10 +1,11 @@
 <%-include('../layouts/header')%>
 <%-include('../layouts/navbar')%>
 <style type="text/css">
-     body {
+    body {
         background-color: #cad1dc;
         color: #333639;
     }
+
     .img-account-profile {
         height: 10rem;
     }
@@ -16,6 +17,7 @@
     .card {
         box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
     }
+
     .card .card-header {
         font-weight: 500;
     }
@@ -44,6 +46,7 @@
         border-radius: 0.35rem;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
+
     .nav-borders .nav-link.active {
         color: #0061f2;
         border-bottom-color: #0061f2;
@@ -61,7 +64,6 @@
         margin-left: 1rem;
         margin-right: 1rem;
     }
-
 
     @media (max-width: 767.98px) {
         .table td,
@@ -92,14 +94,19 @@
         border-bottom: none;
     }
 
+    .order-date {
+        text-align: center;
+        margin-top: 1rem;
+    }
 </style>
-<body>
+
+
     <div class="container-xl px-4 mt-4 mb-5">
         <nav class="nav nav-borders">
             <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
             <a class="nav-link" href="/addressList" target="__blank">Address</a>
             <a class="nav-link" href="/wallet" target="__blank">Wallet</a>
-            <a class="nav-link" href="" target="__blank">Coupons</a>
+            <a class="nav-link" href="/coupon" target="__blank">Coupons</a>
             <a class="nav-link active ms-0" href="/orderHistoryList" target="__blank">Order History</a>
         </nav>
         <div class="row">
@@ -112,36 +119,36 @@
                     <div class="text-center"><%= userData.name %></div>
                 </div>
             </div>
-            
+
             <div class="col-md-12 col-xl-8">
                 <div class="card">
                     <div class="card-header">My Orders</div>
                     <div class="card-body">
                         <% if (orders && orders.length > 0) { %>
                             <% orders.forEach(order => { %>
+                                <p class="order-date"><%= order.currentDate %></p>
                                 <div class="table-responsive">
-                                    <table class="table table-cart table-mobile ">
+                                    <table class="table table-cart table-mobile table-striped">
                                         <tbody>
                                             <% order.items.forEach(item => { %>
                                                 <tr>
-                                                    <td>
-                                                        <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="width: 100px; height: 100px;">
+                                                    <td class="col-2">
+                                                        <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" class="img-fluid" style="width: 100px; height: 100px;">
                                                     </td>
-                                                    <td data-label="Product Name"><%= item.productId.name %></td>
-                                                    <td data-label="Price" class="text-center">$<%= item.price %></td>
-                                                    <td data-label="Quantity" class="text-center">Qty: <%= item.quantity %></td>
-                                                    <td data-label="Payment Method" class="text-center"><%= order.PaymentMethod %></td>
+                                                    <td data-label="Product Name" class="col-4"><%= item.productId.name %></td>
+                                                    <td data-label="Price" class="text-center col-2">₹<%= item.price %></td>
+                                                    <td data-label="Quantity" class="text-center col-2">Qty: <%= item.quantity %></td>
+                                                    <td data-label="Payment Method" class="text-center col-2"><%= order.PaymentMethod %></td>
                                                 </tr>
                                             <% }) %>
                                             <tr>
-                                                <td >
+                                                <td colspan="5" class="text-right">
                                                     <a href="/orderDetails?orderId=<%= order._id %>">
                                                         <button class="btn btn-primary">Order Details</button>
                                                     </a>
+                                                    <strong class="mr-4">Total: ₹<%= order.totalAmount %></strong>
                                                 </td>
-                                                <td>Total : $<%= order.totalAmount %></td>
                                             </tr>
-                                            <p class="mt-1 text-center"><%= order.currentDate %></p>
                                         </tbody>
                                     </table>
                                 </div>
@@ -155,6 +162,6 @@
         </div>
     </div>
 
-
     <%-include('../layouts/footbar') %>
     <%-include('../layouts/footer') %>
+

@@ -11,7 +11,7 @@
                         <% if (errmsg.length > 0) { %>
                             <div class="alert alert-danger"><%= errmsg %></div>
                         <% } %>
-                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" onsubmit=" return validation()">
+                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" onsubmit=" return validation()" >
                             <div class="form-body">
                                 <div class="form-group">
                                     <div class="row">
@@ -64,7 +64,7 @@
                                                     <div class="col-md-11">
                                                         <div class="form-group mb-4">
                                                             <select class="custom-select mr-sm-2" id="category" name="category">
-                                                                <option value="Choose...">Choose...</option>
+                                                                <option value="Choose..." disabled selected>Choose...</option>
                                                                 <% categories.forEach((category) => { %>
                                                                     <option value="<%= category._id %>"
                                                                         <%= category._id.equals(productDetail.category) ? 'selected' : '' %>>
@@ -127,7 +127,6 @@
                             <div class="form-actions">
                                 <div class="text-right">
                                     <button type="submit" class="btn btn-info">Save Changes</button>
-                                    <button type="reset" class="btn btn-dark">Reset</button>
                                 </div>
                             </div>
                         </form>
@@ -143,18 +142,40 @@ function previewImage(input, previewElement) {
     preview.innerHTML = '';
 
     if(input.files){
-        Array.from(input.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100px';
-                img.style.maxHeight = '100px';
-                preview.appendChild(img);
-            }
-            reader.readAsDataURL(file);
-        });
-    }
+            Array.from(input.files).forEach(file=>{
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    const img = document.createElement('img')
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100px';
+                    img.style.maxHeight = '100px';
+                    preview.appendChild(img)
+                    
+
+                    const cropper=new Cropper(img,{
+                        aspectRatio:1,
+                        viewMode:2,
+                        crop:function(event){
+                            const canvas=document.getElementById('croppedImageCanvas')
+                            const context=canvas.getContext('2d')
+                            canvas.width=event.detail.width;
+                            canvas.height=event.detail.height;
+                            context.drawImage(img,event.detail.x,event.detail.y,event.detail.width,event.detail.height,0,0,canvas.width,canvas.height)
+
+                            canvas.toBlob(blob => {
+                                const croppedImageInput = document.createElement('input');
+                                croppedImageInput.type = 'hidden';
+                                croppedImageInput.name = 'croppedImages';
+                                croppedImageInput.value = URL.createObjectURL(blob);
+                                preview.appendChild(croppedImageInput);
+                            }, 'image/jpeg');
+                        }
+
+                    })
+                }
+                reader.readAsDataURL(file)
+            })
+        }
 }
 
 document.getElementById('Inputimage').addEventListener('change', function() {

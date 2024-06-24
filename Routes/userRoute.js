@@ -69,10 +69,21 @@ user_Route.post('/addToWishlist',userController.addToWishlist)
 user_Route.post('/removeWishlist',userController.productRemove)
 
 user_Route.get('/wallet',userAuth.isLogin,userProfileController.loadWallet)
-user_Route.post('/walletMoney',userProfileController.moneyAdding)
+user_Route.post('/walletMoney',userAuth.isLogin,userProfileController.moneyAdding)
+user_Route.post('/withdrawal',userAuth.isLogin,userProfileController.moneyWithdrw)
 
-user_Route.post('/withdrawal',userProfileController.moneyWithdrw)
+user_Route.get('/coupon',userAuth.isLogin,userProfileController.loadCoupon)
+user_Route.post('/couponVerify',userAuth.isLogin,checkoutController.couponVerify)
 
+user_Route.post('/razorpay',userAuth.isLogin,checkoutController.razorpayment)
+user_Route.post('/repayment',userAuth.isLogin,checkoutController.repayment)
+
+user_Route.get('/forgot',userController.loadForgotPage)
+user_Route.post('/forgotPass',userController.verifyMail)
+user_Route.get('/resetPassOtp',userController.loadResetPassOtp)
+user_Route.post('/verifyResetPassOtp/:email',userController.verifyResetPassOtp)
+user_Route.get('/resetPassword',userController.loadResetPassword)
+user_Route.post('/verifyRePassword',userController.verifyRePassword)
 
 // user_Route.get('*',(req,res)=>{
 //     res.redirect('/')

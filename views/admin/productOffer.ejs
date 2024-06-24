@@ -33,34 +33,34 @@
                             </div>
                             <div class="modal-body">
                                 <!-- Your form or content for the new offer goes here -->
-                                <form>
+                                <form id="offerForm">
                                     <div class="form-group">
                                         <label for="product-name">Product Name</label>
                                         <select class="form-control" id="product-name">
-                                          <option value="" disabled selected>Select Product</option>
-                                          <% products.forEach(product=>{%>
-                                          <option id="product-name" value="<%= product._id %>"><%= product.name %></option>
-                                          <%}) %>
+                                            <option value="" disabled selected>Select Product</option>
+                                            <% products.forEach(product => { %>
+                                            <option id="product-name" value="<%= product._id %>"><%= product.name %></option>
+                                            <% }) %>
                                         </select>
-                                      </div>
+                                        <div id="product-name-error" style="color: red; margin-top: 10px;"></div>
+                                    </div>
                                     <div class="form-group">
                                         <label for="offer-amount">Offer Amount</label>
-                                        <input type="number" class="form-control" id="offer-amount"
-                                            placeholder="Enter Offer Amount">
+                                        <input type="number" class="form-control" id="offer-amount" placeholder="Enter Offer Amount">
+                                        <div id="offer-amount-error" style="color: red; margin-top: 10px;"></div>
                                     </div>
                                     <div class="form-group">
                                         <label for="offer-Expiry-Date">Offer Expiry Date</label>
-                                        <input type="date" class="form-control" id="offer-Expiry-Date"
-                                            placeholder="Enter Expiry Date"></input>
+                                        <input type="date" class="form-control" id="offer-Expiry-Date" placeholder="Enter Expiry Date">
+                                        <div id="offer-expiry-date-error" style="color: red; margin-top: 10px;"></div>
                                     </div>
                                     <!-- Add more form fields as needed -->
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" onclick="offeradding()" class="btn btn-primary">Save Offer</button>
-                                </div>    
-                            </form>
-                        
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" onclick="offeradding()" class="btn btn-primary">Save Offer</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -182,6 +182,52 @@
                                         })
                                     }
                                 })
+                            }
+                        </script>
+
+                        <script>
+                            function offeradding() {
+                                const productName = document.getElementById('product-name').value;
+                                const offerAmount = document.getElementById('offer-amount').value;
+                                const offerExpiryDate = document.getElementById('offer-Expiry-Date').value;
+
+                                const productNameError = document.getElementById('product-name-error');
+                                const offerAmountError = document.getElementById('offer-amount-error');
+                                const offerExpiryDateError = document.getElementById('offer-expiry-date-error');
+
+                                productNameError.innerHTML = '';
+                                offerAmountError.innerHTML = '';
+                                offerExpiryDateError.innerHTML = '';
+
+                                let isValid = true;
+
+                                if (!productName) {
+                                    productNameError.innerHTML = 'Please select a product.';
+                                    isValid = false;
+                                }
+
+                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0||Number(offerAmount)>=60) {
+                                    offerAmountError.innerHTML = 'Please enter a valid offer amount';
+                                    isValid = false;
+                                    if(Number(offerAmount)>=60){
+                                        offerAmountError.innerHTML='offer should be less than 60 '
+                                    }
+                                }
+
+                                if (!offerExpiryDate) {
+                                    offerExpiryDateError.innerHTML = 'Please select an expiry date.';
+                                    isValid = false;
+                                } else {
+                                    const today = new Date().toISOString().split('T')[0];
+                                    if (offerExpiryDate < today) {
+                                        offerExpiryDateError.innerHTML = 'Expiry date cannot be in the past.';
+                                        isValid = false;
+                                    }
+                                }
+
+                                if (isValid) {
+                                    document.getElementById('offerForm').submit();
+                                }
                             }
                         </script>
 

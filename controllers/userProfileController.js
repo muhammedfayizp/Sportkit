@@ -174,16 +174,15 @@ const loadProfileEditAddress = async (req, res) => {
         const addressId = req.query.addressId;
         const addressData = await Address.findOne({ 'address._id': addressId, UserId: user });
         if (!addressData) {
-            return res.status(404).send("Address data not found");
+            return
         }
         const address = addressData.address.find(addr => addr._id.toString() === addressId);
         if (!address) {
-            return res.status(404).send("Address not found");
+            return 
         }
         res.render('editAddress', { userData, address,categories});
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -194,11 +193,11 @@ const AddressEdit = async (req, res) => {
         const user = req.session.user;
         const addressData = await Address.findOne({ UserId: user, 'address._id': addressId });
         if (!addressData) {
-            return res.status(404).send("Address data not found");
+            return 
         }
         const foundAddress = addressData.address.find(ads => ads._id.toString() === addressId);
         if (!foundAddress) {
-            return res.status(404).send("Address not found");
+            return 
         }
         const updateResult = await Address.updateOne(
             { UserId: user, 'address._id': addressId },
@@ -219,7 +218,6 @@ const AddressEdit = async (req, res) => {
         res.redirect('/addressList');
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -228,10 +226,12 @@ const loadOrderHistory = async (req, res) => {
         const userId = req.session.user;
         const userData = await User.findOne({ _id: userId });
         const categories = await Category.find({ is_Listed: true });
-        const orders = await Order.find({ UserId: userId }).populate({
+        let orders = await Order.find({ UserId: userId }).populate({
             path: 'items.productId',
             model: 'Product'
         }).exec();
+
+        orders=[...orders].reverse()
 
         res.render('orderHistory', { userData, categories, orders });
     } catch (error) {
@@ -246,35 +246,32 @@ const loadOrderDetails = async (req, res) => {
         const userData = await User.findOne({ _id: userId });
         const categories = await Category.find({ is_Listed: true });
         const orders = await Order.find({ UserId: userId, _id: orderId }).populate('items.productId')
+        const cartData=await Cart.findOne({UserId:userId})
 
-        res.render('orderDetails', { userData, categories, orders });
+        res.render('orderDetails', { userData, categories, orders, cartData });
     } catch (error) {
         console.log(error);
     }
 }
+
+
 
 const cancelOrder = async (req, res) => {
     try {
         const { orderId, productId } = req.body;
         const userId = req.session.user;
         const walletData = await Wallet.findOne({ UserId: userId });
-        const order = await Order.findOne({ _id: orderId, 'items.productId': productId });
+        const order = await Order.findOne({ _id: orderId, 'items.productId': productId }).populate('items');
 
         if (!order) {
-            return res.status(404).json({ success: false, message: "Order not found" });
+            return res.json({ success: false, message: "Order not found" });
         }
 
         const item = order.items.find(item => item.productId.toString() === productId);
         if (!item) {
-            return res.status(404).json({ success: false, message: "Product not found in the order" });
+            return res.json({ success: false, message: "Product not found in the order" });
         }
-
-        const product = await Product.findById(productId);
-        if (product) {
-            product.quantity += item.quantity;
-            await product.save();
-        }
-        order.items = order.items.filter(item => item.productId.toString() !== productId);
+        item.status = 'Cancelled';
 
         if (order.PaymentMethod !== 'cash-on-delivery') {
             if (!walletData) {
@@ -284,7 +281,7 @@ const cancelOrder = async (req, res) => {
                     history: [{
                         amount: item.price * item.quantity,
                         transactionType: 'credit',
-                        method: 'Order Canceled',
+                        method: 'Order Cancelled',
                         currentAmount: item.price * item.quantity
                     }]
                 });
@@ -294,23 +291,22 @@ const cancelOrder = async (req, res) => {
                 walletData.history.push({
                     amount: item.price * item.quantity,
                     transactionType: 'credit',
-                    method: 'Order Canceled',
-                    currentAmount: walletData.balance + item.price * item.quantity
+                    method: 'Order Cancelled',
+                    currentAmount: walletData.balance
                 });
                 await walletData.save();
             }
         }
 
-        if (order.items.length === 0) {
-            await Order.findByIdAndDelete(orderId);
-        } else {
+        
+            const productData = await Product.findById(item.productId);
+            productData.quantity += item.quantity;
+            order.totalAmount-=item.price
             await order.save();
-        }
-
-        return res.json({ success: true, message: 'Order canceled successfully' });
+            await productData.save();
+        return res.json({ success: true, message: 'Order cancelled successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 
@@ -425,6 +421,20 @@ const moneyWithdrw=async(req,res)=>{
     }
 }
 
+const loadCoupon = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const userData = await User.findOne({ _id: userId }).populate('coupon');
+        let couponData = userData.coupon
+
+
+        const categories = await Category.find({ is_Listed: true });
+        res.render('coupon', { categories, userData, coupons: couponData });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 
 module.exports = {
     securePassword,
@@ -443,5 +453,6 @@ module.exports = {
     returnOrder,
     moneyAdding,
     loadWallet,
-    moneyWithdrw
+    moneyWithdrw,
+    loadCoupon
 }
