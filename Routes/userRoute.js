@@ -54,3 +54,5 @@ user_Route.post('/removeCart',cartController.removeProduct)
 user_Route.get('/checkout',checkoutController.loadCheckout)
 
 module.exports=user_Route
+
+//test
