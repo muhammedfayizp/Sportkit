@@ -18,6 +18,7 @@ const loadProductlist=async(req,res)=>{
         console.log(error);
     }
 }
+
 const loadAddProduct=async(req,res)=>{
     try {
         let errmsg=req.flash('errmsg')
@@ -129,7 +130,6 @@ const productEditing = async (req, res) => {
             req.flash('errmsg', 'Please select a valid category.');
             return res.redirect(`/admin/editProduct?id=${productId}`);
         }
-
 
         let existProduct = await Product.findById(productId);
         let imageFiles = req.files;
