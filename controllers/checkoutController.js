@@ -23,7 +23,7 @@ const loadCheckout=async(req,res)=>{
         const populateCart = await Cart.findOne({ UserId: userId }).populate('products.productId')
         const categories=await Category.find({is_Listed:true})
         const addressData=await Address.findOne({UserId:userId})
-
+        console.log('hello')
         const totalCartPrice = populateCart.cartTotal;
         const cartData = populateCart ? populateCart.products : [];
         const discount=req.session.discount
