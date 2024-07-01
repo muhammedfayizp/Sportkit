@@ -122,36 +122,7 @@
                     </div>
                 </div>        
 
-                        <!-- <script>
-                            function catgofferadding() {
-                                let categoryId = $("#category-name").val();
-                                let offerAmount = $('#offer-amount').val();
-                                let expDate = $('#offer-Expiry-Date').val();
-
-                                fetch('/admin/addCategOffer', {
-                                    method: 'post',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        categoryId,
-                                        offerAmount,
-                                        expDate
-                                    })
-                                }).then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire(
-                                            'Success',
-                                            'Offer amount successfully added',
-                                            'success'
-                                        ).then(() => {
-                                            window.location.reload();
-                                        });
-                                    }
-                                });
-                            }
-                        </script> -->
+                    
                         <script>
                             function changeOfferStatus(catgofferId){
                                 Swal.fire({

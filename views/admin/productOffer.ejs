@@ -32,7 +32,6 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <!-- Your form or content for the new offer goes here -->
                                 <form id="offerForm">
                                     <div class="form-group">
                                         <label for="product-name">Product Name</label>
@@ -54,7 +53,6 @@
                                         <input type="date" class="form-control" id="offer-Expiry-Date" placeholder="Enter Expiry Date">
                                         <div id="offer-expiry-date-error" style="color: red; margin-top: 10px;"></div>
                                     </div>
-                                    <!-- Add more form fields as needed -->
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -124,36 +122,7 @@
                     </div>
                 </div>        
 
-                        <!-- <script>
-                            function offeradding(){
-                                let productId=$("#product-name").val()
-                                let offerAmount=$('#offer-amount').val()
-                                let expDate=$('#offer-Expiry-Date').val()
-                                console.log('asdf');
-                                fetch('/admin/addOffer',{
-                                    method:'post',
-                                    headers:{
-                                        'Content-Type':'application/json'
-                                    },
-                                    body:JSON.stringify({
-                                        productId,
-                                        offerAmount,
-                                        expDate
-                                    })
-                                }).then(response=>response.json())
-                                .then(data=>{
-                                    if(data.success){
-                                        Swal.fire(
-                                            'success',
-                                            'offer amount successfuly added',
-                                            'success'
-                                        ).then(()=>{
-                                            window.location.reload()
-                                        })
-                                    }
-                                })
-                            }
-                        </script> -->
+                        
                         <script>
                             function changeOfferStatus(offerId){
                                 Swal.fire({

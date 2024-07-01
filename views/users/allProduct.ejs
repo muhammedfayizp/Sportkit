@@ -267,61 +267,7 @@
         })
     }
 </script>
-<!-- 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                const selectedCategory = event.target.value;
-                if (event.target.checked) {
-                    window.location.href = `/product?filtered=${selectedCategory}`;
-                } else {
-                    window.location.href = `/product`;
-                }
-                checkboxes.forEach(box => {
-                    if (box !== event.target) {
-                        box.checked = false;
-                    }
-                });
-            });
-        });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        priceSort.forEach(checkbox=>{
-            checkbox.addEventListener('change',(event)=>{
-                const priceSelectedType=event.target.value
-                console.log(priceSelectedType)
-                if(event.target.checked){
-                    window.location.href=`/product?selectedPrice=${priceSelectedType}`
-                }else{
-                    window.location.href='/product'
-                }
-                priceSort.forEach(data=>{
-                    if(data!==event.target){
-                        data.checked=false
-                    }
-                })
-            })
-        })
-    })
 
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded',()=>{
-      
-        sortBySelect.addEventListener('change',(event)=>{
-            const selectedSort=event.target.value
-            console.log(selectedSort);
-            if(selectedSort){
-                window.location.href=`/product?sortBy=${selectedSort}`
-            }
-        })
-    })
-</script> -->
 
 <script>
 
@@ -356,10 +302,11 @@
             const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]:checked');
             const priceSort = document.querySelectorAll('input[type=checkbox][name=priceSorting]:checked');
             const sortBySelect = document.getElementById('sortby').value;
+            const searchValue = document.getElementById('search-input').value.trim();
+
 
             const selectedCategories = Array.from(checkboxes).map(cb => cb.value);
             const selectedPriceSort = Array.from(priceSort).map(ps => ps.value);
-            const searchValue = getSearchValue();
 
             const queryParams = new URLSearchParams({
                 search: searchValue,
@@ -376,7 +323,6 @@
 
     document.getElementById('apply').addEventListener('click', filterdProducts);
 </script>
-
 
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

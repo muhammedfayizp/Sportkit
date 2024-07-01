@@ -101,7 +101,7 @@
                             <div class="header-search-wrapper search-wrapper-wide">
                                 <label for="q" class="sr-only">Search</label>
                                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                <input type="search" class="form-control" placeholder="Search product ..." required>
+                                <input type="search" class="form-control" id="search-input" name="input" placeholder="Search product ..." required oninput="showApplyButton()">
                             </div>
                         </form>
                     </div>
@@ -147,6 +147,7 @@
                             <li class="megamenu-container">
                                 <a href="/">Home</a>
                             </li>
+
                             <li class="dropdown">
                                 <a class="sf-with-ul dropdown-toggle" id="dropdownMenuButton">Category</a>
                                 <div class="dropdown-menu" id="widget-1">
@@ -156,7 +157,9 @@
                                             <div class="filter-item">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="<%= category._id %>" name="checkbox" value="<%= category._id %>">
-                                                    <label class="custom-control-label" for="<%= category._id %>"><%= category.name %></label>
+                                                    <label class="custom-control-label" for="<%= category._id %>">
+                                                        <a href="/product?categories=<%= category._id %>"><%= category.name %></a>
+                                                    </label>
                                                 </div>
                                             </div>
                                             <% }) %>
@@ -164,6 +167,7 @@
                                     </div>
                                 </div>
                             </li>
+
                             <li><a href="/product">Product</a></li>
                             <li><a href="/about">About Us</a></li>
                             <li><a href="/contact">Contact</a></li>
@@ -245,37 +249,16 @@
     });
 </script>
 
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                const selectedCategory = event.target.value;
-                if (event.target.checked) {
-                    window.location.href = `/product?filtered=${selectedCategory}`;
-                } else {
-                    window.location.href = `/product`;
-                }
-                checkboxes.forEach(box => {
-                    if (box !== event.target) {
-                        box.checked = false;
-                    }
-                });
-            });
-        });
-    });
-</script> -->
+<script>
+    function showApplyButton() {
+        const searchInput = document.getElementById('search-input');
+        const applyButton = document.getElementById('apply');
 
+        if (searchInput.value.trim().length > 0) {
+            applyButton.style.display = 'inline-block';
+        } else {
+            applyButton.style.display = 'none';
+        }
+    }
+</script>
 
-<!-- search-->
-<!-- <script>
-    document.addEventListener('DOMContentLoaded',function(){
-        document.getElementById('search-form').addEventListener('submit',function(event){
-            event.preventDefault()
-            const input=document.getElementById('q').value 
-            if(input){
-                window.location.href=`/product?input=${input}`
-            }
-        })
-    })
-</script> -->
