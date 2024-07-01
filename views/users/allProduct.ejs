@@ -1,5 +1,5 @@
-<%-include('../layouts/navbar')%>
 <%-include('../layouts/header')%>
+<%-include('../layouts/navbar')%>
 
 <style>
     .offer-price {
@@ -42,7 +42,7 @@
                                     </select>
                                 </div>
                             </div><!-- End .toolbox-sort -->
-                        </div><!-- End .toolbox-right -->
+                            <button id="apply" class="btn-success ml-3" style="display: none;" onclick="filterdProducts()">Apply</button>                          </div><!-- End .toolbox-right -->
                     </div><!-- End .toolbox -->
 
                     <div class="products mb-3">
@@ -143,7 +143,8 @@
                                         <% categories.forEach(category => { %>
                                         <div class="filter-item">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="<%= category._id %>" name="checkbox" value="<%= category._id %>">
+                                                <input type="checkbox" class="custom-control-input" id="<%= category._id %>" name="checkbox" value="<%= category._id %>" <% if
+                                                (selectedCategory.includes(String(category._id))){%>checked<%} %>>
                                                 <label class="custom-control-label" for="<%= category._id %>"><%= category.name %></label>
                                             </div><!-- End .custom-checkbox -->
                                         </div><!-- End .filter-item -->
@@ -167,13 +168,15 @@
                                     <div class="filter-items filter-items-count">
                                         <div class="filter-item">
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input sort-option" type="checkbox" name="priceSorting" value="high-to-low" id="sort-high-to-low">
+                                                <input class="custom-control-input sort-option" type="checkbox" name="priceSorting" value="high-to-low" id="sort-high-to-low"<% if
+                                                (priceType==='high-to-low' ) { %>checked<% } %>>
                                                 <label class="custom-control-label" for="sort-high-to-low">
                                                     High to Low
                                                 </label>
                                             </div>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input sort-option" type="checkbox" name="priceSorting" value="low-to-high" id="sort-low-to-high">
+                                                <input class="custom-control-input sort-option" type="checkbox" name="priceSorting" value="low-to-high" id="sort-low-to-high"<% if
+                                                (priceType==='low-to-high' ) { %>checked<% } %>>
                                                 <label class="custom-control-label" for="sort-low-to-high">
                                                     Low to High
                                                 </label>
@@ -264,7 +267,7 @@
         })
     }
 </script>
-
+<!-- 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]');
@@ -285,10 +288,8 @@
         });
     });
 </script>
-<!--price sort-->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const priceSort=document.querySelectorAll('input[type=checkbox][name=priceSorting]');
         priceSort.forEach(checkbox=>{
             checkbox.addEventListener('change',(event)=>{
                 const priceSelectedType=event.target.value
@@ -311,7 +312,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded',()=>{
-        const sortBySelect = document.getElementById('sortby');
+      
         sortBySelect.addEventListener('change',(event)=>{
             const selectedSort=event.target.value
             console.log(selectedSort);
@@ -320,6 +321,60 @@
             }
         })
     })
+</script> -->
+
+<script>
+
+    function showApplyButton() {
+        document.getElementById("apply").style.display = "inline-block";
+    }
+
+    function addEventListeners() {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');   
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', showApplyButton);
+        });
+
+        var dropdown = document.getElementById('sortby');
+        dropdown.addEventListener('change', showApplyButton);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        addEventListeners();
+    });
+
+    function getSearchValue() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('input') || '';
+    }
+</script>
+
+
+<script>
+      const filterdProducts = async () => {
+        try {
+            const checkboxes = document.querySelectorAll('input[type=checkbox][name=checkbox]:checked');
+            const priceSort = document.querySelectorAll('input[type=checkbox][name=priceSorting]:checked');
+            const sortBySelect = document.getElementById('sortby').value;
+
+            const selectedCategories = Array.from(checkboxes).map(cb => cb.value);
+            const selectedPriceSort = Array.from(priceSort).map(ps => ps.value);
+            const searchValue = getSearchValue();
+
+            const queryParams = new URLSearchParams({
+                search: searchValue,
+                categories: selectedCategories.join(','),
+                priceSort: selectedPriceSort.join(','),
+                sortBy: sortBySelect,
+            });
+
+            window.location.href = `/product?${queryParams}`;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    document.getElementById('apply').addEventListener('click', filterdProducts);
 </script>
 
 

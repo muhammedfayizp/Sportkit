@@ -1,16 +1,10 @@
-    game.reason = reason ; 
-    gameData.stock = gameData.stock + game.quantity;
-    order.totalCartPrice = order.totalCartPrice - game.totalAmount
-    game.Status = 'Cancelled';
-    await gameData.save();
-    await order.save()
-    res.json({success:true})
+    // if (Array.isArray(imageFiles) && imageFiles.length > 0) {
+        //     let Inputimage = imageFiles.map(file => ({
+        //         filename: file.filename,
+        //         path: '/uploads' + file.filename
+        //     }));
+        //     existProduct.Inputimage = Inputimage;
+        //     console.log('inp'+Inputimage);
+        // }
 
-
-
-
-
-    const Inputimage = imageFiles.map(file => ({
-      filename: file.filename,
-      path: '/uploads/' + file.filename // Adjust path as necessary
-  }));
+        // await existProduct.save();

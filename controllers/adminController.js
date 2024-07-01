@@ -269,10 +269,20 @@ const statusChecked = async (req, res) => {
 
 const loadSalesReport = async (req, res) => {
     try {
-        let orderData = await Order.find().populate('items.productId');
-        orderData = [...orderData].reverse()
+ 
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
+
+        const fullData= await Order.find().populate('items.productId').sort({currentDate:-1})
+        let orderData = await Order.find().populate('items.productId').skip(skip).limit(limit);
+        const totalOrders = await Order.countDocuments(orderData);
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        orderData = [...orderData].reverse();
         let subTotal = 0;
         let Discount = 0;
+
         orderData.forEach(order => {
             order.items.forEach(item => {
                 subTotal += item.price * item.quantity;
@@ -292,20 +302,15 @@ const loadSalesReport = async (req, res) => {
 
             if (type === 'today') {
                 startDate = new Date(today.setHours(0, 0, 0, 0));
-                endDate = new Date(today.setHours(23, 59, 59, 999));
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId');
+                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
             } else if (type === 'last-week') {
                 startDate = new Date(today.setDate(today.getDate() - 7));
-                endDate = new Date();
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId');
+                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
             } else if (type === 'last-month') {
                 startDate = new Date(today.setMonth(today.getMonth() - 1));
-                endDate = new Date();
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId');
-            } else {
-                startDate = new Date(0);
-                endDate = new Date();
+                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
             }
+
             subTotal = 0;
             Discount = 0;
 
@@ -321,7 +326,6 @@ const loadSalesReport = async (req, res) => {
 
         const startingDate = req.query.startDate;
         const endingDate = req.query.endDate;
-
 
         if (startingDate && endingDate) {
             const start = new Date(startingDate.split('/').reverse().join('-'));
@@ -343,7 +347,11 @@ const loadSalesReport = async (req, res) => {
                 }
             });
         }
-        res.render('salesReport', { orderData, subTotal, Discount, Details });
+
+        let prevPage = page > 1 ? page - 1 : 1;
+        let nextPage = page < totalPages ? page + 1 : totalPages;
+
+        res.render('salesReport', { orderData, fullData, subTotal, Discount, Details, currentPage: page, totalPages, prevPage, nextPage });
 
     } catch (error) {
         console.log(error);

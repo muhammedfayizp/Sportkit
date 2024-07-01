@@ -13,15 +13,13 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Enter Product Details</h4>
-                        <form action="/admin/insertProduct" method="POST" enctype="multipart/form-data"
-                            onsubmit="return validateForm()">
+                        <form action="/admin/insertProduct" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                             <div class="form-body">
                                 <div class="form-group">
                                     <div class="row">
                                         <label class="col-lg-2">Name</label>
                                         <div class="col-lg-10">
-                                            <input type="text" class="form-control" id="name" name="pname"
-                                                placeholder="Enter Product Name">
+                                            <input type="text" class="form-control" id="name" name="pname" placeholder="Enter Product Name">
                                             <div id="nameContainer" class="text-danger"></div>
                                         </div>
                                     </div>
@@ -30,8 +28,7 @@
                                     <div class="row">
                                         <label class="col-lg-2">Price</label>
                                         <div class="col-lg-10">
-                                            <input type="text" class="form-control" id="price" name="price"
-                                                placeholder="Enter Product Price">
+                                            <input type="text" class="form-control" id="price" name="price" placeholder="Enter Product Price">
                                             <div id="priceContainer" class="text-danger"></div>
                                         </div>
                                     </div>
@@ -40,8 +37,7 @@
                                     <div class="row">
                                         <label class="col-lg-2">Quantity</label>
                                         <div class="col-lg-10">
-                                            <input type="number" class="form-control" id="quantity" name="quantity"
-                                                placeholder="Enter Quantity">
+                                            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter Quantity">
                                             <div id="quantityContainer" class="text-danger"></div>
                                         </div>
                                     </div>
@@ -64,8 +60,7 @@
                                     <div class="row">
                                         <label class="col-lg-2">Description</label>
                                         <div class="col-lg-10">
-                                            <textarea class="form-control" rows="3" id="description"
-                                                name="description" placeholder="Text Here..."></textarea>
+                                            <textarea class="form-control" rows="3" id="description" name="description" placeholder="Text Here..."></textarea>
                                             <div id="descriptionContainer" class="text-danger"></div>
                                         </div>
                                     </div>
@@ -74,8 +69,7 @@
                                     <div class="row">
                                         <label class="col-lg-2" for="Inputimage">Images</label>
                                         <div class="col-lg-10">
-                                            <input type="file" class="form-control-file" id="Inputimage"
-                                                multiple="multiple" accept="image/*" name="Inputimage">
+                                            <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
                                             <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
                                         </div>
                                     </div>
@@ -86,7 +80,7 @@
                                     <button type="submit" class="btn btn-info">Submit</button>
                                 </div>
                             </div>
-                        </form>
+                        </form>                        
                     </div>
                 </div>
             </div>
@@ -123,6 +117,56 @@
     document.getElementById('Inputimage').addEventListener('change', function () {
         previewImage(this);
     });
+</script>
+
+<script>
+    function validateForm() {
+    let isValid = true;
+
+    document.getElementById('nameContainer').innerText = '';
+    document.getElementById('priceContainer').innerText = '';
+    document.getElementById('quantityContainer').innerText = '';
+    document.getElementById('categoryContainer').innerText = '';
+    document.getElementById('descriptionContainer').innerText = '';
+
+    const name = document.getElementById('name').value.trim();
+    if (name === '') {
+        document.getElementById('nameContainer').innerText = 'Name is required.';
+        isValid = false;
+    }
+
+    const price = document.getElementById('price').value.trim();
+    if (price === '') {
+        document.getElementById('priceContainer').innerText = 'Price is required.';
+        isValid = false;
+    } else if (isNaN(price) || parseFloat(price) <= 0) {
+        document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
+        isValid = false;
+    }
+
+    const quantity = document.getElementById('quantity').value.trim();
+    if (quantity === '') {
+        document.getElementById('quantityContainer').innerText = 'Quantity is required.';
+        isValid = false;
+    } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
+        document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
+        isValid = false;
+    }
+
+    const category = document.getElementById('category').value;
+    if (category === '') {
+        document.getElementById('categoryContainer').innerText = 'Category is required.';
+        isValid = false;
+    }
+
+    const description = document.getElementById('description').value.trim();
+    if (description === '') {
+        document.getElementById('descriptionContainer').innerText = 'Description is required.';
+        isValid = false;
+    }
+
+    return isValid;
+}
 </script>
 
 

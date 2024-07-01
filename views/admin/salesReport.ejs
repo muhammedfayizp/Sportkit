@@ -82,11 +82,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Users List</h5>
+                            <h5 class="m-b-10">Sales Report</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                            <li class="breadcrumb-item">Users List</li>
+                            <li class="breadcrumb-item">Sales</li>
                         </ul>
                     </div>
                 </div>
@@ -97,7 +97,6 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Sales Details</h4>
-
                         <div class="button-container">
                             <div class="buttons">
                                 <button id="dwnld-exel-btn">EXCEL</button>
@@ -105,17 +104,17 @@
                             </div>
                             <div class="select-date">
                                 <select id="select">
-                                    <option disabled selected>select</option>
+                                    <option disabled selected>Select</option>
                                     <option value="today">Today</option>
-                                    <option value="last-week">Last-Week</option>
-                                    <option value="last-month">Last-Month</option>
+                                    <option value="last-week">Last Week</option>
+                                    <option value="last-month">Last Month</option>
                                 </select>
                                 <button class="btn bg-dark" style="color: #f9f9f9;" onclick="change()">Change</button>
                             </div>
                             <div class="date-range">
                                 <input type="date" id="start-date">
                                 <input type="date" id="end-date">
-                                <button class="btn bg-dark" style="color: #f9f9f9;" onclick="apply()">apply</button>
+                                <button class="btn bg-dark" style="color: #f9f9f9;" onclick="apply()">Apply</button>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -154,12 +153,30 @@
                                     <% }) %>
                                 </tbody>
                             </table>
-                            
                             <div class="invoice-container">
                                 <p>Sub Total: <span><%= subTotal %></span></p>
                                 <p>Discount: <span><%= Discount %></span></p>
                                 <p>Total: <span><%= subTotal - Discount %></span></p>
                             </div>
+                            <nav aria-label="Page navigation" class="mt-5">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-prev" href="?page=<%= prevPage %>" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                                        </a>
+                                    </li>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-next" href="?page=<%= nextPage %>" aria-label="Next">
+                                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                             <% } else { %>
                             <p>No orders available</p>
                             <% } %>
@@ -170,7 +187,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
@@ -225,13 +241,11 @@
         worksheet['!cols'][C] = { wch: max_width + 1 };
     }
 
-    // Extract invoice details
     let invoiceContainer = document.querySelector(".invoice-container");
     let subTotal = invoiceContainer.querySelector('span').innerText;
     let discount = invoiceContainer.querySelectorAll('span')[1].innerText;
     let total = invoiceContainer.querySelectorAll('span')[2].innerText;
 
-    // Prepare invoice data
     let invoiceData = [
         ["Sub Total", subTotal],
         ["Discount", discount],
@@ -273,4 +287,33 @@
     }
 </script>
 
+<script>
+    function change() {
+    const select = document.getElementById('select');
+    const selectedOption = select.value;
+
+    if (selectedOption === "Select" || !selectedOption) {
+        alert('Please select any option : Today, Last Week, Last Month.');
+        return;
+    }
+    handleDateSelection(selectedOption);
+}
+
+function apply() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
+    if (!startDate || !endDate) {
+        alert('Please select both dates.');
+        return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+        alert('Start date cannot be later than end date.');
+        return;
+    }
+    handleDateRange(startDate, endDate);
+}
+
+</script>
 <%- include('../layouts/adminFooter') %>

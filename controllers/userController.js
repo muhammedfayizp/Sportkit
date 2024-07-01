@@ -85,6 +85,127 @@ const loadAbuotUs=async(req,res)=>{
     }
 }
 
+// const loadProduct = async (req, res) => {
+//     try {
+//         const user = req.session.user;
+//         const userData = await User.findOne({ _id: user });
+//         const categories = await Category.find({ is_Listed: true });
+//         let allproducts = await Product.find({ is_delete: true });
+
+//         const selectedCategory = req.query.categories;
+//         const search=req.query.search
+//         const priceType=req.query.priceSort
+//         const selectedType=req.query.sortBy
+
+//         console.log('cate: '+selectedCategory,'sear: '+search,'pri: '+priceType,'a-z: '+selectedType);
+
+//         const page = parseInt(req.query.page)||1;
+//         const limit = 6;
+//         const skip = (page-1)*limit;
+
+//         let products = await Product.find({is_delete:true}).skip(skip).limit(limit);
+
+//         const totalProduct = await Product.countDocuments(products);
+//         const totalPages = Math.ceil(totalProduct / limit);
+//         let prevPage = page - 1;
+//         let nextPage = page + 1;
+//         if (prevPage < 1) prevPage = 1;
+//         if (nextPage > totalPages) nextPage = totalPages;
+
+//         for (let product of allproducts) {
+//             const productCategory = await Category.findById(product.category);
+//             if (productCategory) {
+//                 product.categoryName = productCategory.name;
+//             }
+//         }
+
+//         const searchfilter={
+//             is_verified:0,
+//             name:{$regex:new RegExp(search,'i')}
+//         }
+    
+//         if(selectedCategory.length>0){
+//             filter.Category={$in:selectedCategory}
+//         }
+//         // if (selectedCategory) {
+//         //     products = await Product.find({ category: selectedCategory, is_delete: true });
+//         // }else if(priceType==='high-to-low'){
+//         //     products=await Product.find({is_delete:true}).sort({price:-1})
+//         // }else if(priceType==='low-to-high'){
+//         //     products=await Product.find({is_delete:true}).sort({price:1})
+//         // }else if (selectedType==='asse') {
+//         //     products=await Product.find({is_delete:true}).sort({name:1})
+//         // }else if(selectedType==='disse'){
+//         //     products=await Product.find({is_delete:true}).sort({name:-1})
+//         // }
+
+//         let sortOption = {};
+//         if (sortBy === 'high-to-low') {
+
+//             sortOption = { price: -1 };
+
+//         } else if (sortBy === 'low-to-high') {
+
+//             sortOption = { price: 1 };
+
+//         } else if (sortBy === 'asse') {
+
+//             sortOption = { name: 1 };
+
+//         } else {
+
+//             sortOption = { name: -1 }; 
+
+//         }
+//         products=await Product.find(filter).populate('category').sort(sortOption).skip(skip).limit(limit)
+//         // const input=req.query.input
+
+//         // if(input){
+//         //     const reg=new RegExp(input,'i')
+//         //     let searchedProducts=await Product.find({name:reg})
+//         //     if(searchedProducts){
+//         //         products=searchedProducts
+//         //     }
+            
+//         // }
+        
+//         for(let eachProduct of products){
+//             const productId=eachProduct._id
+//             let bestOfferPrice=eachProduct.price
+//             let topDiscount = null;
+              
+//             const productOffer=await itemsOffer.findOne({productId:productId,is_active:true})
+            
+//             if(productOffer){
+//                 const offerPrice=eachProduct.price-(eachProduct.price*productOffer.discount/100)
+//                 bestOfferPrice=Math.floor(Math.min(bestOfferPrice, offerPrice));
+//                 topDiscount = productOffer.discount;
+
+//             }
+
+//             const categoryId=eachProduct.category._id
+//             const categoryOffer=await CatgOffer.findOne({categoryId:categoryId,is_active:true})
+//             if(categoryOffer){
+//                 const offerPrice=eachProduct.price-(eachProduct.price*categoryOffer.discount/100)
+//                 const newBestOfferPrice = Math.floor(Math.min(bestOfferPrice, offerPrice));
+//                 if (newBestOfferPrice < bestOfferPrice) {
+//                     bestOfferPrice = newBestOfferPrice;
+//                     topDiscount = categoryOffer.discount;
+//                 }
+//             }
+
+//             await Product.findByIdAndUpdate(productId,{finalPrice: bestOfferPrice,discount: topDiscount});
+//         } 
+
+   
+
+//         res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
+        
+//     } catch (error) {
+//         console.error("Error loading products:", error);
+//     }
+// };
+
 const loadProduct = async (req, res) => {
     try {
         const user = req.session.user;
@@ -92,16 +213,41 @@ const loadProduct = async (req, res) => {
         const categories = await Category.find({ is_Listed: true });
         let allproducts = await Product.find({ is_delete: true });
 
-        const selectedCategory = req.query.filtered;
-        const priceType=req.query.selectedPrice
-        const selectedType=req.query.sortBy
+        const selectedCategory = req.query.categories || [];
+        const search = req.query.search || '';
+        const priceType = req.query.priceSort || '';
+        const selectedType = req.query.sortBy || '';
 
-        const page = parseInt(req.query.page)||1;
+        console.log('cate: ' + selectedCategory, 'sear: ' + search, 'pri: ' + priceType, 'a-z: ' + selectedType);
+
+        const page = parseInt(req.query.page) || 1;
         const limit = 6;
-        const skip = (page-1)*limit;
+        const skip = (page - 1) * limit;
+        
+        const searchfilter = {
+            is_delete: true,
+            name: { $regex: new RegExp(search, 'i') }
+        };
+        
+        
+        if (selectedCategory.length > 0) {
+            searchfilter.category = { $in: selectedCategory };
+        }
+        
+        let sortOption = {};
+        if (priceType === 'high-to-low') {
+            sortOption = { price: -1 };
+        } else if (priceType === 'low-to-high') {
+            sortOption = { price: 1 };
+        } else if (selectedType === 'asse') {
+            sortOption = { name: 1 };
+        } else {
+            sortOption = { name: -1 };
+        }
 
-        let products = await Product.find({is_delete:true}).skip(skip).limit(limit);
-
+       let products = await Product.find(searchfilter).populate('category').sort(sortOption).skip(skip).limit(limit);
+        
+        
         const totalProduct = await Product.countDocuments(products);
         const totalPages = Math.ceil(totalProduct / limit);
         let prevPage = page - 1;
@@ -115,37 +261,25 @@ const loadProduct = async (req, res) => {
                 product.categoryName = productCategory.name;
             }
         }
-    
-        if (selectedCategory) {
-            products = await Product.find({ category: selectedCategory, is_delete: true });
-        }else if(priceType==='high-to-low'){
-            products=await Product.find({is_delete:true}).sort({price:-1})
-        }else if(priceType==='low-to-high'){
-            products=await Product.find({is_delete:true}).sort({price:1})
-        }else if (selectedType==='asse') {
-            products=await Product.find({is_delete:true}).sort({name:1})
-        }else if(selectedType==='disse'){
-            products=await Product.find({is_delete:true}).sort({name:-1})
-        }
-        
-        for(let eachProduct of products){
-            const productId=eachProduct._id
-            let bestOfferPrice=eachProduct.price
-            let topDiscount = null;
-              
-            const productOffer=await itemsOffer.findOne({productId:productId,is_active:true})
-            
-            if(productOffer){
-                const offerPrice=eachProduct.price-(eachProduct.price*productOffer.discount/100)
-                bestOfferPrice=Math.floor(Math.min(bestOfferPrice, offerPrice));
-                topDiscount = productOffer.discount;
 
+        
+        for (let eachProduct of products) {
+            const productId = eachProduct._id;
+            let bestOfferPrice = eachProduct.price;
+            let topDiscount = null;
+
+            const productOffer = await itemsOffer.findOne({ productId: productId, is_active: true });
+
+            if (productOffer) {
+                const offerPrice = eachProduct.price - (eachProduct.price * productOffer.discount / 100);
+                bestOfferPrice = Math.floor(Math.min(bestOfferPrice, offerPrice));
+                topDiscount = productOffer.discount;
             }
 
-            const categoryId=eachProduct.category._id
-            const categoryOffer=await CatgOffer.findOne({categoryId:categoryId,is_active:true})
-            if(categoryOffer){
-                const offerPrice=eachProduct.price-(eachProduct.price*categoryOffer.discount/100)
+            const categoryId = eachProduct.category._id;
+            const categoryOffer = await CatgOffer.findOne({ categoryId: categoryId, is_active: true });
+            if (categoryOffer) {
+                const offerPrice = eachProduct.price - (eachProduct.price * categoryOffer.discount / 100);
                 const newBestOfferPrice = Math.floor(Math.min(bestOfferPrice, offerPrice));
                 if (newBestOfferPrice < bestOfferPrice) {
                     bestOfferPrice = newBestOfferPrice;
@@ -153,26 +287,17 @@ const loadProduct = async (req, res) => {
                 }
             }
 
-            await Product.findByIdAndUpdate(productId,{finalPrice: bestOfferPrice,discount: topDiscount});
-        } 
-
-        const input=req.query.input
-
-        if(input){
-            const reg=new RegExp(input,'i')
-            let searchedProducts=await Product.find({name:reg})
-            if(searchedProducts){
-                products=searchedProducts
-            }
-            
+            await Product.findByIdAndUpdate(productId, { finalPrice: bestOfferPrice, discount: topDiscount });
         }
 
-        res.render('allProduct', { categories, allproducts, userData ,products:products,totalPages,prevPage,nextPage,page});
-        
+        res.render('allProduct', { categories, allproducts, userData, products: products, totalPages, prevPage, nextPage, page ,priceType,selectedCategory});
+
     } catch (error) {
         console.error("Error loading products:", error);
+        res.status(500).send("An error occurred while loading products.");
     }
 };
+
 
 const loadDetails=async(req,res)=>{
     try {

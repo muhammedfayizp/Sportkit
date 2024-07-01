@@ -59,7 +59,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" onclick="offeradding()" class="btn btn-primary">Save Offer</button>
+                                <button type="button" onclick="offeradding()"  class="btn btn-primary">Save Offer</button>
                             </div>
                         </div>
                     </div>
@@ -124,12 +124,12 @@
                     </div>
                 </div>        
 
-                        <script>
+                        <!-- <script>
                             function offeradding(){
                                 let productId=$("#product-name").val()
                                 let offerAmount=$('#offer-amount').val()
                                 let expDate=$('#offer-Expiry-Date').val()
-
+                                console.log('asdf');
                                 fetch('/admin/addOffer',{
                                     method:'post',
                                     headers:{
@@ -153,7 +153,7 @@
                                     }
                                 })
                             }
-                        </script>
+                        </script> -->
                         <script>
                             function changeOfferStatus(offerId){
                                 Swal.fire({
@@ -206,11 +206,11 @@
                                     isValid = false;
                                 }
 
-                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0||Number(offerAmount)>=60) {
+                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0 || Number(offerAmount) >= 60) {
                                     offerAmountError.innerHTML = 'Please enter a valid offer amount';
                                     isValid = false;
-                                    if(Number(offerAmount)>=60){
-                                        offerAmountError.innerHTML='offer should be less than 60 '
+                                    if (Number(offerAmount) >= 60) {
+                                        offerAmountError.innerHTML = 'Offer should be less than 60%';
                                     }
                                 }
 
@@ -226,7 +226,30 @@
                                 }
 
                                 if (isValid) {
-                                    document.getElementById('offerForm').submit();
+                                    fetch('/admin/addOffer', {
+                                        method: 'post',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            productId: productName,
+                                            offerAmount: offerAmount,
+                                            expDate: offerExpiryDate
+                                        })
+                                    }).then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            Swal.fire(
+                                                'Success',
+                                                'Offer amount successfully added',
+                                                'success'
+                                            ).then(() => {
+                                                window.location.reload();
+                                            });
+                                        }
+                                    }).catch(error => {
+                                        console.error('Error:', error);
+                                    });
                                 }
                             }
                         </script>

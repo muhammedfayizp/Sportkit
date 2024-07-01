@@ -132,7 +132,8 @@ const productEditing = async (req, res) => {
         }
 
         let existProduct = await Product.findById(productId);
-        let imageFiles = req.files;
+        let imageFiles = req.body.Inputimage;
+        console.log('im'+imageFiles);
 
         existProduct.name = name;
         existProduct.price = price;
@@ -140,22 +141,26 @@ const productEditing = async (req, res) => {
         existProduct.category = category;
         existProduct.description = description;
 
-        if (Array.isArray(imageFiles) && imageFiles.length > 0) {
-            let Inputimage = imageFiles.map(file => ({
-                filename: file.filename,
-                path: '/uploads' + file.filename
-            }));
-            existProduct.Inputimage = Inputimage;
-        }
+    
 
+        if (imageFiles && imageFiles.length > 0) {
+            let newImages = imageFiles.map(file => ({
+                filename: file.filename,
+                path: '/uploads/' + file.filename
+            }));
+            existProduct.Inputimage = [...newImages];
+            console.log('inp'+newImages);
+            console.log('ex'+existProduct.Inputimage);
+        }
         await existProduct.save();
 
         req.flash('success', 'Product updating successful');
-        return res.redirect('/admin/productlist');
+        res.redirect('/admin/productlist');
     } catch (error) {
         console.error(error);
     }
 };
+
 
 
 module.exports={

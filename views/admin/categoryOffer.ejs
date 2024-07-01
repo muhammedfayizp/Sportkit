@@ -122,7 +122,7 @@
                     </div>
                 </div>        
 
-                        <script>
+                        <!-- <script>
                             function catgofferadding() {
                                 let categoryId = $("#category-name").val();
                                 let offerAmount = $('#offer-amount').val();
@@ -151,7 +151,7 @@
                                     }
                                 });
                             }
-                        </script>
+                        </script> -->
                         <script>
                             function changeOfferStatus(catgofferId){
                                 Swal.fire({
@@ -186,7 +186,7 @@
 
                         <script>
                             function catgofferadding() {
-                                const categoryName = document.getElementById('category-name').value;
+                                const categoryId = document.getElementById('category-name').value;
                                 const offerAmount = document.getElementById('offer-amount').value;
                                 const offerExpiryDate = document.getElementById('offer-Expiry-Date').value;
 
@@ -200,16 +200,16 @@
 
                                 let isValid = true;
 
-                                if (!categoryName) {
+                                if (!categoryId) {
                                     categoryNameError.innerHTML = 'Please select a category.';
                                     isValid = false;
                                 }
 
-                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0||Number(offerAmount)>=60) {
+                                if (!offerAmount || isNaN(offerAmount) || Number(offerAmount) <= 0 || Number(offerAmount) >= 60) {
                                     offerAmountError.innerHTML = 'Please enter a valid offer amount greater than zero.';
                                     isValid = false;
-                                    if(Number(offerAmount)>=60){
-                                        offerAmountError.innerHTML='offer should be less than 60'
+                                    if (Number(offerAmount) >= 60) {
+                                        offerAmountError.innerHTML = 'Offer should be less than 60';
                                     }
                                 }
 
@@ -225,7 +225,30 @@
                                 }
 
                                 if (isValid) {
-                                    document.getElementById('offerForm').submit();
+                                    fetch('/admin/addCategOffer', {
+                                        method: 'post',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            categoryId,
+                                            offerAmount,
+                                            expDate: offerExpiryDate
+                                        })
+                                    }).then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            Swal.fire(
+                                                'Success',
+                                                'Offer amount successfully added',
+                                                'success'
+                                            ).then(() => {
+                                                window.location.reload();
+                                            });
+                                        }
+                                    }).catch(error => {
+                                        console.error('Error:', error);
+                                    });
                                 }
                             }
                         </script>
