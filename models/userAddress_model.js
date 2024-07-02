@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-const addressSchema=mongoose.Schema({
+const addressSchema=new mongoose.Schema({
 
     UserId:{
         type:mongoose.Schema.Types.ObjectId,
