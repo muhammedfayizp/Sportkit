@@ -1,6 +1,34 @@
 <%-include('../layouts/header')%>
 <%-include('../layouts/navbar')%>
 
+<style>
+    .product-gallery-item {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.product-gallery-item:hover {
+    border-color: #333;
+}
+@media (max-width: 767px) {
+    .product-details-action {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .product-details-action .btn-product {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .product-details-action .btn-product:last-child {
+        margin-bottom: 0;
+    }
+}
+</style>
 
 <main class="main">
     <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
@@ -32,64 +60,60 @@
                     <div class="col-md-6">
                         <div class="product-gallery product-gallery-vertical">
                             <div class="row">
-                                <figure class="product-main-image">
-                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product image">
-
-                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                        <i class="icon-arrows"></i>
-                                    </a>
-                                </figure><!-- End .product-main-image -->
-
+                                <figure class="product-main-image" style="width: 400px;">
+                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product image">
+                                </figure>
+                                                    
                                 <div id="product-zoom-gallery" class="product-image-gallery">
-                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product side">
+                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product side">
                                     </a>
-
-                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product cross">
-                                    </a>
-
+                                        
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[1].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product with model">
+                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product cross">
                                     </a>
-
+                                        
                                     <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[2].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product back">
+                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product with model">
+                                    </a>
+                                        
+                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
+                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product back">
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
 
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="product-details">
                             <h1 class="product-title"><%= products.name %></h1><!-- End .product-title -->
 
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <a class="ratings-text" href="#product-review-link" id="review-link"></a>
-                            </div><!-- End .rating-container -->
-
-                            <div class="product-price">
-                               <%= products.price%>
+                            <div class="product-price mt-5">
+                               ₹ <%= products.price%>
                             </div><!-- End .product-price -->
 
-                            <div class="product-content mt-4 mb-5">
+                            <div class="product-content mt-2 mb-5">
                                 <h3>Description</h3>
                                 <p><%= products.description %> </p>
                             </div><!-- End .product-content -->
-
-                            <div class="product-details-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-
-                                <div class="details-action-wrapper">
-                                    <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                    <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
-                                </div><!-- End .details-action-wrapper -->
-                            </div><!-- End .product-details-action -->
-
+                            <% if(userData) { %>
+                                <div class="product-details-action">
+                                    <button class="btn-product" onclick="addtocart('<%= products._id %>')"><span>add to cart</span></button>
+                                    <div class="product-details-action pt-3 pl-4">
+                                        <button class="btn-product" onclick="addtoWishlist('<%= products._id %>')"><span>add to wishlist</span></button>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div><!-- End .product-details-action -->
+                            <% } else { %>
+                                <div class="product-details-action">
+                                    <a href="/login" class="btn-product"><span>add to cart</span></a>
+                                    <div class="product-details-action pt-3 pl-4">
+                                        <a href="/login" class="btn-product btn-wishlist"><span>add to wishlist</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div><!-- End .product-details-action -->
+                            <% } %>
+                            
                             <div class="product-details-footer">
                                 <div class="social-icons social-icons-sm">
                                     <span class="social-label">Share:</span>
@@ -105,44 +129,120 @@
             </div><!-- End .product-details-top -->  
         </div><!-- End .container -->
     </div><!-- End .page-content -->
-</main><!-- End .main -->
+</main>
+
+<script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
 
 
 <script>
-    let subImage=document.querySelectorAll('.product-gallery-item')
-    subImage.forEach((sub)=>{
-        sub.addEventListener('click',function(event){   
-            event.preventDefault();
-            const mainImage=document.getElementById('product-zoom')
-            mainImage.setAttribute('src',this.getAttribute('data-image'))
-            mainImage.setAttribute('data-zoom-image',this.getAttribute('data-zoom-image'))
-            subImage.forEach((image)=>{
-                image.classList.remove('active');
-            });
-            this.classList.add('active')
-        })
-    })
-    new Zoom(document.getElementById('product-zoom'))
+    function addtocart(productId){
+        const quantity=1;
+        fetch(`/addToCart?productId=${productId}&quantity=${quantity}`,{
+            method:'post'})
+            .then(response=>response.json())
+            .then(data=>{
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Success',
+                        text:'successfully product added to cart',
+                        showConfiremButton:false,
+                        timer:2500,
+                    })
+                    .then(()=>{
+                        window.location.reload()
+                    });
+                }else if(data.message=='out of stock'){
+                    Swal.fire(
+                        'error',
+                        'out of stock',
+                        'error'
+                    )
+                }else{
+                    Swal.fire({
+                        icon:'error',
+                        title:'Error',
+                        text:'failed to add product to cart',
+                        showConfiremButton:false,
+                        timer:2500
+                    })
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+                Swal.fire({
+                    icon:'error',
+                    title:'Error',
+                    text:'an error occurred whiel adding product to cart',
+                    showConfiremButton:false,
+                    timer:2500
+                })
+            })
+    }
 </script>
 
-//image zooming//
-<link href="css/zoom.css" rel="stylesheet">
-<script src="js/zoom.js"></script>
 <script>
-    window.onload=function () {
-        const imageZoom=document.querySelector('#product-main-image')
-        new Drift(imageZoom,{
-            peneContainer:document.querySelector('#product-main-image'),
-            inlinePane:false,
-            inlineOffsetY:-85,
-            containInline: false,
-            hoverBoundingBox: true,
-            touchBoundingBox: true,
-            hoverDelay: 150,
+    function addtoWishlist(productId){
+        fetch('/addToWishlist',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({productId})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            if(data.success){
+                Swal.fire(
+                    'Success',
+                    'successfully product added to wishlist',
+                    'success'
+                )
+            }else{
+                Swal.fire(
+                    'Failed',
+                    'your wishlist adding failed',
+                    'error'
+                )
+            }
         })
     }
 </script>
 
+<script>
+    $(document).ready(function() {
+        $("#product-zoom").elevateZoom({
+            zoomType: "inner",
+            cursor: "crosshair",
+            zoomWindowFadeIn: 500,
+            zoomWindowFadeOut: 750
+        });
+
+        $(".product-gallery-item").on("click", function(e) {
+            e.preventDefault();
+            var ezoom = $('#product-zoom').data('elevateZoom');
+            ezoom.swaptheimage($(this).data('image'), $(this).data('zoom-image'));
+            $(".product-gallery-item").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const galleryItems = document.querySelectorAll('.product-gallery-item');
+
+    galleryItems.forEach(item => {
+        item.addEventListener('mouseover', function() {
+            const imageUrl = item.getAttribute('data-image');
+            const zoomImageUrl = item.getAttribute('data-zoom-image');
+
+            document.getElementById('product-zoom').src = imageUrl;
+            document.getElementById('product-zoom').setAttribute('data-zoom-image', zoomImageUrl);
+        });
+    });
+});
+</script>
 
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

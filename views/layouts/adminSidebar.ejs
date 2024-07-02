@@ -1,3 +1,20 @@
+<style>
+	.dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+</style>
+
 
 <body class="">
 	<div class="loader-bg">
@@ -27,7 +44,7 @@
 	<nav class="pc-sidebar ">
 		<div class="navbar-wrapper">
 			<div class="m-header" style="background-color: rgb(255, 255, 255);">
-				<a href="/dashboard" class="b-brand">
+				<a class="b-brand">
                     <img src="/admin/dist/assets/images/logo.png" alt="" class="logo logo" style="width: 150px; height: 40px;">
 				</a>
 			</div>
@@ -44,28 +61,35 @@
                         <a href="/admin/productlist" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="box"></i></span><span class="pc-mtext">Product</span></a>
                     </li>
                     <li class="pc-item pc-hasmenu">
-                        <a href="#!" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="shopping-bag"></i></span><span class="pc-mtext">Orders</span></a>
+                        <a href="/admin/ordersList" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="shopping-bag"></i></span><span class="pc-mtext">Orders</span></a>
                     </li>
                     <li class="pc-item">
-                        <a href="/admin/categorylist" class="pc-link" style="color: rgb(114, 111, 111);">
-                            <span class="pc-micon"><i data-feather="list"></i></span>
-                            <span class="pc-mtext">Categories</span>
-                        </a>
+                        <a href="/admin/categorylist" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="list"></i></span><span class="pc-mtext">Categories</span></a>
                     </li>
-                    <li class="pc-item">
-                        <a href="chart-apex.html" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="tag"></i></span><span class="pc-mtext">Coupons</span></a>
-                    </li>
+					
+					<li class="pc-item">
+						<a href="/admin/couponPage" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="tag"></i></span><span class="pc-mtext">Coupons</span></a>
+					</li>
+					<li class="pc-item"><a class="pc-link" id="offerLink" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="percent"></i></span><span class="pc-mtext">Offer</span></a>
+						<div class="dropdown-content" style="display:none;">
+							<a href="/admin/productOffer">Product Offer</a>
+							<a href="/admin/categoryOffer">Category Offer</a>
+						</div>
+					</li>
+					<li class="pc-item">
+						<a href="/admin/sales" class="pc-link" style="color: rgb(114, 111, 111);"><span class="pc-micon"><i data-feather="bar-chart"></i></span><span class="pc-mtext">sales</span></a>
+					</li>
                 </ul>
             </div>
 		</div>
 	</nav>
-
+	
 	<header class="pc-header ">
 		<div class="header-wrapper">
 			<div class="mr-auto pc-mob-drp">
 				<ul class="list-unstyled">
 					<li class="dropdown pc-h-item">
-						<a href="" class="dropdown-item">
+						<a href="/admin/adminlogout" class="dropdown-item">
                             <i data-feather="log-out"></i>
                             <span>Logout</span>
                         </a>
@@ -76,27 +100,12 @@
 				<ul class="list-unstyled">
 					<li class="dropdown pc-h-item">
 						<a class="pc-head-link dropdown-toggle arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-							<i class="material-icons-two-tone">search</i>
-						</a>
-						<div class="dropdown-menu dropdown-menu-right pc-h-dropdown drp-search">
-							<form class="px-3">
-								<div class="form-group mb-0 d-flex align-items-center">
-									<i data-feather="search"></i>
-									<input type="search" class="form-control border-0 shadow-none" placeholder="Search here. . .">
-								</div>
-							</form>
-						</div>
-					</li>
-					<li class="dropdown pc-h-item">
-						<a class="pc-head-link dropdown-toggle arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
 							<span>
 								<span class="user-name">Hello Admin</span>
 							</span>
 						</a>
 						<div class="dropdown-menu dropdown-menu-right pc-h-dropdown">
-							<div class=" dropdown-header">
-								<h5 class="text-overflow m-0"><span class="badge bg-light-primary"><a href="https://gumroad.com/dashboardkit" target="_blank">Upgrade to Pro</a></span></h5>
-							</div>
+							
 				
 							<a href="auth-signin.html" class="dropdown-item">
 								<i class="material-icons-two-tone">chrome_reader_mode</i>
@@ -109,3 +118,16 @@
 
 		</div>
 	</header>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var dropdownContent = document.querySelector('.dropdown-content');
+			var offerLink = document.getElementById('offerLink');
+
+			offerLink.addEventListener('click', function(event) {
+				event.preventDefault();
+
+				dropdownContent.style.display = dropdownContent.style.display === 'none'? 'block' : 'none';
+			});
+		});
+	</script>

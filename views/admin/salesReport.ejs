@@ -1,0 +1,319 @@
+<%- include('../layouts/adminHeader') %>
+<%- include('../layouts/adminSidebar') %>
+
+<style>
+     .invoice-container {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        width: 300px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+
+    .invoice-container p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .invoice-container p span {
+        float: right;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .invoice-container p:last-child {
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+   
+    span {
+        font-weight: bold;
+    }
+    .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.buttons button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.select-date select, .select-date button {
+    margin-right: 10px;
+}
+
+.date-range input[type="date"] {
+    margin-right: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+    select {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .summary-container {
+        text-align: right;
+    }
+</style>
+
+<div class="pc-container" style="background-color: rgb(234, 230, 230);">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Sales Report</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item">Sales</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Sales Details</h4>
+                        <div class="button-container">
+                            <div class="buttons">
+                                <button id="dwnld-exel-btn">EXCEL</button>
+                                <button id="dwnld-pdf-btn">PDF</button>
+                            </div>
+                            <div class="select-date">
+                                <select id="select">
+                                    <option disabled selected>Select</option>
+                                    <option value="today">Today</option>
+                                    <option value="last-week">Last Week</option>
+                                    <option value="last-month">Last Month</option>
+                                </select>
+                                <button class="btn bg-dark" style="color: #f9f9f9;" onclick="change()">Change</button>
+                            </div>
+                            <div class="date-range">
+                                <input type="date" id="start-date">
+                                <input type="date" id="end-date">
+                                <button class="btn bg-dark" style="color: #f9f9f9;" onclick="apply()">Apply</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <% if (orderData.length || Details) { %>
+                            <table class="table text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Order ID</th>
+                                        <th scope="col">Pay Method</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Qty</th>
+                                        <th scope="col">Discount</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% (Details || orderData).forEach(order => { %>
+                                    <% order.items.forEach(item => { %>
+                                    <tr>
+                                        <td><%= order.orderId %></td>
+                                        <td><%= order.PaymentMethod %></td>
+                                        <td><%= new Date(order.currentDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
+                                        <td><%= item.productId.name %></td>
+                                        <td><%= item.price %></td>
+                                        <td><%= item.quantity %></td>
+                                        <% if(order.discount) { %>
+                                            <td><%= order.discount %></td>
+                                        <% } else { %>
+                                            <td>-</td>
+                                        <% } %>
+                                        <td><%= item.price * item.quantity %></td>
+                                    </tr>
+                                    <% }) %>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                            <div class="invoice-container">
+                                <p>Sub Total: <span><%= subTotal %></span></p>
+                                <p>Discount: <span><%= Discount %></span></p>
+                                <p>Total: <span><%= subTotal - Discount %></span></p>
+                            </div>
+                            <nav aria-label="Page navigation" class="mt-5">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-prev" href="?page=<%= prevPage %>" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                                        </a>
+                                    </li>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-next" href="?page=<%= nextPage %>" aria-label="Next">
+                                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <% } else { %>
+                            <p>No orders available</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+<script>
+
+    document.getElementById("dwnld-pdf-btn").addEventListener("click", function () {
+        let doc = new window.jspdf.jsPDF();
+        let pageCenter = doc.internal.pageSize.getWidth() / 2;
+        let margin = 15;
+
+        doc.setFontSize(25);
+        doc.text("Sportkit.", pageCenter, 25, { align: 'center' });
+
+        doc.setFontSize(15);
+
+        let table = document.querySelector(".table");
+        doc.autoTable({ html: table, startY: 35 + margin });
+
+        doc.setFontSize(10); 
+
+        let invoiceContainer = document.querySelector(".invoice-container");
+        let invoiceContent = invoiceContainer.innerHTML.replace(/<[^>]*>/g, '');
+
+        let invoiceLines = invoiceContent.split('\n').map(line => line.trim()).filter(line => line !== '');
+        let startY = doc.autoTable.previous.finalY + 10 + margin; 
+        invoiceLines.forEach((line, index) => {
+            doc.text(line, margin, startY + (index * 10));
+        });
+
+        doc.save(`sales_report.pdf`);
+    });
+
+
+    document.getElementById("dwnld-exel-btn").addEventListener("click", function () {
+    let workbook = XLSX.utils.book_new();
+    let table = document.querySelector(".table");
+    let worksheet = XLSX.utils.table_to_sheet(table);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+
+    let range = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        let max_width = 0;
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            let cell_address = { c: C, r: R };
+            let cell_ref = XLSX.utils.encode_cell(cell_address);
+            if (!worksheet[cell_ref]) continue;
+            let cell_width = worksheet[cell_ref].v.toString().length;
+            max_width = Math.max(max_width, cell_width);
+        }
+        worksheet['!cols'] = worksheet['!cols'] || [];
+        worksheet['!cols'][C] = { wch: max_width + 1 };
+    }
+
+    let invoiceContainer = document.querySelector(".invoice-container");
+    let subTotal = invoiceContainer.querySelector('span').innerText;
+    let discount = invoiceContainer.querySelectorAll('span')[1].innerText;
+    let total = invoiceContainer.querySelectorAll('span')[2].innerText;
+
+    let invoiceData = [
+        ["Sub Total", subTotal],
+        ["Discount", discount],
+        ["Total", total]
+    ];
+
+    let invoiceSheet = XLSX.utils.aoa_to_sheet(invoiceData);
+    XLSX.utils.book_append_sheet(workbook, invoiceSheet, "Invoice Details");
+
+    XLSX.writeFile(workbook, "sales_report.xlsx", { bookSST: true, type: 'binary' });
+});
+</script>
+<script>
+    function change(){
+        const value = document.getElementById('select').value.trim();
+        if(value){
+            window.location.href = `/admin/sales?type=${value}`;
+        }
+    }
+</script>
+
+<script>
+    function apply() {
+        const startDate = new Date(document.getElementById('start-date').value);
+        const endDate = new Date(document.getElementById('end-date').value);
+
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+
+        console.log('startDate:', formattedStartDate, 'endDate:', formattedEndDate);
+        window.location.href = `/admin/sales?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+    }
+
+    function formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+</script>
+
+<script>
+    function change() {
+    const select = document.getElementById('select');
+    const selectedOption = select.value;
+
+    if (selectedOption === "Select" || !selectedOption) {
+        alert('Please select any option : Today, Last Week, Last Month.');
+        return;
+    }
+    handleDateSelection(selectedOption);
+}
+
+function apply() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
+    if (!startDate || !endDate) {
+        alert('Please select both dates.');
+        return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+        alert('Start date cannot be later than end date.');
+        return;
+    }
+    handleDateRange(startDate, endDate);
+}
+
+</script>
+<%- include('../layouts/adminFooter') %>

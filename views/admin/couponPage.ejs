@@ -1,0 +1,300 @@
+<%-include('../layouts/adminHeader')%>
+    <%-include('../layouts/adminSidebar')%>
+
+    <style>
+        /* body{
+        background-color:#ff52529c;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        } */
+
+
+        .card-body{
+
+        width: 300px;
+        border:none;
+        height: 300px;
+        border-radius: 15px;
+        padding: 20px;
+        background-image: linear-gradient(to bottom right, #393131, #FF8A80);
+    }
+
+        .percent{
+
+        font-size: 56px;
+        color: #fff;
+        }
+
+        .discount{
+
+        font-size: 27px;
+        color: #fff;
+        }
+
+
+        .line{
+
+        color: #fff;
+        }
+
+
+
+        .form-check-input:checked {
+            background-image: linear-gradient(to bottom right, #393131, #FF8A80);
+            border-color: #F44336;
+        }
+
+
+        .form-check-input:focus {
+        border-color: #d50000;
+        outline: 0;
+        box-shadow: none;
+        }
+
+
+        .form-check {
+        display: block;
+        min-height: 1.5rem;
+        padding-left: 1.75em;
+        margin-bottom: -5px;
+        }
+        .input-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .copy-button input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            background-image: linear-gradient(to bottom right, #393131, #FF8A80);
+            padding-right: 80px; 
+            box-sizing: border-box;
+            color: #fff;
+        }
+
+        .copy-button button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px 20px;
+            background-color: #dc143c;
+            color: #fff;
+            border: 1px solid transparent;
+            height: 80%;
+            cursor: pointer;
+        }
+        .copy-button {
+            margin: 12px 0 -5px 0;
+            height: 45px;
+            border-radius: 4px;
+            padding: 0 5px;
+            border: 1px solid #e1e1e1;
+        }
+
+        .modal-content {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            color: #343a40;
+        }
+        
+
+    </style>
+
+    <div class="pc-container" style="background-color: rgb(234, 230, 230);">
+        <div class="pcoded-content">
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Coupon</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item">coupon</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container" style="display: flex; justify-content: right; margin-top:45px;">
+                <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Coupon+</a>
+            </div>
+            <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">New Coupon</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Your form or content for the new offer goes here -->
+                            <form>
+                                
+                                <div class="form-group">
+                                    <label for="minimum-price">Minimum</label>
+                                    <input type="number" class="form-control" id="minimum-price" placeholder="Enter the Minimum price">
+                                </div>
+                                <div class="form-group">
+                                    <label for="discount">Discount</label>
+                                    <input type="number" class="form-control" id="discount" placeholder="Enter the discount">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="coupon-Expiry-Date">Offer Expiry Date</label>
+                                    <input type="date" class="form-control" id="coupon-Expiry-Date" placeholder="Enter Expiry Date">
+                                </div>
+                                <!-- Add more form fields as needed -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" onclick="couponadding()" class="btn btn-primary">Save Offer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="card">
+                    <h4 class="card-title p-3">Offers</h4>
+                    <% if (coupon && coupon.length > 0) { %>
+                        <div class="row">
+                            <% coupon.forEach((item, index) => { %>
+                                <div class="col-lg-4 col-md-6 mb-4 d-flex flex-column align-items-center">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="d-flex flex-row text-center">
+                                                <!-- <img src="https://i.imgur.com/bIgSEvT.png" width="70" height="70" > -->
+                                                <div class="d-flex flex-column text-center text-white ">
+                                                    <span>min purchase:</span>
+                                                    <span>₹<%= item.minimumPrice %></span>
+                                                </div>
+                                                <div class="d-flex flex-column ml-1">
+                                                    <h1 class="mb-0 percent pl-5"><%= item.discount %>%</h1>
+                                                    <span class="discount pl-5">Discount</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="line">
+                                        <div class="copy-button">
+                                            <div class="input-container">
+                                                <input id="copyvalue" type="text" readonly value="<%= item.couponCode %>" >
+                                                <button onclick="copyIt('<%= item._id %>')" class="copybtn">COPY</button>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-4">
+                                            <span id="status-<%= item._id %>" class="text-white"><%= item.is_active ? 'Active' : 'Inactive' %></span>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchChecked-<%= item._id %>" value="<%= item._id %>" <%= item.is_active ? 'checked' : '' %>>
+                                            </div>
+                                        </div>
+                                        <p class="d-flex justify-content-end mt-4">Exp: <%= new Date(item.expiryDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></p>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <p>Coupon not available</p>
+                    <% } %>
+                </div>
+            </div>
+            
+
+            <script>
+                function couponadding() {
+                    let discount = $('#discount').val();
+                    let minimumPrice = $('#minimum-price').val();
+                    let expiryDate = $('#coupon-Expiry-Date').val();
+            
+                    fetch('/admin/addCoupon', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            discount,
+                            minimumPrice,
+                            expiryDate
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success',
+                                'Coupon successfully added',
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error',
+                            'An error occurred while adding the coupon',
+                            'error'
+                        );
+                    });
+                }
+            </script>
+            
+            <script>
+                let copybtn = document.querySelector(".copybtn");
+                function copyIt(){
+                let copyInput = document.querySelector('#copyvalue');
+                copyInput.select();
+                document.execCommand("copy");
+                copybtn.textContent = "COPIED";
+                }
+            </script>
+
+<script>
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const couponId = checkbox.getAttribute('value');
+            const isChecked = checkbox.checked;
+            fetch('/admin/statusChecked', {  // Ensure the URL is correct here
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ isChecked, couponId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById(`status-${couponId}`);
+                if (data.success) {
+                    statusElement.textContent = isChecked ? 'Active' : 'Inactive';
+                    Swal.fire('Success', `Coupon is ${isChecked ? 'active' : 'inactive'}`, 'success');
+                } else {
+                    Swal.fire('Error', 'Coupon status change failed', 'error');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        });
+    });
+    </script>
+    
+
+    <%-include('../layouts/adminFooter')%>

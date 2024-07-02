@@ -34,6 +34,11 @@
                                 </div>
                             </div>
                             <br>
+                            <% if (errormsg) { %>
+                                <div class="text-center" style="color: red; background: white;">
+                                    <%= errormsg %>
+                                </div>
+                             <%   }     %>
                             <div class="col-lg-12 text-center">
                                 <button type="submit" class="btn btn-block btn-dark">Login</button>
                             </div>

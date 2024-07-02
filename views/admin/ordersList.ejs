@@ -1,0 +1,163 @@
+<%- include('../layouts/adminHeader') %>
+<%- include('../layouts/adminSidebar') %>
+<style type="text/css">
+    .img-account-profile {
+        height: 10rem;
+    }
+
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+
+    .card {
+        box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+    }
+    .card .card-header {
+        font-weight: 500;
+    }
+
+    .card-header:first-child {
+        border-radius: 0.35rem 0.35rem 0 0;
+    }
+
+    .card-header {
+        padding: 1rem 1.35rem;
+        background-color: rgba(33, 40, 50, 0.03);
+        border-bottom: 1px solid rgba(7, 8, 9, 0.125);
+    }
+
+    .table,
+    .table-responsive {
+        width: 100%;
+        line-height: 1;
+        color: #69707a;
+        margin-top: 10px;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #2d2c2c;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.35rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    @media (max-width: 767.98px) {
+        .table td,
+        .table th {
+            display: block;
+            text-align: center;
+        }
+
+        .table td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            padding-left: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+    }
+
+    .table-cart {
+        border: none;
+    }
+
+    .table-cart tbody tr {
+        border-bottom: 1px solid #2d2c2c;
+    }
+
+    .table-cart tbody tr:last-child {
+        border-bottom: none;
+    }
+</style>
+<div class="pc-container" style="background-color: rgb(234, 230, 230);">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-md-12 col-xl-12">
+                <div class="card">
+                    <div class="card-header">My Orders</div>
+                    <div class="card-body">
+                        <% if (orders && orders.length > 0) { %>
+                            <% orders.forEach((order, index) => { %>
+                                <div class="table-responsive">
+                                    <table class="table table-cart table-mobile ">
+                                        <tbody>
+                                            <% order.items.forEach(item => { %>
+                                                <tr>
+                                                    <td class="product-col" data-label="Image">
+                                                        <div class="product">
+                                                            <figure class="product-media">
+                                                                <a href="#">
+                                                                    <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="width: 100px; height: 100px;">
+                                                                </a>
+                                                            </figure>
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Product Name"><%= item.productId.name %></td>
+                                                    <td data-label="Price" class="text-center">$<%= order.totalAmount %></td>
+                                                    <td data-label="Quantity" class="text-center">Qty: <%= item.quantity %></td>
+                                                    <td data-label="Payment Method" class="text-center"><%= order.PaymentMethod %></td>
+                                                    <% if(item.status !== 'Cancelled') { %>
+
+                                                   
+                                                    <td data-label="Status" class="text-center">
+                                                        <select class="form-select" id="selectStatus<%= index %>" data-orderid="<%= order._id %>" data-productid="<%= item.productId._id %>">
+                                                            <option value="Confirmed" <%= item.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                                            <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                            <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+
+                                                        </select>
+                                                    </td>
+                                                    <% } %>
+                                                </tr>
+                                            <% }) %>
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    <a href="/admin/orderDetailsList?orderId=<%= order._id %>">
+                                                        <button class="btn btn-primary">Order Details</button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p>Your order history is empty.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.form-select').forEach(selectElement => {
+        selectElement.addEventListener('change', function() {
+            const selectedValue = this.value;
+            const orderId = this.getAttribute('data-orderid');
+            const productId = this.getAttribute('data-productid');
+            console.log(productId);
+            
+
+            fetch('/admin/statusChange', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: selectedValue, orderId: orderId , productId: productId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+<%- include('../layouts/adminFooter') %>
