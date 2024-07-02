@@ -10,7 +10,7 @@ const userRoute=require('./Routes/userRoute');
 const adminRoute=require('./Routes/adminRoute');
 
 const MONGODB = "mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit"
- console.log('success');
+
 
 app.use(flash())
 app.use(nocache())
