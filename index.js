@@ -36,7 +36,7 @@ mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mon
 })
 console.log('success');
 
-app.listen(3010,()=>{
+app.listen(3000,()=>{
     console.log('Server is running http://localhost:3010');
     console.log('Server is running http://localhost:3010/admin');
 })
