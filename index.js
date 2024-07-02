@@ -9,7 +9,7 @@ const nocache=require('nocache')
 const userRoute=require('./Routes/userRoute');
 const adminRoute=require('./Routes/adminRoute');
 
-mongoose.connect("mongodb://127.0.0.1:27017/Sportkit");
+const MONGODB = "mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit"
 
 
 app.use(flash())
@@ -26,6 +26,15 @@ app.use('/admin',adminRoute)
 
 
 app.use('/',authRoute)
+
+
+mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit")
+.then(()=>{
+    console.log("Mongodb Connected");
+}).catch((err)=>{
+    console.log("Failed to Connect Mongodb"+err);
+})
+
 
 app.listen(3010,()=>{
     console.log('Server is running http://localhost:3010');

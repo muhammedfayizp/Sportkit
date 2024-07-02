@@ -5,6 +5,7 @@ const multer = require('multer')
 const path=require('path')
 const express=require('express')
 const { find, findById } = require('../models/cart_model')
+const { response } = require('../Routes/userRoute')
 const app=express()
 
 const loadProductlist=async(req,res)=>{
@@ -120,6 +121,70 @@ const loadProductEdit=async(req,res)=>{
         console.log(error);
     }
 }
+const imageRemove = async (req, res) => {
+    try {
+        const { productId, index } = req.body;
+
+        console.log('Received productId:', productId);
+        console.log('Received index:', index);
+
+        let product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        product.Inputimage.splice(index, 1);
+
+        await product.save();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing image:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// const productEditing = async (req, res) => {
+//     try {
+//         const productId = req.query.id;
+//         const { name, price, quantity, category, description } = req.body;
+
+//         if (!category || category === "") {
+//             req.flash('errmsg', 'Please select a valid category.');
+//             return res.redirect(`/admin/editProduct?id=${productId}`);
+//         }
+
+//         let existProduct = await Product.findById(productId);
+//         let imageFiles = req.body.Inputimage;
+//         console.log('im'+imageFiles);
+
+//         existProduct.name = name;
+//         existProduct.price = price;
+//         existProduct.quantity = quantity;
+//         existProduct.category = category;
+//         existProduct.description = description;
+
+    
+
+//         if (imageFiles && imageFiles.length > 0) {
+//             let newImages = imageFiles.map(file => ({
+//                 filename: file.filename,
+//                 path: '/uploads/' + file.filename
+//             }));
+//             existProduct.Inputimage = [...newImages];
+//             console.log('inp'+newImages);
+//             console.log('ex'+existProduct.Inputimage);
+//         }
+//         await existProduct.save();
+
+//         req.flash('success', 'Product updating successful');
+//         res.redirect('/admin/productlist');
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+
 
 const productEditing = async (req, res) => {
     try {
@@ -132,34 +197,36 @@ const productEditing = async (req, res) => {
         }
 
         let existProduct = await Product.findById(productId);
-        let imageFiles = req.body.Inputimage;
-        console.log('im'+imageFiles);
 
+        // Update product details
         existProduct.name = name;
         existProduct.price = price;
         existProduct.quantity = quantity;
         existProduct.category = category;
         existProduct.description = description;
 
-    
-
-        if (imageFiles && imageFiles.length > 0) {
-            let newImages = imageFiles.map(file => ({
+        // Handle image updates
+        if (req.files && req.files.length > 0) {
+            let newImages = req.files.map(file => ({
                 filename: file.filename,
                 path: '/uploads/' + file.filename
             }));
             existProduct.Inputimage = [...newImages];
-            console.log('inp'+newImages);
-            console.log('ex'+existProduct.Inputimage);
         }
+
+        // Save updated product
         await existProduct.save();
 
         req.flash('success', 'Product updating successful');
         res.redirect('/admin/productlist');
     } catch (error) {
         console.error(error);
+        req.flash('errmsg', 'Failed to update product');
+        res.redirect(`/admin/editProduct?id=${productId}`);
     }
 };
+
+
 
 
 
@@ -169,5 +236,6 @@ module.exports={
     insertProduct,
     loadproductListUnlist,
     loadProductEdit,
-    productEditing
+    productEditing,
+    imageRemove
 }

@@ -37,12 +37,13 @@
                                 <div class="select-custom">
                                     <select name="sortby" id="sortby" class="form-control">
                                         <option value="" disabled selected>Choose</option>
-                                        <option name="charecterSort" value="asse">A-Z</option>
-                                        <option name="charecterSort" value="disse">Z-A</option>
+                                        <option value="asse" <% if (selectedType === 'asse') { %> selected <% } %>>A-Z</option>
+                                        <option value="disse" <% if (selectedType === 'disse') { %> selected <% } %>>Z-A</option>
                                     </select>
                                 </div>
                             </div><!-- End .toolbox-sort -->
-                            <button id="apply" class="btn-success ml-3" style="display: none;" onclick="filterdProducts()">Apply</button>                          </div><!-- End .toolbox-right -->
+                            <button id="apply" class="btn-success ml-3" style="display: none;" onclick="filterdProducts()">Apply</button> 
+                            <button id="clear" class="btn-secondary ml-3" style="display: none;" onclick="clearFilters()">Clear Filters</button>                         </div><!-- End .toolbox-right -->
                     </div><!-- End .toolbox -->
 
                     <div class="products mb-3">
@@ -275,6 +276,10 @@
         document.getElementById("apply").style.display = "inline-block";
     }
 
+    function showClearButton() {
+        document.getElementById("clear").style.display = "inline-block";
+    }
+
     function addEventListeners() {
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');   
         checkboxes.forEach(function(checkbox) {
@@ -288,12 +293,32 @@
     document.addEventListener('DOMContentLoaded', function() {
         addEventListeners();
     });
-
+</script>
+<script>    
     function getSearchValue() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('input') || '';
     }
 </script>
+
+<script>
+    let queryString = window.location.search;
+    let clear = document.getElementById('clear');
+
+    if (queryString) {
+        clear.style.display = 'block'
+    } else {
+        clear.style.display = 'none'
+    }  
+</script>
+
+
+<script>
+    function clearFilters() {
+        window.location.href = '/product'
+    }
+</script>
+
 
 
 <script>

@@ -91,28 +91,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Images</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
-                                                    <div id="imagePreview" class="d-flex flex-wrap mt-2">
-                                                        <% for (let i = 0; i < productDetail.Inputimage.length; i++) { %>
-                                                            <div class="image-wrapper mr-3 mb-3">
-                                                                <button class="close-button" aria-label="Close alert" type="button" data-close>
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                                <img style="height: 100px; max-width: 100px;" src="/IMAGES/<%= productDetail.Inputimage[i].filename %>" alt="Product Image">
-                                                            </div>
-                                                        <% } %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
+                                
+
                                 <div class="form-group">
                                     <div class="row">
                                         <label class="col-lg-2">Images</label>
@@ -122,19 +102,21 @@
                                                     <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
                                                     <div id="imagePreview" class="d-flex flex-wrap mt-2">
                                                         <% for (let i = 0; i < productDetail.Inputimage.length; i++) { %>
-                                                            <div class="image-wrapper mr-3 mb-3">
-                                                                <button class="close-button" aria-label="Close alert" type="button" data-index="<%= i %>" onclick="imageRemove('<%= productDetail._id %>')">
+                                                            <div class="image-wrapper mr-3 mb-3" data-index="<%= i %>">
+                                                                <button class="close-button" aria-label="Close alert" type="button" onclick="imageRemove('<%= productDetail._id %>', '<%= i %>')">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
                                                                 <img style="height: 100px; max-width: 100px;" src="/IMAGES/<%= productDetail.Inputimage[i].filename %>" alt="Product Image">
                                                             </div>
                                                         <% } %>
                                                     </div>
+                                                    <button id="addImageButton" class="btn btn-primary mt-2">Add Images</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                               
                                 </div>
                             </div>
                             <!-- Image Preview -->
@@ -153,111 +135,130 @@
         </div>
     </div>   
 </div>
+
+
 <script>
-function previewImage(input, previewElement) {
-    const preview = document.getElementById(previewElement);
-    preview.innerHTML = '';
-
-    if(input.files){
-            Array.from(input.files).forEach(file=>{
-                const reader = new FileReader();
-                reader.onload = function(e){
-                    const img = document.createElement('img')
-                    img.src = e.target.result;
-                    img.style.maxWidth = '100px';
-                    img.style.maxHeight = '100px';
-                    preview.appendChild(img)
-                    
-
-                    const cropper=new Cropper(img,{
-                        aspectRatio:1,
-                        viewMode:2,
-                        crop:function(event){
-                            const canvas=document.getElementById('croppedImageCanvas')
-                            const context=canvas.getContext('2d')
-                            canvas.width=event.detail.width;
-                            canvas.height=event.detail.height;
-                            context.drawImage(img,event.detail.x,event.detail.y,event.detail.width,event.detail.height,0,0,canvas.width,canvas.height)
-
-                            canvas.toBlob(blob => {
-                                const croppedImageInput = document.createElement('input');
-                                croppedImageInput.type = 'hidden';
-                                croppedImageInput.name = 'croppedImages';
-                                croppedImageInput.value = URL.createObjectURL(blob);
-                                preview.appendChild(croppedImageInput);
-                            }, 'image/jpeg');
-                        }
-
-                    })
+    function imageRemove(productId, index) {
+        fetch(`/admin/imageRemove`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId, index })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementsByClassName('image-wrapper')[index].remove();
+                if (data.imageCount < 4) {
+                    document.getElementById('addImageButton').style.display = 'block';
                 }
-                reader.readAsDataURL(file)
-            })
+            } else {
+                console.error('Failed to remove image');
+            }
+        })
+        .catch(error => console.error('Error removing image:', error));
+    }
+
+    function previewImage(input, previewId) {
+        if (input.files) {
+            const files = Array.from(input.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageWrapper = document.createElement('div');
+                    imageWrapper.classList.add('image-wrapper', 'mr-3', 'mb-3');
+                    const closeButton = document.createElement('button');
+                    closeButton.classList.add('close-button');
+                    closeButton.setAttribute('aria-label', 'Close alert');
+                    closeButton.setAttribute('type', 'button');
+                    closeButton.addEventListener('click', function() {
+                        imageWrapper.remove();
+                    });
+                    closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+
+                    const image = document.createElement('img');
+                    image.style.height = '100px';
+                    image.style.maxWidth = '100px';
+                    image.src = e.target.result;
+                    image.alt = 'Product Image';
+
+                    imageWrapper.appendChild(closeButton);
+                    imageWrapper.appendChild(image);
+
+                    document.getElementById(previewId).appendChild(imageWrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            const currentImageCount = document.querySelectorAll('.image-wrapper').length;
+            if (currentImageCount >= 10) {
+                document.getElementById('addImageButton').style.display = 'none';
+            } else {
+                document.getElementById('addImageButton').style.display = 'block';
+            }
         }
-}
-
-document.getElementById('Inputimage').addEventListener('change', function() {
-    previewImage(this, 'imagePreview');
-});
-</script>
-
-<script>
-   function imageRemove(productId) {
-        const preview = document.getElementById('imagePreview');
-        const index = this.getAttribute('data-index');
-        const imageWrapper = this.closest('.image-wrapper');
-        
-        window.location.href='/produc'
     }
-</script>
 
-<script>
+    document.getElementById('Inputimage').addEventListener('change', function() {
+        previewImage(this, 'imagePreview');
+        this.value = ''; 
+    });
+
+    document.getElementById('addImageButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('Inputimage').click()
+    });
+
     function validation() {
-    let isValid = true;
+        let isValid = true;
 
-    document.getElementById('nameContainer').innerText = '';
-    document.getElementById('priceContainer').innerText = '';
-    document.getElementById('quantityContainer').innerText = '';
-    document.getElementById('categoryContainer').innerText = '';
-    document.getElementById('descriptionContainer').innerText = '';
+        document.getElementById('nameContainer').innerText = '';
+        document.getElementById('priceContainer').innerText = '';
+        document.getElementById('quantityContainer').innerText = '';
+        document.getElementById('categoryContainer').innerText = '';
+        document.getElementById('descriptionContainer').innerText = '';
 
-    const name = document.getElementById('name').value.trim();
-    if (name === '') {
-        document.getElementById('nameContainer').innerText = 'Name is required.';
-        isValid = false;
+        const name = document.getElementById('name').value.trim();
+        if (name === '') {
+            document.getElementById('nameContainer').innerText = 'Name is required.';
+            isValid = false;
+        }
+
+        const price = document.getElementById('price').value.trim();
+        if (price === '') {
+            document.getElementById('priceContainer').innerText = 'Price is required.';
+            isValid = false;
+        } else if (isNaN(price) || parseFloat(price) <= 0) {
+            document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
+            isValid = false;
+        }
+
+        const quantity = document.getElementById('quantity').value.trim();
+        if (quantity === '') {
+            document.getElementById('quantityContainer').innerText = 'Quantity is required.';
+            isValid = false;
+        } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
+            document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
+            isValid = false;
+        }
+
+        const category = document.getElementById('category').value;
+        if (category === 'Choose...' || category === '') {
+            document.getElementById('categoryContainer').innerText = 'Category is required.';
+            isValid = false;
+        }
+
+        const description = document.getElementById('description').value.trim();
+        if (description === '') {
+            document.getElementById('descriptionContainer').innerText = 'Description is required.';
+            isValid = false;
+        }
+
+        return isValid;
     }
-
-    const price = document.getElementById('price').value.trim();
-    if (price === '') {
-        document.getElementById('priceContainer').innerText = 'Price is required.';
-        isValid = false;
-    } else if (isNaN(price) || parseFloat(price) <= 0) {
-        document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
-        isValid = false;
-    }
-
-    const quantity = document.getElementById('quantity').value.trim();
-    if (quantity === '') {
-        document.getElementById('quantityContainer').innerText = 'Quantity is required.';
-        isValid = false;
-    } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
-        document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
-        isValid = false;
-    }
-
-    const category = document.getElementById('category').value;
-    if (category === 'Choose...' || category === '') {
-        document.getElementById('categoryContainer').innerText = 'Category is required.';
-        isValid = false;
-    }
-
-    const description = document.getElementById('description').value.trim();
-    if (description === '') {
-        document.getElementById('descriptionContainer').innerText = 'Description is required.';
-        isValid = false;
-    }
-
-    return isValid;
-}
 </script>
-    
+
+
 <%-include('../layouts/adminFooter')%>

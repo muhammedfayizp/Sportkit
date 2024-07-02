@@ -97,8 +97,6 @@ const loadProduct = async (req, res) => {
         const priceType = req.query.priceSort || '';
         const selectedType = req.query.sortBy || '';
 
-        console.log('cate: ' + selectedCategory, 'sear: ' + search, 'pri: ' + priceType, 'a-z: ' + selectedType);
-
         const page = parseInt(req.query.page) || 1;
         const limit = 6;
         const skip = (page - 1) * limit;
@@ -169,7 +167,7 @@ const loadProduct = async (req, res) => {
             await Product.findByIdAndUpdate(productId, { finalPrice: bestOfferPrice, discount: topDiscount });
         }
 
-        res.render('allProduct', { categories, allproducts, userData, products: products, totalPages, prevPage, nextPage, page ,priceType,selectedCategory});
+        res.render('allProduct', { categories, allproducts, userData, products: products, totalPages, prevPage, nextPage, page ,priceType,selectedCategory,selectedType});
 
     } catch (error) {
         console.error("Error loading products:", error);
