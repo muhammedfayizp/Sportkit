@@ -59,6 +59,7 @@ user_Route.get('/checkoutAdsedit',userAuth.isLogin,checkoutController.loadEditAd
 user_Route.post('/editAdd',checkoutController.checkoutAddressEdit)
 user_Route.post('/placeOrder',checkoutController.placeOrder)
 
+
 user_Route.get('/orderHistoryList',userAuth.isLogin,userProfileController.loadOrderHistory)
 user_Route.get('/orderDetails',userAuth.isLogin,userProfileController.loadOrderDetails)
 user_Route.post('/cancelOrder',userProfileController.cancelOrder)
@@ -89,3 +90,5 @@ user_Route.post('/verifyRePassword',userController.verifyRePassword)
 //     res.redirect('/')
 // })
 module.exports=user_Route
+
+
