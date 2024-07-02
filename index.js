@@ -34,7 +34,7 @@ mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mon
 }).catch((err)=>{
     console.log("Failed to Connect Mongodb"+err);
 })
-
+console.log('success');
 
 app.listen(3010,()=>{
     console.log('Server is running http://localhost:3010');
