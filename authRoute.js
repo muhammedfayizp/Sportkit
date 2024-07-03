@@ -7,7 +7,7 @@ require("dotenv").config();
 
 const CLIENT_ID=process.env.CLIENT_ID
 const CLIENT_SECRET=process.env.CLIENT_SECRET
-const REDIRECT_URI='http://localhost:3010/auth/google/callback'
+const REDIRECT_URI='https://sportkit.online/auth/google/callback'
 
 router.get('/auth/google', (req, res) => {
   const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile email`;
