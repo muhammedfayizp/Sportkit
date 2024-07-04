@@ -65,25 +65,32 @@ const returnApproev=async(req,res)=>{
         const product=order.items.find(item=>item.productId.toString()===productId)
         order.approvel=2
         product.status='Return'
+
+
+        console.log('sff'+product);
+        console.log('sggeg'+order);
+        
+        console.log(order.totalAmount);
+
         if(!walletData){
             const addingWalletMoney=new Wallet({
                 UserId:userId,
-                balance:product.price,
+                balance:order.totalAmount,
                 history:[{
-                    amount:product.price,
+                    amount:order.totalAmount,
                     transactionType:'credit',
                     method:'purchase Return',
-                    currentAmount:product.price
+                    currentAmount:order.totalAmount
                 }]
             })
             await addingWalletMoney.save() 
         }else{
-            walletData.balance+=product.price
+            walletData.balance+=order.totalAmount
             walletData.history.push({
-                amount:product.price,
+                amount:order.totalAmount,
                 transactionType:'credit',
                 method:'Purchase Return',
-                currentAmount:product.price
+                currentAmount:walletData.balance
             })
             await walletData.save();
         }

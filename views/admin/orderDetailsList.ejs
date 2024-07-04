@@ -63,24 +63,29 @@
                                                 <% order.items.forEach(item => { %>
                                                     <tr>
                                                         <td>
-                                                            <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="max-width: 60px; max-height: 60px;">
+                                                            <% if (item.productId && item.productId.Inputimage && item.productId.Inputimage.length > 0) { %>
+                                                                <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="max-width: 60px; max-height: 60px;">
+                                                            <% } else { %>
+                                                                <img src="/IMAGES/default.jpg" alt="default image" style="max-width: 60px; max-height: 60px;">
+                                                            <% } %>
                                                         </td>
-                                                        <td data-label="Product Name"><%= item.productId.name %></td>
+                                                        <td data-label="Product Name"><%= item.productId ? item.productId.name : 'Unknown Product' %></td>
                                                         <td class="price-col" data-label="Price">$<%= order.totalAmount %></td>
                                                         <td data-label="Quantity">Qty : <%= item.quantity %></td>
                                                         <td data-label="Payment Method"><%= order.PaymentMethod %></td>
-                                                        
                                                     </tr>
                                                 <% }) %>
-                                                <%order.items.forEach(item=>{%>
-                                                    <% if(item.status == 'Delivered'&& order.approvel == 1) { %>
-                                                        <td colspan="5" class="text-center">
-                                                            <p>Reason : <%= item.reason %></p>
-                                                            <button class="btn btn-success" onclick="approvelfun('<%= order._id %>','<%= item.productId._id %>')">approve</button>
-                                                            <button class="btn btn-dark" onclick="declinefun('<%= order._id %>','<%= item.productId._id %>')">decline</button>
-                                                        </td>
+                                                <% order.items.forEach(item => { %>
+                                                    <% if (item.status == 'Delivered' && order.approvel == 1) { %>
+                                                        <tr>
+                                                            <td colspan="5" class="text-center">
+                                                                <p>Reason : <%= item.reason %></p>
+                                                                <button class="btn btn-success" onclick="approvelfun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">approve</button>
+                                                                <button class="btn btn-dark" onclick="declinefun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">decline</button>
+                                                            </td>
+                                                        </tr>
                                                     <% } %>
-                                                <%})%> 
+                                                <% }) %>
                                             </tbody>
                                         </table>
                                     </div>

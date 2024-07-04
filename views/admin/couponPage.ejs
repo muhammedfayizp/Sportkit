@@ -218,44 +218,97 @@
             </div>
             
 
-            <script>
-                function couponadding() {
-                    let discount = $('#discount').val();
-                    let minimumPrice = $('#minimum-price').val();
-                    let expiryDate = $('#coupon-Expiry-Date').val();
+            <div class="modal-body">
+                <!-- Your form or content for the new offer goes here -->
+                <form id="coupon-form">
+                    <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
             
-                    fetch('/admin/addCoupon', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            discount,
-                            minimumPrice,
-                            expiryDate
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire(
-                                'Success',
-                                'Coupon successfully added',
-                                'success'
-                            ).then(() => {
-                                window.location.reload();
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire(
-                            'Error',
-                            'An error occurred while adding the coupon',
-                            'error'
-                        );
-                    });
+                    <div class="form-group">
+                        <label for="minimum-price">Minimum</label>
+                        <input type="number" class="form-control" id="minimum-price" placeholder="Enter the Minimum price">
+                    </div>
+                    <div class="form-group">
+                        <label for="discount">Discount</label>
+                        <input type="number" class="form-control" id="discount" placeholder="Enter the discount">
+                    </div>
+                    <div class="form-group">
+                        <label for="coupon-Expiry-Date">Offer Expiry Date</label>
+                        <input type="date" class="form-control" id="coupon-Expiry-Date" placeholder="Enter Expiry Date">
+                    </div>
+                    <!-- Add more form fields as needed -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="couponadding()" class="btn btn-primary">Save Offer</button>
+                    </div>
+                </form>
+            </div>
+            
+            <script>
+            function couponadding() {
+                let discount = $('#discount').val();
+                let minimumPrice = $('#minimum-price').val();
+                let expiryDate = $('#coupon-Expiry-Date').val();
+                let currentDate = new Date().toISOString().split('T')[0]; 
+                let errorMessage = $('#error-message');
+
+                // Clear previous error message
+                errorMessage.text('');
+
+                // Validation
+                if (!minimumPrice || !discount || !expiryDate) {
+                    errorMessage.text('All fields are required.');
+                    return;
                 }
+
+                if (minimumPrice <= 0 || discount <= 0) {
+                    errorMessage.text('Minimum price and discount must be positive numbers.');
+                    return;
+                }
+
+                if (discount >= 70) {
+                    errorMessage.text('Discount should be between 5 and 70.');
+                    return;
+                }
+
+                if (expiryDate <= currentDate) {
+                    errorMessage.text('Expiry date must be in the future.');
+                    return;
+                }
+
+            
+                fetch('/admin/addCoupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        discount,
+                        minimumPrice,
+                        expiryDate
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Success',
+                            'Coupon successfully added',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error',
+                        'An error occurred while adding the coupon',
+                        'error'
+                    );
+                });
+            }
             </script>
+            
             
             <script>
                 let copybtn = document.querySelector(".copybtn");
