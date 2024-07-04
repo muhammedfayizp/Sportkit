@@ -147,8 +147,9 @@
                         </div>
                         <div class="modal-body">
                             <!-- Your form or content for the new offer goes here -->
-                            <form>
-                                
+                            <form id="coupon-form">
+                                <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
+                        
                                 <div class="form-group">
                                     <label for="minimum-price">Minimum</label>
                                     <input type="number" class="form-control" id="minimum-price" placeholder="Enter the Minimum price">
@@ -157,7 +158,6 @@
                                     <label for="discount">Discount</label>
                                     <input type="number" class="form-control" id="discount" placeholder="Enter the discount">
                                 </div>
-                                
                                 <div class="form-group">
                                     <label for="coupon-Expiry-Date">Offer Expiry Date</label>
                                     <input type="date" class="form-control" id="coupon-Expiry-Date" placeholder="Enter Expiry Date">
@@ -218,30 +218,7 @@
             </div>
             
 
-            <div class="modal-body">
-                <!-- Your form or content for the new offer goes here -->
-                <form id="coupon-form">
-                    <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
             
-                    <div class="form-group">
-                        <label for="minimum-price">Minimum</label>
-                        <input type="number" class="form-control" id="minimum-price" placeholder="Enter the Minimum price">
-                    </div>
-                    <div class="form-group">
-                        <label for="discount">Discount</label>
-                        <input type="number" class="form-control" id="discount" placeholder="Enter the discount">
-                    </div>
-                    <div class="form-group">
-                        <label for="coupon-Expiry-Date">Offer Expiry Date</label>
-                        <input type="date" class="form-control" id="coupon-Expiry-Date" placeholder="Enter Expiry Date">
-                    </div>
-                    <!-- Add more form fields as needed -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" onclick="couponadding()" class="btn btn-primary">Save Offer</button>
-                    </div>
-                </form>
-            </div>
             
             <script>
             function couponadding() {
