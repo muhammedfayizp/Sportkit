@@ -270,19 +270,15 @@
                                                     <form id="returnForm">
                                                         <input type="hidden" id="modalOrderId" name="orderId">
                                                         <input type="hidden" id="modalProductId" name="productId">
+                                                        <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
                                                         <div class="mb-3">
-                                                            <label for="returnReason" class="form-label">Reason for
-                                                                Return</label>
+                                                            <label for="returnReason" class="form-label">Reason for Return</label>
                                                             <select id="returnReason" class="form-select" name="reason">
                                                                 <option value="" disabled selected>Choose</option>
-                                                                <option value="Received Wrong Item">Received Wrong Item
-                                                                </option>
-                                                                <option value="Defective or Damaged product">Defective
-                                                                    or Damaged Product</option>
-                                                                <option value="Wrong Size or Fit">Wrong Size or Fit
-                                                                </option>
-                                                                <option value="Unsatisfactory Quantity">Unsatisfactory
-                                                                    Quantity</option>
+                                                                <option value="Received Wrong Item">Received Wrong Item</option>
+                                                                <option value="Defective or Damaged product">Defective or Damaged Product</option>
+                                                                <option value="Wrong Size or Fit">Wrong Size or Fit</option>
+                                                                <option value="Unsatisfactory Quantity">Unsatisfactory Quantity</option>
                                                                 <option value="Late Delivery">Late Delivery</option>
                                                                 <option value="Other">Other</option>
                                                             </select>
@@ -290,8 +286,7 @@
                                                     </form>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-primary"
-                                                        onclick="submitReturnForm()">Submit Return</button>
+                                                    <button type="button" class="btn btn-primary" onclick="submitReturnForm()">Submit Return</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -479,13 +474,21 @@
                     const orderId = returnForm.querySelector('#modalOrderId').value;
                     const productId = returnForm.querySelector('#modalProductId').value;
                     const reason = returnForm.querySelector('#returnReason').value;
-
+                    const errorMessage = document.getElementById('error-message');
+                
+                    errorMessage.textContent = '';
+                
+                    if (!orderId || !productId || !reason) {
+                        errorMessage.textContent = ' field is empty.';
+                        return;
+                    }
+                
                     const formData = {
                         orderId: orderId,
                         productId: productId,
                         reason: reason
                     };
-
+                
                     fetch('/orderReturn', {
                         method: 'POST',
                         headers: {
@@ -493,22 +496,23 @@
                         },
                         body: JSON.stringify(formData)
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-
-                                Swal.fire({
-                                    title: 'Request Sent!',
-                                    text: 'Your return request has been successfully sent.',
-                                    icon: 'success'
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Request Sent!',
+                                text: 'Your return request has been successfully sent.',
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
                 }
-            </script>
+                </script>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
             <script

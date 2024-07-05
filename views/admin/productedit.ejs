@@ -1,5 +1,20 @@
 <%-include('../layouts/adminHeader')%>
 <%-include('../layouts/adminSidebar')%>
+<style>
+    .image-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    .close-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.7);
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 
 <div class="pc-container" style="background-color: rgb(234, 230, 230);">
     <div class="pcoded-content">
@@ -11,7 +26,8 @@
                         <% if (errmsg.length > 0) { %>
                             <div class="alert alert-danger"><%= errmsg %></div>
                         <% } %>
-                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" onsubmit="return validation()">
+                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" enctype="multipart/form-data" onsubmit="return validation()">
+                            <input type="hidden" id="removedImages" name="removedImages" value="">
                             <div class="form-body">
                                 <div class="form-group">
                                     <div class="row">
@@ -98,7 +114,7 @@
                                         <label class="col-lg-2">Images</label>
                                         <div class="col-lg-10">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-7">
                                                     <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
                                                     <div id="imagePreview" class="d-flex flex-wrap mt-2">
                                                         <% for (let i = 0; i < productDetail.Inputimage.length; i++) { %>
@@ -110,146 +126,152 @@
                                                             </div>
                                                         <% } %>
                                                     </div>
-                                                    <button id="addImageButton" class="btn btn-primary mt-2">Add Images</button>
+                                                    <button id="addImageButton" class="btn btn-primary mt-2" style="display: none;">Add Images</button>
+                                                    <div id="imageValidationMessage" class="text-danger"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                </div>
                                
                                 </div>
                             </div>
-                            <!-- Image Preview -->
-                            <div id="imagePreview" class="mt-3 thumbnail-container"></div>
-                            <!-- Image Preview end -->
                             <div class="form-actions">
                                 <div class="text-right">
                                     <button type="submit" class="btn btn-info">Save Changes</button>
                                 </div>
                             </div>
                         </form>
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>   
 </div>
-
-
 <script>
-    function imageRemove(productId, index) {
-        fetch(`/admin/imageRemove`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId, index })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementsByClassName('image-wrapper')[index].remove();
-                if (data.imageCount < 4) {
-                    document.getElementById('addImageButton').style.display = 'block';
-                }
-            } else {
-                console.error('Failed to remove image');
-            }
-        })
-        .catch(error => console.error('Error removing image:', error));
-    }
-
-    function previewImage(input, previewId) {
-        if (input.files) {
-            const files = Array.from(input.files);
-
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imageWrapper = document.createElement('div');
-                    imageWrapper.classList.add('image-wrapper', 'mr-3', 'mb-3');
-                    const closeButton = document.createElement('button');
-                    closeButton.classList.add('close-button');
-                    closeButton.setAttribute('aria-label', 'Close alert');
-                    closeButton.setAttribute('type', 'button');
-                    closeButton.addEventListener('click', function() {
-                        imageWrapper.remove();
-                    });
-                    closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
-
-                    const image = document.createElement('img');
-                    image.style.height = '100px';
-                    image.style.maxWidth = '100px';
-                    image.src = e.target.result;
-                    image.alt = 'Product Image';
-
-                    imageWrapper.appendChild(closeButton);
-                    imageWrapper.appendChild(image);
-
-                    document.getElementById(previewId).appendChild(imageWrapper);
-                };
-                reader.readAsDataURL(file);
-            });
-
-            const currentImageCount = document.querySelectorAll('.image-wrapper').length;
-            if (currentImageCount >= 10) {
-                document.getElementById('addImageButton').style.display = 'none';
-            } else {
-                document.getElementById('addImageButton').style.display = 'block';
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageWrappers = document.querySelectorAll('.image-wrapper');
+        if (imageWrappers.length === 0) {
+            document.getElementById('addImageButton').style.display = 'block';
         }
-    }
+    });
+
+    function imageRemove(productId, imageIndex) {
+        const imageWrapper = document.querySelector(`.image-wrapper[data-index='${imageIndex}']`);
+        if (imageWrapper) {
+            imageWrapper.remove();
+        }
+
+        const removedImagesInput = document.getElementById('removedImages');
+        let removedImages = removedImagesInput.value ? JSON.parse(removedImagesInput.value) : [];
+        removedImages.push(imageIndex);
+        removedImagesInput.value = JSON.stringify(removedImages);
+
+        const imageWrappers = document.querySelectorAll('.image-wrapper');
+        if (imageWrappers.length < 4) {
+            document.getElementById('addImageButton').style.display = 'block';
+        } else {
+            document.getElementById('addImageButton').style.display = 'none';
+        }
+
+        validateImageCount(); // Call function to validate image count
+    } 
 
     document.getElementById('Inputimage').addEventListener('change', function() {
         previewImage(this, 'imagePreview');
         this.value = ''; 
+        validateImageCount(); // Call function to validate image count
     });
-
+    
     document.getElementById('addImageButton').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('Inputimage').click()
     });
 
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Validate form including images
+        if (!validation() || !validateImageCount()) {
+            return; // Exit if validation fails
+        }
+
+        const imagePreviews = document.querySelectorAll('.image-wrapper img');
+        const imagePaths = Array.from(imagePreviews).map(img => img.src);
+
+        const formData = new FormData(this);
+        imagePaths.forEach((path, index) => {
+            formData.append(`imagePath${index}`, path);
+        });
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+          .then(data => {
+            if (data.success) {
+                Swal.fire(
+                    'Success',
+                    'Product edit successful',
+                    'success'
+                ).then(() => {
+                    window.location.href = '/admin/productlist';
+                });
+            } else {
+                console.log('Error:', data.message);
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    });
+
     function validation() {
         let isValid = true;
 
+        // Clear previous error messages
         document.getElementById('nameContainer').innerText = '';
         document.getElementById('priceContainer').innerText = '';
         document.getElementById('quantityContainer').innerText = '';
         document.getElementById('categoryContainer').innerText = '';
         document.getElementById('descriptionContainer').innerText = '';
 
+        // Validate name
         const name = document.getElementById('name').value.trim();
         if (name === '') {
             document.getElementById('nameContainer').innerText = 'Name is required.';
             isValid = false;
         }
 
+        // Validate price
         const price = document.getElementById('price').value.trim();
         if (price === '') {
             document.getElementById('priceContainer').innerText = 'Price is required.';
             isValid = false;
         } else if (isNaN(price) || parseFloat(price) <= 0) {
-            document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
+            document.getElementById('priceContainer').innerText = 'Please enter a valid positive price.';
             isValid = false;
         }
 
+        // Validate quantity
         const quantity = document.getElementById('quantity').value.trim();
         if (quantity === '') {
             document.getElementById('quantityContainer').innerText = 'Quantity is required.';
             isValid = false;
         } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
-            document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
+            document.getElementById('quantityContainer').innerText = 'Please enter a valid positive quantity.';
             isValid = false;
         }
 
+        // Validate category
         const category = document.getElementById('category').value;
         if (category === 'Choose...' || category === '') {
             document.getElementById('categoryContainer').innerText = 'Category is required.';
             isValid = false;
         }
 
+        // Validate description
         const description = document.getElementById('description').value.trim();
         if (description === '') {
             document.getElementById('descriptionContainer').innerText = 'Description is required.';
@@ -258,7 +280,21 @@
 
         return isValid;
     }
+
+    function validateImageCount() {
+    const imageCount = document.querySelectorAll('.image-wrapper').length;
+    const imageValidationMessage = document.getElementById('imageValidationMessage');
+    
+    if (imageCount === 0) {
+        imageValidationMessage.innerText = 'Please upload at least one image.';
+        return false;
+    } else if (imageCount > 4) {
+        imageValidationMessage.innerText = 'Maximum of 4 images allowed.';
+        return false;
+    } else {
+        imageValidationMessage.innerText = '';
+        return true;
+    }
+}
 </script>
-
-
 <%-include('../layouts/adminFooter')%>

@@ -19,13 +19,13 @@
             type:Number,
             required:true
         },
-        Inputimage:{
-            type:[{
-                filename:String,
-                path:String
+        Inputimage: {
+            type: [{
+                filename: String,
+                path: String
             }],
-            validate:[arraylimit,'{PATH} exceedes the limit of 4'],
-            required:true
+            validate: [arrayLimit, '{PATH} exceeds the limit of 4'],
+            required: true
         },
         description:{
             type:String,
@@ -52,7 +52,7 @@
 
     })
 
-    function arraylimit(val){
+    function arrayLimit(val) {
         return val.length <= 4;
     }
 

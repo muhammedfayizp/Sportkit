@@ -88,10 +88,6 @@ const insertProduct=async(req,res)=>{
     }
 } 
 
-
-
-
-
 const loadproductListUnlist=async (req,res)=>{
     try {
         const productid=req.query.productid
@@ -121,112 +117,75 @@ const loadProductEdit=async(req,res)=>{
         console.log(error);
     }
 }
-const imageRemove = async (req, res) => {
-    try {
-        const { productId, index } = req.body;
 
-        console.log('Received productId:', productId);
-        console.log('Received index:', index);
 
-        let product = await Product.findById(productId);
-
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-
-        product.Inputimage.splice(index, 1);
-
-        await product.save();
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error removing image:', error);
-        res.status(500).json({ error: 'Internal server error' });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/IMAGES');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
     }
-};
+});
 
-// const productEditing = async (req, res) => {
-//     try {
-//         const productId = req.query.id;
-//         const { name, price, quantity, category, description } = req.body;
-
-//         if (!category || category === "") {
-//             req.flash('errmsg', 'Please select a valid category.');
-//             return res.redirect(`/admin/editProduct?id=${productId}`);
-//         }
-
-//         let existProduct = await Product.findById(productId);
-//         let imageFiles = req.body.Inputimage;
-//         console.log('im'+imageFiles);
-
-//         existProduct.name = name;
-//         existProduct.price = price;
-//         existProduct.quantity = quantity;
-//         existProduct.category = category;
-//         existProduct.description = description;
-
-    
-
-//         if (imageFiles && imageFiles.length > 0) {
-//             let newImages = imageFiles.map(file => ({
-//                 filename: file.filename,
-//                 path: '/uploads/' + file.filename
-//             }));
-//             existProduct.Inputimage = [...newImages];
-//             console.log('inp'+newImages);
-//             console.log('ex'+existProduct.Inputimage);
-//         }
-//         await existProduct.save();
-
-//         req.flash('success', 'Product updating successful');
-//         res.redirect('/admin/productlist');
-//     } catch (error) {
-//         console.error(error);
-//     }
-// };
-
+const upload = multer({ storage: storage }).array('Inputimage', 10);
 
 const productEditing = async (req, res) => {
     try {
-        const productId = req.query.id;
-        const { name, price, quantity, category, description } = req.body;
+        upload(req, res, async function (error) {
+            if (error) {
+                return res.status(500).json({ success: false, message: 'Image upload failed' });
+            }
 
-        if (!category || category === "") {
-            req.flash('errmsg', 'Please select a valid category.');
-            return res.redirect(`/admin/editProduct?id=${productId}`);
-        }
+            const productId = req.query.id;
+            const { name, price, quantity, category, description} = req.body;
+            let {removedImages}=req.body
 
-        let existProduct = await Product.findById(productId);
+            if (!category || category === "") {
+                req.flash('errmsg', 'Please select a valid category.');
+                return res.redirect(`/admin/editProduct?id=${productId}`);
+            }
 
-        // Update product details
-        existProduct.name = name;
-        existProduct.price = price;
-        existProduct.quantity = quantity;
-        existProduct.category = category;
-        existProduct.description = description;
+            let existProduct = await Product.findById(productId);
 
-        // Handle image updates
-        if (req.files && req.files.length > 0) {
-            let newImages = req.files.map(file => ({
-                filename: file.filename,
-                path: '/uploads/' + file.filename
-            }));
-            existProduct.Inputimage = [...newImages];
-        }
+            existProduct.name = name;
+            existProduct.price = price;
+            existProduct.quantity = quantity;
+            existProduct.category = category;
+            existProduct.description = description;
 
-        // Save updated product
-        await existProduct.save();
+            if (removedImages) {
+                removedImages = JSON.parse(removedImages);
+                removedImages.forEach(index => {
+                    existProduct.Inputimage.splice(index, 1);
+                });
+            }
 
-        req.flash('success', 'Product updating successful');
-        res.redirect('/admin/productlist');
+            if (existProduct.Inputimage.length > 4) {
+                return res.status(400).json({ success: false, message: 'Maximum of 4 images allowed.' });
+            }
+
+            if (req.files && req.files.length > 0) {
+                const newImages = req.files.map(file => ({
+                    filename: file.filename,
+                    path: '/IMAGES/' + file.filename
+                }));
+
+                if (existProduct.Inputimage.length + newImages.length > 4) {
+                    return res.status(400).json({ success: false, message: 'Maximum of 4 images allowed.' });
+                }
+
+                existProduct.Inputimage.push(...newImages);
+            }
+
+            await existProduct.save();
+            res.json({ success: true });
+        });
     } catch (error) {
         console.error(error);
-        req.flash('errmsg', 'Failed to update product');
-        res.redirect(`/admin/editProduct?id=${productId}`);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 };
-
-
 
 
 
@@ -237,5 +196,4 @@ module.exports={
     loadproductListUnlist,
     loadProductEdit,
     productEditing,
-    imageRemove
 }

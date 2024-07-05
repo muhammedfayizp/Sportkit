@@ -227,13 +227,10 @@
                 let expiryDate = $('#coupon-Expiry-Date').val();
                 let currentDate = new Date().toISOString().split('T')[0]; 
                 let errorMessage = $('#error-message');
-
-                // Clear previous error message
                 errorMessage.text('');
 
-                // Validation
                 if (!minimumPrice || !discount || !expiryDate) {
-                    errorMessage.text('All fields are required.');
+                    errorMessage.text('All fields are empty.');
                     return;
                 }
 
@@ -277,11 +274,7 @@
                     }
                 })
                 .catch(error => {
-                    Swal.fire(
-                        'Error',
-                        'An error occurred while adding the coupon',
-                        'error'
-                    );
+                    console.log('Error',error);
                 });
             }
             </script>
@@ -302,7 +295,7 @@
         checkbox.addEventListener('change', () => {
             const couponId = checkbox.getAttribute('value');
             const isChecked = checkbox.checked;
-            fetch('/admin/statusChecked', {  // Ensure the URL is correct here
+            fetch('/admin/statusChecked', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

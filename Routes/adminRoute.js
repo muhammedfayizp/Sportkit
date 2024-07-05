@@ -27,7 +27,6 @@ admin_Route.get('/addProduct',adminAuth.isLogin,productController.loadAddProduct
 admin_Route.post('/insertProduct',productController.insertProduct)
 admin_Route.get('/productEdit',adminAuth.isLogin,productController.loadProductEdit)
 admin_Route.post('/editProduct',adminAuth.isLogin,productController.productEditing)
-admin_Route.post('/imageRemove',adminAuth.isLogin,productController.imageRemove)
 
 
 admin_Route.get('/categoryList',adminAuth.isLogin,CategoryController.loadCategory)
