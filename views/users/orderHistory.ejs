@@ -98,17 +98,72 @@
         text-align: center;
         margin-top: 1rem;
     }
+    .custom-pagination {
+        border-color: #333639 !important;
+    }
+    .custom-pagination .page-link {
+        color: #333639 !important;
+        background-color: #cad1dc !important;
+
+    }
 </style>
 
 
-    <div class="container-xl px-4 mt-4 mb-5">
-        <nav class="nav nav-borders">
-            <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
-            <a class="nav-link" href="/addressList" target="__blank">Address</a>
-            <a class="nav-link" href="/wallet" target="__blank">Wallet</a>
-            <a class="nav-link" href="/coupon" target="__blank">Coupons</a>
-            <a class="nav-link active ms-0" href="/orderHistoryList" target="__blank">Order History</a>
-        </nav>
+    <div class="container-xl px-4 mt-2 mb-5">
+        <div class="d-flex justify-content-between">
+            <nav class="nav nav-borders">
+                <a class="nav-link" href="/userProfile" target="__blank">Profile</a>
+                <a class="nav-link" href="/addressList" target="__blank">Address</a>
+                <a class="nav-link" href="/wallet" target="__blank">Wallet</a>
+                <a class="nav-link" href="/coupon" target="__blank">Coupons</a>
+                <a class="nav-link active ms-0" href="/orderHistoryList" target="__blank">Order History</a>
+            </nav>
+            
+            
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage > 3) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                        <% if (currentPage > 4) { %>
+                            <li class="page-item disabled custom-pagination">
+                                <span class="page-link">...</span>
+                            </li>
+                        <% } %>
+                    <% } %>
+
+                    <% for (var i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage < totalPages - 2) { %>
+                        <% if (currentPage < totalPages - 3) { %>
+                            <li class="page-item disabled custom-pagination">
+                                <span class="page-link">...</span>
+                            </li>
+                        <% } %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= totalPages %>"><%= totalPages %></a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
         <div class="row">
             <div class="col-md-6 col-xl-4 mb-4">
                 <div class="card">

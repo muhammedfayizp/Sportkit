@@ -236,5 +236,31 @@
     }
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var mobileMenuToggler = document.querySelector(".mobile-menu-toggler");
+        var mobileMenuContainer = document.querySelector(".mobile-menu-container");
+        var mobileMenuClose = document.querySelector(".mobile-menu-close");
+        var mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
+
+        mobileMenuToggler.addEventListener("click", function() {
+            mobileMenuContainer.classList.toggle("active");
+            mobileMenuOverlay.style.display = "block";
+        });
+
+        mobileMenuClose.addEventListener("click", function() {
+            mobileMenuContainer.classList.remove("active");
+            mobileMenuOverlay.style.display = "none";
+        });
+
+        mobileMenuOverlay.addEventListener("click", function(event) {
+            if (!event.target.matches('.mobile-menu-close')) {
+                mobileMenuContainer.classList.remove("active");
+                mobileMenuOverlay.style.display = "none";
+            }
+        });
+    });
+</script>
+
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

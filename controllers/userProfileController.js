@@ -221,19 +221,23 @@ const AddressEdit = async (req, res) => {
     }
 };
 
+
+
 const loadOrderHistory = async (req, res) => {
     try {
         const userId = req.session.user;
         const userData = await User.findOne({ _id: userId });
         const categories = await Category.find({ is_Listed: true });
-        let orders = await Order.find({ UserId: userId }).populate({
-            path: 'items.productId',
-            model: 'Product'
-        }).exec();
 
-        orders=[...orders].reverse()
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 2; 
+        const skip = (page - 1) * limit; 
 
-        res.render('orderHistory', { userData, categories, orders });
+        let orders = await Order.find({ UserId: userId }).populate('items.productId').sort({ createdAt: -1 }).skip(skip).limit(limit)
+    
+        const count = await Order.countDocuments({ UserId: userId });
+
+        res.render('orderHistory', { userData, categories, orders, currentPage: page, totalPages: Math.ceil(count / limit) });
     } catch (error) {
         console.log(error);
     }

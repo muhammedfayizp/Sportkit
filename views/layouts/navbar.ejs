@@ -1,37 +1,4 @@
 <style>
-    
-    .mobile-menu-container {
-    height: 500px; /* Set your desired height */
-    overflow: hidden; /* Hide the scrollbar */
-    margin-left: 79px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1001; /* Ensure the mobile menu is above other elements */
-    transform: translateX(-100%); /* Initially hide the menu */
-    transition: transform 0.3s ease-in-out;
-}
-
-.mobile-menu-container.active {
-    transform: translateX(0); /* Show the menu */
-}
-
-.mobile-menu-wrapper {
-    height: 100%; /* Ensure the wrapper takes the full height of the container */
-    display: flex;
-    flex-direction: column;
-}
-
-.mobile-menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none; /* Hide by default */
-    z-index: 1000; /* Ensure the overlay is below the menu but above other elements */
-}
 
 .header-bottom .main-nav .menu > li {
     position: relative;
@@ -63,6 +30,49 @@
 
     </style>
 
+
+<div class="mobile-menu-overlay"></div>
+<div class="mobile-menu-container">
+    <div class="mobile-menu-wrapper">
+        <span class="mobile-menu-close"><i class="icon-close"></i></span>
+        <form action="#" method="get" class="mobile-search">
+            <label for="mobile-search" class="sr-only">Search</label>
+            <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+        </form>
+        <nav class="mobile-nav ">
+            <ul class="mobile-menu ml-3">
+                <li><a href="/">Home</a></li>
+                <li>
+                    <a class="sf-with-ul" style="color: #000;">Category</a>
+                    <div class="megamenu">
+                        <div class="col-md-6">
+                            <ul>
+                                <% categories.forEach(category => { %>
+                                    <li>
+                                        <a href="<%= category.link %>">
+                                            <span><%= category.name %></span>
+                                        </a>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="/product">Product</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="social-icons">
+            <a class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+            <a class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+            <a class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+            <a class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+        </div>
+    </div>
+</div>
+</div>  
 <div class="page-wrapper">
     <!-- Header -->
     <header class="header header-6">
@@ -182,48 +192,6 @@
         </div>
     </header>
 
-    <div class="mobile-menu-overlay"></div>
-    <div class="mobile-menu-container">
-        <div class="mobile-menu-wrapper">
-            <span class="mobile-menu-close"><i class="icon-close"></i></span>
-            <form action="#" method="get" class="mobile-search">
-                <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
-                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-            </form>
-            <nav class="mobile-nav ">
-                <ul class="mobile-menu ml-3">
-                    <li><a href="/">Home</a></li>
-                    <li>
-                        <a class="sf-with-ul" style="color: #000;">Category</a>
-                        <div class="megamenu">
-                            <div class="col-md-6">
-                                <ul>
-                                    <% categories.forEach(category => { %>
-                                        <li>
-                                            <a href="<%= category.link %>">
-                                                <span><%= category.name %></span>
-                                            </a>
-                                        </li>
-                                    <% }); %>
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <li><a href="/product">Product</a></li>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                </ul>
-            </nav>
-            <div class="social-icons">
-                <a class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-                <a class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-                <a class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-                <a class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-            </div>
-        </div>
-    </div>
-</div>  
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
