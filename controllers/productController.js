@@ -49,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
+
 const insertProduct=async(req,res)=>{
     try {
         insert(req,res,async function(error){
@@ -87,6 +88,7 @@ const insertProduct=async(req,res)=>{
         console.log(error,'error while adding product');
     }
 } 
+
 
 const loadproductListUnlist=async (req,res)=>{
     try {

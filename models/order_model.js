@@ -88,9 +88,12 @@
             type:Number,
             default:0
         },
+        couponCode:{
+            type:Number
+        },
         discount:{
             type:Number
-        }
+        },
 
     })
 

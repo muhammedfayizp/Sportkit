@@ -13,7 +13,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Enter Product Details</h4>
-                        <form action="/admin/insertProduct" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        <form id="productForm" action="/admin/insertProduct" method="POST" enctype="multipart/form-data" onsubmit="return submitForm(event)">
                             <div class="form-body">
                                 <div class="form-group">
                                     <div class="row">
@@ -69,7 +69,7 @@
                                     <div class="row">
                                         <label class="col-lg-2" for="Inputimage">Images</label>
                                         <div class="col-lg-10">
-                                            <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
+                                            <input type="file" class="form-control-file" id="Inputimage" accept="image/*" name="Inputimage" multiple>
                                             <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
                                         </div>
                                     </div>
@@ -80,94 +80,92 @@
                                     <button type="submit" class="btn btn-info">Submit</button>
                                 </div>
                             </div>
-                        </form>                        
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-<link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css">
-<script src="https://unpkg.com/cropperjs"></script>
+<script defer src="https://cdn.crop.guide/loader/l.js?c=DSFJQL"></script>
 
 <script>
     function previewImage(input) {
-        const imagePreview = document.getElementById('imagePreview');
-        imagePreview.innerHTML = '';
+    const imagePreview = document.getElementById('imagePreview');
+    imagePreview.innerHTML = '';
 
-        if (input.files) {
-            Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
+    if (input.files) {
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
 
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.maxWidth = '100px';
-                    img.style.maxHeight = '100px';
-                    imagePreview.appendChild(img);
-                };
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+                img.className = 'm-1'; 
+                imagePreview.appendChild(img);
+            };
 
-                reader.readAsDataURL(file);
-            });
-        }
+            reader.readAsDataURL(file);
+        });
     }
+}
 
-    document.getElementById('Inputimage').addEventListener('change', function () {
-        previewImage(this);
-    });
+document.getElementById('Inputimage').addEventListener('change', function () {
+    previewImage(this);
+});
+
 </script>
 
 <script>
-    function validateForm() {
-    let isValid = true;
+function validateForm() {
+        let isValid = true;
 
-    document.getElementById('nameContainer').innerText = '';
-    document.getElementById('priceContainer').innerText = '';
-    document.getElementById('quantityContainer').innerText = '';
-    document.getElementById('categoryContainer').innerText = '';
-    document.getElementById('descriptionContainer').innerText = '';
+        document.getElementById('nameContainer').innerText = '';
+        document.getElementById('priceContainer').innerText = '';
+        document.getElementById('quantityContainer').innerText = '';
+        document.getElementById('categoryContainer').innerText = '';
+        document.getElementById('descriptionContainer').innerText = '';
 
-    const name = document.getElementById('name').value.trim();
-    if (name === '') {
-        document.getElementById('nameContainer').innerText = 'Name is required.';
-        isValid = false;
+        const name = document.getElementById('name').value.trim();
+        if (name === '') {
+            document.getElementById('nameContainer').innerText = 'Name is required.';
+            isValid = false;
+        }
+
+        const price = document.getElementById('price').value.trim();
+        if (price === '') {
+            document.getElementById('priceContainer').innerText = 'Price is required.';
+            isValid = false;
+        } else if (isNaN(price) || parseFloat(price) <= 0) {
+            document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
+            isValid = false;
+        }
+
+        const quantity = document.getElementById('quantity').value.trim();
+        if (quantity === '') {
+            document.getElementById('quantityContainer').innerText = 'Quantity is required.';
+            isValid = false;
+        } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
+            document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
+            isValid = false;
+        }
+
+        const category = document.getElementById('category').value;
+        if (category === '') {
+            document.getElementById('categoryContainer').innerText = 'Category is required.';
+            isValid = false;
+        }
+
+        const description = document.getElementById('description').value.trim();
+        if (description === '') {
+            document.getElementById('descriptionContainer').innerText = 'Description is required.';
+            isValid = false;
+        }
+
+        return isValid;
     }
-
-    const price = document.getElementById('price').value.trim();
-    if (price === '') {
-        document.getElementById('priceContainer').innerText = 'Price is required.';
-        isValid = false;
-    } else if (isNaN(price) || parseFloat(price) <= 0) {
-        document.getElementById('priceContainer').innerText = 'Please enter a positive price.';
-        isValid = false;
-    }
-
-    const quantity = document.getElementById('quantity').value.trim();
-    if (quantity === '') {
-        document.getElementById('quantityContainer').innerText = 'Quantity is required.';
-        isValid = false;
-    } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
-        document.getElementById('quantityContainer').innerText = 'Please enter a positive quantity.';
-        isValid = false;
-    }
-
-    const category = document.getElementById('category').value;
-    if (category === '') {
-        document.getElementById('categoryContainer').innerText = 'Category is required.';
-        isValid = false;
-    }
-
-    const description = document.getElementById('description').value.trim();
-    if (description === '') {
-        document.getElementById('descriptionContainer').innerText = 'Description is required.';
-        isValid = false;
-    }
-
-    return isValid;
-}
 </script>
-
 
 <%- include('../layouts/adminFooter') %>

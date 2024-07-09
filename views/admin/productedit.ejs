@@ -149,6 +149,8 @@
         </div>
     </div>   
 </div>
+<script defer src="https://cdn.crop.guide/loader/l.js?c=DSFJQL"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const imageWrappers = document.querySelectorAll('.image-wrapper');
@@ -175,13 +177,13 @@
             document.getElementById('addImageButton').style.display = 'none';
         }
 
-        validateImageCount(); // Call function to validate image count
+        validateImageCount();   
     } 
 
     document.getElementById('Inputimage').addEventListener('change', function() {
         previewImage(this, 'imagePreview');
         this.value = ''; 
-        validateImageCount(); // Call function to validate image count
+        validateImageCount();
     });
     
     document.getElementById('addImageButton').addEventListener('click', function(e) {
@@ -192,9 +194,8 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Validate form including images
         if (!validation() || !validateImageCount()) {
-            return; // Exit if validation fails
+            return;
         }
 
         const imagePreviews = document.querySelectorAll('.image-wrapper img');

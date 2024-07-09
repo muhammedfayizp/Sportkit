@@ -6,6 +6,7 @@ const Product=require('../models/product_model')
 const Cart=require('../models/cart_model')
 const Order=require('../models/order_model')
 const Wallet=require('../models/wallet-model')
+const Coupon=require('../models/coupon_model')
 
 const securePassword = async (password) => {
     try {
@@ -229,20 +230,24 @@ const loadOrderHistory = async (req, res) => {
         const userData = await User.findOne({ _id: userId });
         const categories = await Category.find({ is_Listed: true });
 
-        const page = parseInt(req.query.page) || 1; 
+        const page = parseInt(req.query.page) || 1;
         const limit = 2; 
         const skip = (page - 1) * limit; 
 
-        let orders = await Order.find({ UserId: userId }).populate('items.productId').sort({ createdAt: -1 }).skip(skip).limit(limit)
-    
         const count = await Order.countDocuments({ UserId: userId });
+        const totalPages = Math.ceil(count / limit);
 
-        res.render('orderHistory', { userData, categories, orders, currentPage: page, totalPages: Math.ceil(count / limit) });
+        const prevPage = page > 1 ? page - 1 : 1;
+        const nextPage = page < totalPages ? page + 1 : totalPages;
+
+        const orders = await Order.find({ UserId: userId }).populate('items.productId').sort({ currentDate: -1 }).skip(skip).limit(limit);
+
+        res.render('orderHistory', {userData,categories,orders,totalPages,prevPage,nextPage,currentPage: page});
     } catch (error) {
         console.log(error);
+        res.status(500).send('Server error');
     }
 };
-
 const loadOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -272,28 +277,32 @@ const cancelOrder = async (req, res) => {
         }
 
         const item = order.items.find(item => item.productId.toString() === productId);
-        if (!item) {
-            return res.json({ success: false, message: "Product not found in the order" });
-        }
+        
         item.status = 'Cancelled';
 
+        
+        if(order.discount){
+            order.totalAmount=order.totalAmount-((order.totalAmount*order.discount)/100)
+        }
+
         if (order.PaymentMethod !== 'cash-on-delivery') {
+
             if (!walletData) {
                 const walletMoney = new Wallet({
                     UserId: userId,
-                    balance: item.price * item.quantity,
+                    balance: order.totalAmount,
                     history: [{
-                        amount: item.price * item.quantity,
+                        amount: order.totalAmount,
                         transactionType: 'credit',
                         method: 'Order Cancelled',
-                        currentAmount: item.price * item.quantity
+                        currentAmount: order.totalAmount
                     }]
                 });
                 await walletMoney.save();
             } else {
-                walletData.balance += item.price * item.quantity;
+                walletData.balance += order.totalAmount;
                 walletData.history.push({
-                    amount: item.price * item.quantity,
+                    amount: order.totalAmount,
                     transactionType: 'credit',
                     method: 'Order Cancelled',
                     currentAmount: walletData.balance
@@ -430,7 +439,6 @@ const loadCoupon = async (req, res) => {
         const userId = req.session.user;
         const userData = await User.findOne({ _id: userId }).populate('coupon');
         let couponData = userData.coupon
-
 
         const categories = await Category.find({ is_Listed: true });
         res.render('coupon', { categories, userData, coupons: couponData });

@@ -5,6 +5,7 @@
     .offer-price {
         color: red;
     }
+
     .original-price {
         text-decoration: line-through;
     }
@@ -12,6 +13,24 @@
     .banner-lg video {
         width: 100%;
         height: 100%;
+    }
+
+    .banner-lg {
+        position: relative;
+    }
+
+    .banner-content {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        text-align: left;
+        padding-left: 20px; /* Add some padding if needed */
+    }
+
+    .banner-content img {
+        max-width: 100%;
+        height: auto;
     }
 
     .product-action a {
@@ -62,10 +81,8 @@
                 <video src="\user\assets\videos\home main video.mp4" type="video/mp4" autoplay loop muted></video>
             </a>
             <div class="banner-content">
-                <div class="text-center text-white font-weight-bold" style="width: 65%;">
-                    <img src="\user\assets\images\main image logo.png" alt="Logo">
-                </div>
-                <h4 class="banner-subtitle text-white font-weight-bold" style="margin-left: 50px;">Amazing Value</h4>
+                <img src="\user\assets\images\main image logo.png" alt="Logo" class="mb-4">
+                <h4 class="banner-subtitle text-white font-weight-bold mb-3">Amazing Value</h4>
                 <div class="border border-black rounded-lg p-3 pl-5 mt-3" style="border-width: 10px; width: 200px;">
                     <a href="/productDetails?id=66868afc640e4be98b340c86" class="banner-link font-weight-bold text-white">Shop Now<i class="icon-long-arrow-right"></i></a>
                 </div>
@@ -244,23 +261,17 @@
         var mobileMenuOverlay = document.querySelector(".mobile-menu-overlay");
 
         mobileMenuToggler.addEventListener("click", function() {
-            mobileMenuContainer.classList.toggle("active");
-            mobileMenuOverlay.style.display = "block";
+            mobileMenuContainer.classList.toggle("open");
         });
 
         mobileMenuClose.addEventListener("click", function() {
-            mobileMenuContainer.classList.remove("active");
-            mobileMenuOverlay.style.display = "none";
+            mobileMenuContainer.classList.remove("open");
         });
 
-        mobileMenuOverlay.addEventListener("click", function(event) {
-            if (!event.target.matches('.mobile-menu-close')) {
-                mobileMenuContainer.classList.remove("active");
-                mobileMenuOverlay.style.display = "none";
-            }
+        mobileMenuOverlay.addEventListener("click", function() {
+            mobileMenuContainer.classList.remove("open");
         });
     });
 </script>
-
 <%-include('../layouts/footbar') %>
 <%-include('../layouts/footer') %>

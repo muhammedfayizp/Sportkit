@@ -189,9 +189,8 @@ const placeOrder = async (req, res) => {
         const addressData = await Address.findOne({ 'address._id': addressId });
         const walletData = await Wallet.findOne({ UserId: userId });
         const addressDetails = addressData.address.find(address => address._id.equals(addressId));
-        
+        const cpId=await Coupon.findOne({couponId})
 
-        
 
         const orderId = orderIdgenerate();
         const newOrder = new Order({
@@ -235,6 +234,7 @@ const placeOrder = async (req, res) => {
             await discountRemoveing(req)
             await Cart.findOneAndUpdate({UserId:userId},{$set: {cartTotal:0,products:[]}});
             await User.findOneAndUpdate({_id:userId},{$pull:{coupon:couponId}});
+            req.session.couponId=null
             res.json({success:true});
         }
         } else if (paymentMethodType === 'Wallet') {
@@ -257,6 +257,7 @@ const placeOrder = async (req, res) => {
                 await discountRemoveing(req)
                 await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
                 await User.findOneAndUpdate({ _id: userId }, { $pull: { coupon: couponId } });
+                req.session.couponId=null
                 res.json({ success: true });
             
         }else if(paymentMethodType==='online-payment'){
@@ -265,6 +266,7 @@ const placeOrder = async (req, res) => {
             await discountRemoveing(req)
             await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
             await User.findOneAndUpdate({ _id: userId }, { $pull: { coupon: couponId } });
+            req.session.couponId=null
             res.json({success:true})
         }
         for (let item of cartData.products) {
@@ -354,8 +356,7 @@ const couponVerify = async (req, res) => {
     try {
         const userId = req.session.user;
         const {couponNumber} = req.body;
-        let couponCode = Number(couponNumber);
-        
+        let couponCode = Number(couponNumber);        
         const cartData=await Cart.findOne({UserId:userId});
         const userData=await User.findById(userId).populate('coupon');
 
