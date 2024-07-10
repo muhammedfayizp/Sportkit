@@ -846,41 +846,45 @@
                         },
                         body: body,
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Order Successful',
-                                    text: 'Your order was placed successfully!',
-                                }).then(() => {
-                                    window.location.href = '/';
-                                });
-                            } else if (data.message === 'not_available') {
-                                Swal.fire(
-                                    'error',
-                                    'cash on delivery not available for purchases above 2500',
-                                    'error'
-                                )
-
-
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Successful',
+                                text: data.message || 'Your order was placed successfully!',
+                            }).then(() => {
+                                window.location.href = '/';
+                            });
+                        } else {
+                            let title = 'Order Failed';
+                            let text = data.message;
+                            let icon = 'error';
+                            if (data.message === 'not_available') {
+                                title = 'Error';
+                                text = 'Cash on delivery not available for purchases above 2500';
                             } else if (data.message === 'no_wallet') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'No Wallet',
-                                    text: 'You have no wallet',
-                                });
+                                title = 'No Wallet';
+                                text = 'You have no wallet';
                             } else if (data.message === 'insufficient_balance') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Insufficient Balance',
-                                    text: `You don't have enough balance in your wallet.`,
-                                });
+                                title = 'Insufficient Balance';
+                                text = `You don't have enough balance in your wallet.`;
+                            } else if (data.message === 'your payment failed') {
+                                icon = 'info';
+                                text = 'Your payment failed';
                             }
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
+                            Swal.fire({
+                                icon: icon,
+                                title: title,
+                                text: text,
+                            }).then(() => {
+                                window.location.href = '/orderHistoryList';
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
                 }
 
                 let totalCartPrice = $('#cart-total-price').text().replace('₹', '').trim();

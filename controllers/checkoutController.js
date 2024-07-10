@@ -269,7 +269,11 @@ const placeOrder = async (req, res) => {
             await Cart.findOneAndUpdate({ UserId: userId }, { $set: { cartTotal: 0, products: [] } });
             await User.findOneAndUpdate({ _id: userId }, { $pull: { coupon: couponId } });
             req.session.couponId=null
-            res.json({success:true})
+            if (status === 'Failed') {
+                return res.json({ success: false, message: 'your payment failed' });
+            } else {
+                return res.json({ success: true, message: 'Your order was placed successfully!' });
+            }
         }
         for (let item of cartData.products) {
             const eachProduct = await Product.findById(item.productId);

@@ -170,7 +170,11 @@
                                                 <a href="/orderDetails?orderId=<%= order._id %>">
                                                     <button class="btn btn-primary">Order Details</button>
                                                 </a>
+                                                <% if(order.items.status =='Cancelled') {%>
+                                                    <strong class="mr-4">Total: ₹ 0</strong>
+                                                    <% } else{%>
                                                 <strong class="mr-4">Total: ₹<%= order.totalAmount %></strong>
+                                                <%}%>
                                             </td>
                                         </tr>
                                     </tbody>

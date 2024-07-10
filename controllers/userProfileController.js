@@ -282,7 +282,11 @@ const cancelOrder = async (req, res) => {
 
         
         if(order.discount){
-            order.totalAmount=order.totalAmount-((order.totalAmount*order.discount)/100)
+            let discountPrice=order.discount
+            console.log('discAmo'+discountPrice);
+            let dis=Math.floorapply(discountPrice/order.items.length)
+            console.log('diverded price'+dis);
+            order.totalAmount-=dis
         }
 
         if (order.PaymentMethod !== 'cash-on-delivery') {

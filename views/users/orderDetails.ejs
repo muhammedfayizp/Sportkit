@@ -229,7 +229,7 @@
                                                                                     id="downloadInvoice">Invoice</button>
                                                                             </div>
                                                                             <% } %>
-                                                                            <% if (order.paymentStatus === 'Failed') { %>
+                                                                            <% if (order.paymentStatus === 'Failed'&&item.status !=='Cancelled') { %>
                                                                                 <button class="btn btn-primary btn-sm ml-2" onclick="razorPay('<%= order.paymentStatus %>', '<%= order.orderId %>')">Repayment</button>
                                                                             <% } %>
 
@@ -237,17 +237,29 @@
                                                             </td>
                                                         </tr>
                                                         <% }) %>
-                                                            <tr class="d-flex flex-wrap text-right mt-5 mr-4">
+                                                        <tr class="d-flex flex-wrap text-right mt-5 mr-4">
+                                                                <% if(order.items.status =='Cancelled') { %>
+                                                                    <td class="col-12 col-sm-4 " colspan="3">
+                                                                        Delivery Charge: 0
+                                                                    </td>
+                                                                <% } else {%>
                                                                 <td class="col-12 col-sm-4 " colspan="3">
                                                                     Delivery Charge: <%= cartData.deliveryCharge ?
                                                                         cartData.deliveryCharge : 0 %>
                                                                 </td>
+                                                                <%} %>
                                                                 <td class="col-12 col-sm-4 " colspan="3">
                                                                     Discount: <%= order.discount ? order.discount : 0 %>
                                                                 </td>
+                                                                <% if(order.items.status =='Cancelled') { %>
+                                                                    <td class="col-12 col-sm-4" colspan="3" id="totalAmount">
+                                                                        Total : ₹ 0
+                                                                    </td>
+                                                                <% } else {%>
                                                                 <td class="col-12 col-sm-4" colspan="3" id="totalAmount">
                                                                     Total : ₹<%= order.totalAmount %>
                                                                 </td>
+                                                                <%} %>
                                                             </tr>
                                                 </tbody>
                                             </table>
