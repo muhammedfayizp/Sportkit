@@ -71,6 +71,8 @@
                                         <div class="col-lg-10">
                                             <input type="file" class="form-control-file" id="Inputimage" accept="image/*" name="Inputimage" multiple>
                                             <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
+                                            <button id="addImageButton" class="btn btn-primary mt-2" style="display: none;">Add Images</button>
+                                            <div id="imageValidationMessage" class="text-danger"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -90,33 +92,65 @@
 <script defer src="https://cdn.crop.guide/loader/l.js?c=DSFJQL"></script>
 
 <script>
-    function previewImage(input) {
+    document.getElementById('Inputimage').addEventListener('change', function(event) {
+    const files = event.target.files;
     const imagePreview = document.getElementById('imagePreview');
-    imagePreview.innerHTML = '';
+    imagePreview.innerHTML = ''; 
 
-    if (input.files) {
-        Array.from(input.files).forEach(file => {
-            const reader = new FileReader();
+    const existingImages = Array.from(document.querySelectorAll('.image-wrapper'));
+    existingImages.forEach(img => imagePreview.appendChild(img));
 
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100px';
-                img.style.maxHeight = '100px';
-                img.className = 'm-1'; 
-                imagePreview.appendChild(img);
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = 'image-wrapper mr-3 mb-3';
+            imageWrapper.dataset.index = i + existingImages.length; 
+
+            const closeButton = document.createElement('button');
+            closeButton.className = 'close-button';
+            closeButton.type = 'button';
+            closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+            closeButton.onclick = function() {
+                imageRemove(i + existingImages.length); 
             };
 
-            reader.readAsDataURL(file);
-        });
+            const img = document.createElement('img');
+            img.style.height = '100px';
+            img.style.maxWidth = '100px';
+            img.src = e.target.result;
+            img.alt = 'Product Image';
+
+            imageWrapper.appendChild(closeButton);
+            imageWrapper.appendChild(img);
+            imagePreview.appendChild(imageWrapper);
+        };
+
+        reader.readAsDataURL(file);
     }
-}
+        if (files.length > 0) {
+            document.getElementById('addImageButton').style.display = 'none';
+        }
+    });
 
-document.getElementById('Inputimage').addEventListener('change', function () {
-    previewImage(this);
-});
+    function imageRemove(index) {
+        const imagePreview = document.getElementById('imagePreview');
+        const imageWrapper = imagePreview.querySelector(`[data-index="${index}"]`);
+        if (imageWrapper) {
+            imageWrapper.remove();
+        }
 
+        if (imagePreview.children.length < 4) {
+        document.getElementById('addImageButton').style.display = 'block';
+    } else {
+        document.getElementById('addImageButton').style.display = 'none';
+    }
+    }
 </script>
+
+
 
 <script>
 function validateForm() {

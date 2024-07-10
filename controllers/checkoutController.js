@@ -23,6 +23,8 @@ const loadCheckout=async(req,res)=>{
         const populateCart = await Cart.findOne({ UserId: userId }).populate('products.productId')
         const categories=await Category.find({is_Listed:true})
         const addressData=await Address.findOne({UserId:userId})
+        const cp=await User.findOne({_id:userId}).populate('coupon');
+        const coupons=cp.coupon
         const totalCartPrice = populateCart.cartTotal;
         const cartData = populateCart ? populateCart.products : [];
         const discount=req.session.discount
@@ -33,7 +35,7 @@ const loadCheckout=async(req,res)=>{
             populateCart.deliveryCharge=0
         }
         await populateCart.save()
-        res.render('checkout',{userData,cartData,totalCartPrice,addressData,errormsg,categories,discount,discountAmount,deliveryCharge: populateCart.deliveryCharge})
+        res.render('checkout',{userData,cartData,totalCartPrice,addressData,errormsg,categories,discount,discountAmount,deliveryCharge: populateCart.deliveryCharge,coupons})
     } catch (error) {
         console.log(error);
     }

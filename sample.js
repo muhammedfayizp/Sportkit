@@ -1,5 +1,9 @@
-<td class="quantity-col">
-                                                        <div class="cart-product-quantity">
-                                                            <input type="number" id="quantity" class="form-control readonly-input" value="<%= products.quantity %>" min="1" max="<%= products.productId.quantity %>" step="1" data-decimals="0" required data-product-id="<%= products.productId._id %>" readonly>
-                                                        </div>
-                                                    </td>
+<div class="form-group">
+                                    <div class="row">
+                                        <label class="col-lg-2" for="Inputimage">Images</label>
+                                        <div class="col-lg-10">
+                                            <input type="file" class="form-control-file" id="Inputimage" accept="image/*" name="Inputimage" multiple>
+                                            <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
+                                        </div>
+                                    </div>
+                                </div>

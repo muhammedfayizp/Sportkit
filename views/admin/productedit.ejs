@@ -231,51 +231,44 @@
     function validation() {
         let isValid = true;
 
-        // Clear previous error messages
         document.getElementById('nameContainer').innerText = '';
         document.getElementById('priceContainer').innerText = '';
         document.getElementById('quantityContainer').innerText = '';
         document.getElementById('categoryContainer').innerText = '';
         document.getElementById('descriptionContainer').innerText = '';
 
-        // Validate name
         const name = document.getElementById('name').value.trim();
         if (name === '') {
-            document.getElementById('nameContainer').innerText = 'Name is required.';
+            document.getElementById('nameContainer').innerText = 'Name is emp.';
             isValid = false;
         }
 
-        // Validate price
         const price = document.getElementById('price').value.trim();
         if (price === '') {
-            document.getElementById('priceContainer').innerText = 'Price is required.';
+            document.getElementById('priceContainer').innerText = 'Price is emp.';
             isValid = false;
         } else if (isNaN(price) || parseFloat(price) <= 0) {
             document.getElementById('priceContainer').innerText = 'Please enter a valid positive price.';
             isValid = false;
         }
 
-        // Validate quantity
         const quantity = document.getElementById('quantity').value.trim();
         if (quantity === '') {
-            document.getElementById('quantityContainer').innerText = 'Quantity is required.';
+            document.getElementById('quantityContainer').innerText = 'Quantity is emp.';
             isValid = false;
         } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
             document.getElementById('quantityContainer').innerText = 'Please enter a valid positive quantity.';
             isValid = false;
         }
 
-        // Validate category
         const category = document.getElementById('category').value;
         if (category === 'Choose...' || category === '') {
-            document.getElementById('categoryContainer').innerText = 'Category is required.';
+            document.getElementById('categoryContainer').innerText = 'Category is emp.';
             isValid = false;
         }
 
-        // Validate description
-        const description = document.getElementById('description').value.trim();
         if (description === '') {
-            document.getElementById('descriptionContainer').innerText = 'Description is required.';
+            document.getElementById('descriptionContainer').innerText = 'Description is emp.';
             isValid = false;
         }
 
