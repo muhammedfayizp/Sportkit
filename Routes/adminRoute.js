@@ -51,6 +51,7 @@ admin_Route.post('/changeCatgStatus',adminAuth.isLogin,adminController.catgOffer
 
 admin_Route.get('/couponPage',adminAuth.isLogin,adminController.loadCouponPage)
 admin_Route.post('/addCoupon',adminAuth.isLogin,adminController.couponAdding)
+admin_Route.post('/editCoupon',adminAuth.isLogin,adminController.couponEdit)
 admin_Route.post('/statusChecked',adminAuth.isLogin,adminController.statusChecked);
 
 admin_Route.get('/sales',adminAuth.isLogin,adminController.loadSalesReport)

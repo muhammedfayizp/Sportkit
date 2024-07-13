@@ -11,16 +11,14 @@
                                     <h5 class="m-b-10">Category Offer</h5>
                                 </div>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item">Dashboard</li>
+                                    <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
                                     <li class="breadcrumb-item">category-offers</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="container" style="display: flex; justify-content: right; margin-top:45px;">
-                    <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Offer+</a>
-                </div>
+                
                 <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -62,7 +60,7 @@
                     </div>
                 </div>
             </div>
-                <div class="row">
+                <div class="row" style="margin-top: 40px;">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
@@ -122,6 +120,9 @@
                     </div>
                 </div>        
 
+                <div class="container" style="display: flex; justify-content: right;">
+                    <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Offer+</a>
+                </div>
                     
                         <script>
                             function changeOfferStatus(catgofferId){

@@ -8,13 +8,20 @@ const { find, findById } = require('../models/cart_model')
 const { response } = require('../Routes/userRoute')
 const app=express()
 
-const loadProductlist=async(req,res)=>{
+const loadProductlist = async (req, res) => {
     try {
-        let productData=await Product.find().populate('category','name').populate('offers')
-        productData=[...productData].reverse()
-        let success=req.flash('success')
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 8; 
+        const skip = (page - 1) * limit; 
 
-        res.render('productlist',{productData,success})
+        const totalProducts = await Product.countDocuments(); 
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        let productData = await Product.find().populate('category', 'name').populate('offers').skip(skip).limit(limit);
+
+        let success = req.flash('success');
+        
+        res.render('productlist', {productData,success,currentPage: page,totalPages});
     } catch (error) {
         console.log(error);
     }

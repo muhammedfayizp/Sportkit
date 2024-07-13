@@ -1,178 +1,216 @@
-<%-include('../layouts/adminHeader')%>
-    <%-include('../layouts/adminSidebar')%>
-    <div class="pc-container" style="background-color: rgb(234, 230, 230);">
-        <div class="pcoded-content">
-            <div class="row">
-                <div class="col-md-6 col-xl-6 mb-4">
-                    <div class="card">
-                        <div class="card-header text-center">Order Details</div>
-                        <div class="row g-2">
-                            <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12 mx-auto ">
-                                <div class="card-body d-flex justify-content-center">
-                                    <h6>Delivery Address</h6>
-                                </div>
-                                    <div class="ml-3">
-                                        <% if (orders && orders.length > 0) { %>
-                                            <% orders.forEach(order => { %>
-                                                <% if (order.addressDetails ) { %>
-                                                        <p> <%= order.addressDetails.name %></p>
-                                                        <p> <%= order.addressDetails.pincode %></p>
-                                                        <p> <%= order.addressDetails.state %></p>
-                                                        <p> <%= order.addressDetails.dist %></p>
-                                                        <p><%= order.addressDetails.city %></p>
-                                                        <p> <%= order.addressDetails.houseName %></p>
-                                                        <p> <%= order.addressDetails.houseNo %></p>
-                                                    
-                                                <% } %>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <p>No orders found.</p>
-                                        <% } %>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="card-body d-flex justify-content-center">
-                                    <h6>Order info</h6>
-                                </div>
-                                <div>
-                                    <% if (orders && orders.length > 0) { %>
-                                        <% orders.forEach(order => { %>
-                                            <p><%= order.currentDate %></p>
-                                            <p>Order Id : <%= order.orderId %></p>
-                                            <p>Payment Method : <%= order.PaymentMethod %></p>
-                                            <% if (order.UserId) { %>
-                                                <p>Mobile: <%= order.UserId.mobile %></p>
-                                                <p><%= order.UserId.email %></p>
-                                            <% } %>
-                                        <% }); %>
-                                    <% } %>
-                                </div>
-                            </div>
-                            
-                        </div>
+<%- include('../layouts/adminHeader') %>
+<%- include('../layouts/adminSidebar') %>
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; 
+    }
+
+    table {
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+
+    td, th {
+        padding: 8px;
+        text-align: left; 
+    }
+
+    img {
+        max-width: 100%;
+        height: auto; 
+    }
+
+    @media (max-width: 767px) {
+        table, thead, tbody, th, td, tr {
+            display: block; 
+        }
+
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr {
+            margin: 0 0 1rem 0; 
+        }
+
+        td {
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%; 
+        }
+
+        td:before {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 45%; 
+            padding-right: 10px;
+            white-space: nowrap;
+            content: attr(data-label);
+            font-weight: bold;
+        }
+    }
+</style>
+
+<div class="pc-container" style="background-color: rgb(234, 230, 230);">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header text-center">Order Details</div>
+                    <div class="card-body">
+                        <% if (orders && orders.length > 0) { %>
+                            <% orders.forEach(order => { %>
+                                <% if (order.addressDetails) { %>
+                                    <p>Name: <%= order.addressDetails.name %></p>
+                                    <p>Pincode: <%= order.addressDetails.pincode %></p>
+                                    <p>State: <%= order.addressDetails.state %></p>
+                                    <p>District: <%= order.addressDetails.dist %></p>
+                                    <p>City: <%= order.addressDetails.city %></p>
+                                    <p>House No: <%= order.addressDetails.houseNo %></p>
+                                <% } %>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No orders found.</p>
+                        <% } %>
                     </div>
                 </div>
-                <div class="col-md-6 col-xl-6">
-                    <div class="card">
-                        <div class="card-header">My Orders</div>
-                            <% if (orders && orders.length > 0) { %> 
-                                <% orders.forEach(order => { %>
-                                    <div>
-                                        <table class="table table-cart table-mobile">
-                                            <tbody>
-                                                <% order.items.forEach(item => { %>
-                                                    <tr>
-                                                        <td>
-                                                            <% if (item.productId && item.productId.Inputimage && item.productId.Inputimage.length > 0) { %>
-                                                                <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="max-width: 60px; max-height: 60px;">
-                                                            <% } else { %>
-                                                                <img src="/IMAGES/default.jpg" alt="default image" style="max-width: 60px; max-height: 60px;">
-                                                            <% } %>
-                                                        </td>
-                                                        <td data-label="Product Name"><%= item.productId ? item.productId.name : 'Unknown Product' %></td>
-                                                        <td class="price-col" data-label="Price">$<%= order.totalAmount %></td>
-                                                        <td data-label="Quantity">Qty : <%= item.quantity %></td>
-                                                        <td data-label="Payment Method"><%= order.PaymentMethod %></td>
-                                                    </tr>
-                                                <% }) %>
-                                                <% order.items.forEach(item => { %>
-                                                    <% if (item.status == 'Delivered' && order.approvel == 1) { %>
-                                                        <tr>
-                                                            <td colspan="5" class="text-center">
-                                                                <p>Reason : <%= item.reason %></p>
-                                                                <button class="btn btn-success" onclick="approvelfun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">approve</button>
-                                                                <button class="btn btn-dark" onclick="declinefun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">decline</button>
-                                                            </td>
-                                                        </tr>
-                                                    <% } %>
-                                                <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <hr>
-                                <% }) %>
-                            <% } else { %>
-                                <p>Your order history is empty.</p>
-                            <% } %>
-                        </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">Order Info</div>
+                    <div class="card-body">
+                        <% if (orders && orders.length > 0) { %>
+                            <% orders.forEach(order => { %>
+                                <p>Date: <%= new Date(order.currentDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) %></p>
+                                <p>Order Id: <%= order.orderId %></p>
+                                <p>Payment Method: <%= order.PaymentMethod %></p>
+                                <% if (order.UserId) { %>
+                                    <p>Mobile: <%= order.UserId.mobile %></p>
+                                    <p>Email: <%= order.UserId.email %></p>
+                                <% } %>
+                            <% }); %>
+                        <% } %>
+                    </div>
                 </div>
-                
+            </div>
+            
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">My Orders</div>
+                    <% if (orders && orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                            <div class="table-responsive">
+                                <table class="table table-cart table-mobile">
+                                    <tbody>
+                                        <% order.items.forEach(item => { %>
+                                            <tr>
+                                                <td>
+                                                    <% if (item.productId && item.productId.Inputimage && item.productId.Inputimage.length > 0) { %>
+                                                        <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" style="max-width: 60px; max-height: 60px;" class="img-fluid">
+                                                    <% } else { %>
+                                                        <img src="/IMAGES/default.jpg" alt="default image" style="max-width: 60px; max-height: 60px;" class="img-fluid">
+                                                    <% } %>
+                                                </td>
+                                                <td><%= item.productId ? item.productId.name : 'Unknown Product' %></td>
+                                                <td>₹<%= order.totalAmount %></td>
+                                                <td>Qty: <%= item.quantity %></td>
+                                                <td><%= order.PaymentMethod %></td>
+                                            </tr>
+                                            <% if (item.status == 'Delivered' && order.approvel == 1) { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">
+                                                        <p>Reason: <%= item.reason %></p>
+                                                        <button class="btn btn-success" onclick="approvelfun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">Approve</button>
+                                                        <button class="btn btn-dark" onclick="declinefun('<%= order._id %>', '<%= item.productId ? item.productId._id : '' %>')">Decline</button>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr>
+                        <% }); %>
+                    <% } else { %>
+                        <p>Your order history is empty.</p>
+                    <% } %>
+                </div>
             </div>
         </div>
-        </div>
-    </div>        
+    </div>
+</div>
 
-    <script>
-        function approvelfun(orderId,productId){
-            Swal.fire({
-                title:'Are You Sure ?',
-                icon:'question',
-                showCancelButton:true,
-                confirmButtonColor:'#3085d6',
-                cancelButtonColor:'#d33',
-                confirmButtonText:`Yes`
-            })
-            .then((result) => {
-                if(result.isConfirmed){
-                    fetch('/admin/returnApproved',{
-                        method:'POST',
-                        headers:{
-                            'Content-Type':'application/json'
-                        },
-                        body:JSON.stringify({orderId,productId})
-                    })
-                    .then(response=>response.json())
-                    .then(data=>{
-                        if (data.success) {
-                            Swal.fire(
-                                'Approved',
-                                'Return request successfully approved',
-                                'success'
-                            )
-                            .then(()=>{
-                                window.location.reload()
-                            })
-                        }
-                    })
-                }
-            })
-        }
-    </script>
+<script>
+    function approvelfun(orderId, productId) {
+        Swal.fire({
+            title: 'Are You Sure?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/admin/returnApproved', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId, productId })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Approved',
+                            'Return request successfully approved',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
 
-    <script>
-        function declinefun(orderId,productId){
-            Swal.fire({
-                title:'Are You Sure ?',
-                icon:'question',
-                showCancelButton:true,
-                confirmButtonColor:'#3085d6',
-                cancelButtonColor:'#d33',
-                confirmButtonText:`Yes`
-            })
-            .then((result)=>{
-                if(result.isConfirmed){
-                    fetch('/admin/returnDeclined',{
-                        method:'POST',
-                        headers:{
-                            'Content-Type':'application/json'
-                        },
-                        body:JSON.stringify({orderId,productId})
-                    })
-                    .then(response=>response.json())
-                    .then(data=>{
-                        if(data.success){
-                            Swal.fire(
-                                'Declined',
-                                'Return request has been declined',
-                                'success'
-                            )
-                            .then(()=>{
-                                window.location.reload()
-                            })
-                        }
-                    })
-                }
-            })
-        }
-    </script>
-    <%- include('../layouts/adminFooter') %>
+    function declinefun(orderId, productId) {
+        Swal.fire({
+            title: 'Are You Sure?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/admin/returnDeclined', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId, productId })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Declined',
+                            'Return request has been declined',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<%- include('../layouts/adminFooter') %>

@@ -265,6 +265,68 @@ const loadOrderDetails = async (req, res) => {
 
 
 
+// const cancelOrder = async (req, res) => {
+//     try {
+//         const { orderId, productId } = req.body;
+//         const userId = req.session.user;
+//         const walletData = await Wallet.findOne({ UserId: userId });
+//         const order = await Order.findOne({ _id: orderId, 'items.productId': productId }).populate('items');
+
+//         if (!order) {
+//             return res.json({ success: false, message: "Order not found" });
+//         }
+
+//         const item = order.items.find(item => item.productId.toString() === productId);
+        
+//         item.status = 'Cancelled';
+
+        
+//         if(order.discount){
+//             let discountPrice=order.discount
+//             console.log('discAmo'+discountPrice);
+//             let dis=Math.floorapply(discountPrice/order.items.length)
+//             console.log('diverded price'+dis);
+//             order.totalAmount-=dis
+//         }
+
+//         if (order.PaymentMethod !== 'cash-on-delivery') {
+
+//             if (!walletData) {
+//                 const walletMoney = new Wallet({
+//                     UserId: userId,
+//                     balance: order.totalAmount,
+//                     history: [{
+//                         amount: order.totalAmount,
+//                         transactionType: 'credit',
+//                         method: 'Order Cancelled',
+//                         currentAmount: order.totalAmount
+//                     }]
+//                 });
+//                 await walletMoney.save();
+//             } else {
+//                 walletData.balance += order.totalAmount;
+//                 walletData.history.push({
+//                     amount: order.totalAmount,
+//                     transactionType: 'credit',
+//                     method: 'Order Cancelled',
+//                     currentAmount: walletData.balance
+//                 });
+//                 await walletData.save();
+//             }
+//         }
+
+        
+//             const productData = await Product.findById(item.productId);
+//             productData.quantity += item.quantity;
+//             order.totalAmount-=item.price
+//             await order.save();
+//             await productData.save();
+//         return res.json({ success: true, message: 'Order cancelled successfully' });
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+
 const cancelOrder = async (req, res) => {
     try {
         const { orderId, productId } = req.body;
@@ -280,17 +342,15 @@ const cancelOrder = async (req, res) => {
         
         item.status = 'Cancelled';
 
-        
-        if(order.discount){
-            let discountPrice=order.discount
-            console.log('discAmo'+discountPrice);
-            let dis=Math.floorapply(discountPrice/order.items.length)
-            console.log('diverded price'+dis);
-            order.totalAmount-=dis
+        if (order.discount) {
+            let discountPrice = order.discount;
+            console.log('discAmo' + discountPrice);
+            let dis = Math.floor(discountPrice / order.items.length);
+            console.log('divided price' + dis);
+            order.totalAmount -= dis;
         }
 
         if (order.PaymentMethod !== 'cash-on-delivery') {
-
             if (!walletData) {
                 const walletMoney = new Wallet({
                     UserId: userId,
@@ -315,12 +375,12 @@ const cancelOrder = async (req, res) => {
             }
         }
 
+        const productData = await Product.findById(item.productId);
+        productData.quantity += item.quantity;
+        order.totalAmount -= item.price;
+        await order.save();
+        await productData.save();
         
-            const productData = await Product.findById(item.productId);
-            productData.quantity += item.quantity;
-            order.totalAmount-=item.price
-            await order.save();
-            await productData.save();
         return res.json({ success: true, message: 'Order cancelled successfully' });
     } catch (error) {
         console.error(error);
@@ -438,18 +498,46 @@ const moneyWithdrw=async(req,res)=>{
     }
 }
 
+// const loadCoupon = async (req, res) => {
+//     try {
+//         const userId = req.session.user;
+//         const userData = await User.findOne({ _id: userId }).populate('coupon');
+//         let couponData = userData.coupon
+
+//         const categories = await Category.find({ is_Listed: true });
+//         res.render('coupon', { categories, userData, coupons: couponData });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
 const loadCoupon = async (req, res) => {
     try {
         const userId = req.session.user;
+        const page = parseInt(req.query.page) || 1; // Get the current page from query parameters, default to 1
+        const couponsPerPage = 6; // Set the number of coupons per page
+
         const userData = await User.findOne({ _id: userId }).populate('coupon');
-        let couponData = userData.coupon
+        let couponData = userData.coupon;
+
+        const totalCoupons = couponData.length;
+        const totalPages = Math.ceil(totalCoupons / couponsPerPage);
+
+        // Get the subset of coupons for the current page
+        const coupons = couponData.slice((page - 1) * couponsPerPage, page * couponsPerPage);
 
         const categories = await Category.find({ is_Listed: true });
-        res.render('coupon', { categories, userData, coupons: couponData });
+        res.render('coupon', {
+            categories,
+            userData,
+            coupons,
+            currentPage: page,
+            totalPages,
+        });
     } catch (error) {
         console.log(error);
     }
 };
+
 
 
 module.exports = {

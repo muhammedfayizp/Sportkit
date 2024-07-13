@@ -30,10 +30,19 @@ const loadAdminLogin = async (req, res) => {
     }
 }
 
+
+
 const loadUserlist = async (req, res) => {
     try {
-        const users = await User.find()
-        res.render('userlist', { users })
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
+
+        const users = await User.find().skip(skip).limit(limit);
+        const totalUsers = await User.countDocuments();
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        res.render('userlist', { users, currentPage: page, totalPages });
     } catch (error) {
         console.log(error);
     }
@@ -219,10 +228,18 @@ const catgOfferStatus = async (req, res) => {
     }
 }
 
+
 const loadCouponPage = async (req, res) => {
     try {
-        const coupon = await Coupon.find()
-        res.render('couponPage', { coupon })
+        const perPage = 6;
+        const page = parseInt(req.query.page) || 1;
+
+        const totalCoupons = await Coupon.countDocuments();
+        const totalPages = Math.ceil(totalCoupons / perPage);
+
+        const coupons = await Coupon.find().skip((perPage * page) - perPage).limit(perPage);
+
+        res.render('couponPage', {coupons,currentPage: page,totalPages,perPage});
     } catch (error) {
         console.log(error);
     }
@@ -267,91 +284,104 @@ const statusChecked = async (req, res) => {
     }
 };
 
+const couponEdit=async(req,res)=>{
+    try {
+        const {couponId,minimumPrice,discount,expDate}=req.body
+         const expiryDate = new Date(expDate);
+         console.log(typeof(expiryDate));
+        const couponData=await Coupon.findOneAndUpdate({_id:couponId},{$set:{minimumPrice:minimumPrice,discount:discount,expiryDate:expiryDate}})
+        await couponData.save()
+        res.json({success:true,coupon: couponData})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const loadSalesReport = async (req, res) => {
     try {
- 
         const page = parseInt(req.query.page) || 1;
-        const limit = 10; 
+        const limit = 10;
         const skip = (page - 1) * limit;
 
-        const fullData= await Order.find().populate('items.productId').sort({currentDate:-1})
-        let orderData = await Order.find().populate('items.productId').skip(skip).limit(limit);
-        const totalOrders = await Order.countDocuments(orderData);
-        const totalPages = Math.ceil(totalOrders / limit);
+        let orderData;
+        let subTotalInitial = 0; 
+        let discountInitial = 0; 
+        let subTotalFiltered = 0; 
+        let discountFiltered = 0;
+        let Details = null; 
 
-        orderData = [...orderData].reverse();
-        let subTotal = 0;
-        let Discount = 0;
-
-        orderData.forEach(order => {
+        const allOrders = await Order.find().populate('items.productId');
+        allOrders.forEach(order => {
             order.items.forEach(item => {
-                subTotal += item.price * item.quantity;
+                subTotalInitial += item.price * item.quantity;
             });
             if (order.discount) {
-                Discount += order.discount;
+                discountInitial += order.discount;
             }
         });
 
-        const type = req.query.type;
-        let Details;
-
-        if (type) {
+        if (req.query.type) {
             const today = new Date();
-            let startDate;
-            let endDate = new Date(today.setHours(23, 59, 59, 999));
+            let startDate, endDate;
 
-            if (type === 'today') {
-                startDate = new Date(today.setHours(0, 0, 0, 0));
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
-            } else if (type === 'last-week') {
-                startDate = new Date(today.setDate(today.getDate() - 7));
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
-            } else if (type === 'last-month') {
-                startDate = new Date(today.setMonth(today.getMonth() - 1));
-                Details = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit);
+            switch (req.query.type) {
+                case 'today':
+                    startDate = new Date(today.setHours(0, 0, 0, 0));
+                    endDate = new Date(today.setHours(23, 59, 59, 999));
+                    break;
+                case 'last-week':
+                    startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    endDate = new Date(today.setHours(23, 59, 59, 999));
+                    break;
+                case 'last-month':
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59, 999);
+                    break;
+                default:
+                    break;
             }
 
-            subTotal = 0;
-            Discount = 0;
-
-            Details.forEach(order => {
-                order.items.forEach(val => {
-                    subTotal += val.price * val.quantity;
-                });
-                if (order.discount) {
-                    Discount += order.discount;
-                }
-            });
-        }
-
-        const startingDate = req.query.startDate;
-        const endingDate = req.query.endDate;
-
-        if (startingDate && endingDate) {
-            const start = new Date(startingDate.split('/').reverse().join('-'));
-            const end = new Date(endingDate.split('/').reverse().join('-'));
-
-            end.setDate(end.getDate() + 1);
-
-            orderData = await Order.find({ currentDate: { $gte: start.toISOString(), $lt: end.toISOString() } }).populate('items.productId');
-
-            let subTotal = 0;
-            let Discount = 0;
+            orderData = await Order.find({ currentDate: { $gte: startDate, $lt: endDate } }).populate('items.productId').skip(skip).limit(limit).sort({ currentDate: -1 });
 
             orderData.forEach(order => {
                 order.items.forEach(item => {
-                    subTotal += item.price * item.quantity;
+                    subTotalFiltered += item.price * item.quantity;
                 });
                 if (order.discount) {
-                    Discount += order.discount;
+                    discountFiltered += order.discount;
                 }
             });
+
+            Details = orderData;
+
+        } else if (req.query.startDate && req.query.endDate) {
+            const start = new Date(req.query.startDate);
+            const end = new Date(req.query.endDate);
+
+            orderData = await Order.find({ currentDate: { $gte: start, $lt: end } }).populate('items.productId').skip(skip).limit(limit).sort({ currentDate: -1 });
+
+            orderData.forEach(order => {
+                order.items.forEach(item => {
+                    subTotalFiltered += item.price * item.quantity;
+                });
+                if (order.discount) {
+                    discountFiltered += order.discount;
+                }
+            });
+
+            Details = orderData; 
+
+        } else {
+            orderData = await Order.find().populate('items.productId').skip(skip).limit(limit).sort({ currentDate: -1 });
         }
 
-        let prevPage = page > 1 ? page - 1 : 1;
-        let nextPage = page < totalPages ? page + 1 : totalPages;
+        const totalOrders = await Order.countDocuments();
+        const totalPages = Math.ceil(totalOrders / limit);
+        const currentPage = page;
+        const prevPage = currentPage > 1 ? currentPage - 1 : 1;
+        const nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
 
-        res.render('salesReport', { orderData, fullData, subTotal, Discount, Details, currentPage: page, totalPages, prevPage, nextPage });
+        res.render('salesReport', {orderData, subTotalInitial,discountInitial,subTotalFiltered,discountFiltered,Details,currentPage,totalPages,prevPage, nextPage,req,query: req.query});
 
     } catch (error) {
         console.log(error);
@@ -469,7 +499,9 @@ module.exports = {
     catgOfferStatus,
     loadCouponPage,
     couponAdding,
+    couponEdit,
     statusChecked,
     loadSalesReport,
-    chartController
+    chartController,
+
 }

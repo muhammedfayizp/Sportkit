@@ -6,14 +6,20 @@ const categoryOffer = require('../models/categoryOffer_model')
 
 const loadCategory = async (req, res) => {
     try {
-        const categoriesData = await Category.find().populate('offers');
-        let success = req.flash('success')
-        res.render('categoryList', { success, categoriesData, })
+        const page = parseInt(req.query.page) || 1; 
+        const perPage = 7; 
+        
+        const categoriesData = await Category.find().populate('offers').skip((page - 1) * perPage).limit(perPage);
+        
+        const totalCount = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCount / perPage);
+
+        let success = req.flash('success');
+        res.render('categoryList', { success, categoriesData, currentPage: page, totalPages });
     } catch (error) {
         console.log(error);
     }
 }
-
 const loadAddingCategory = async (req, res) => {
     try {
         let errmsg = req.flash('errmsg')

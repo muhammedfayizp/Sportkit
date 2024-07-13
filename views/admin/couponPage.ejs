@@ -125,16 +125,14 @@
                                 <h5 class="m-b-10">Coupon</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
                                 <li class="breadcrumb-item">coupon</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="container" style="display: flex; justify-content: right; margin-top:45px;">
-                <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Coupon+</a>
-            </div>
+           
             <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -172,17 +170,16 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
+            <div class="container" style="margin-top: 40px;">
                 <div class="card">
-                    <h4 class="card-title p-3">Offers</h4>
-                    <% if (coupon && coupon.length > 0) { %>
+                    <h4 class="card-title p-3">Coupons</h4>
+                    <% if (coupons && coupons.length > 0) { %>
                         <div class="row">
-                            <% coupon.forEach((item, index) => { %>
+                            <% coupons.forEach((item, index) => { %>
                                 <div class="col-lg-4 col-md-6 mb-4 d-flex flex-column align-items-center">
                                     <div class="card-body">
                                         <div class="text-center">
                                             <div class="d-flex flex-row text-center">
-                                                <!-- <img src="https://i.imgur.com/bIgSEvT.png" width="70" height="70" > -->
                                                 <div class="d-flex flex-column text-center text-white ">
                                                     <span>min purchase:</span>
                                                     <span>₹<%= item.minimumPrice %></span>
@@ -206,16 +203,78 @@
                                                 <input class="form-check-input" type="checkbox" id="flexSwitchChecked-<%= item._id %>" value="<%= item._id %>" <%= item.is_active ? 'checked' : '' %>>
                                             </div>
                                         </div>
-                                        <p class="d-flex justify-content-end mt-4">Exp: <%= new Date(item.expiryDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></p>
+                                        <div class="row">
+                                            <div class="col-6 mt-3">
+                                                <a id="updateLink<%= item._id %>" class="update-link" data-coupon-id="<%= item._id %>" data-minimum-price="<%= item.minimumPrice %>" data-discount="<%= item.discount %>" data-expiry-date="<%= new Date(item.expiryDate).toLocaleDateString('en-IN') %>">Update</a>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="d-flex justify-content-end mt-3">Exp: <%= new Date(item.expiryDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="updateModal<%= item._id %>" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel<%= item._id %>" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="updateModalLabel<%= item._id %>">Update Item</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form class="update-form" data-coupon-id="<%= item._id %>">
+                                                    <div id="update-error-message-<%= item._id %>" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
+                                                    <div class="form-group">
+                                                        <label for="input1">Minimum Price</label>
+                                                        <input type="text" class="form-control" id="input1" name="minimumPrice" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="input2">Discount</label>
+                                                        <input type="text" class="form-control" id="input2" name="discount" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="input3">Expiry Date</label>
+                                                        <input type="date" class="form-control" id="input3" name="expiryDate" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             <% }) %>
                         </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination m-3">
+                                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                    <a class="page-link page-link-prev" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                        <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span> Prev
+                                    </a>
+                                </li>
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link page-link-next" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                        Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     <% } else { %>
-                        <p>Coupon not available</p>
+                        <p class="ml-3">Coupon not available</p>
                     <% } %>
                 </div>
             </div>
+
+            <div class="container" style="display: flex; justify-content: right; margin-top:30x;">
+                <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#offerModal">Add New Coupon+</a>
+            </div>
+
+          
             
 
             
@@ -290,34 +349,128 @@
                 }
             </script>
 
-<script>
-    document.querySelectorAll('.form-check-input').forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const couponId = checkbox.getAttribute('value');
-            const isChecked = checkbox.checked;
-            fetch('/admin/statusChecked', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ isChecked, couponId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const statusElement = document.getElementById(`status-${couponId}`);
-                if (data.success) {
-                    statusElement.textContent = isChecked ? 'Active' : 'Inactive';
-                    Swal.fire('Success', `Coupon is ${isChecked ? 'active' : 'inactive'}`, 'success');
-                } else {
-                    Swal.fire('Error', 'Coupon status change failed', 'error');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-        });
-    });
-    </script>
-    
+            <script>
+                document.querySelectorAll('.form-check-input').forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const couponId = checkbox.getAttribute('value');
+                        const isChecked = checkbox.checked;
+                        fetch('/admin/statusChecked', { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ isChecked, couponId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const statusElement = document.getElementById(`status-${couponId}`);
+                            if (data.success) {
+                                statusElement.textContent = isChecked ? 'Active' : 'Inactive';
+                                Swal.fire('Success', `Coupon is ${isChecked ? 'active' : 'inactive'}`, 'success');
+                            } else {
+                                Swal.fire('Error', 'Coupon status change failed', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                    });
+                });
+            </script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const updateLinks = document.querySelectorAll('[id^="updateLink"]');
+                    updateLinks.forEach(link => {
+                        link.addEventListener('click', function(event) {
+                            event.preventDefault();
+
+                            const couponId = this.getAttribute('data-coupon-id');
+                            const minimumPrice = this.getAttribute('data-minimum-price');
+                            const discount = this.getAttribute('data-discount');
+                            const expiryDate = this.getAttribute('data-expiry-date');
+
+                            const modal = document.getElementById('updateModal' + couponId);
+                            const input1 = modal.querySelector('#input1');
+                            const input2 = modal.querySelector('#input2');
+                            const input3 = modal.querySelector('#input3');
+
+                            input1.value = minimumPrice;
+                            input2.value = discount;
+                            input3.value = expiryDate;
+
+                            const modalInstance = new bootstrap.Modal(modal);
+                            modalInstance.show();
+                        });
+                    });
+
+                    const updateForms = document.querySelectorAll('.update-form');
+                    updateForms.forEach(form => {
+                        form.addEventListener('submit', function(event) {
+                            event.preventDefault();
+
+                            const couponId = form.getAttribute('data-coupon-id');                            
+                            const minimumPrice = this.querySelector('#input1').value;
+                            const discount = this.querySelector('#input2').value;
+                            const expDate = this.querySelector('#input3').value;
+
+                            errorMessageContainer.textContent = '';
+
+                            if (!minimumPrice || !discount || !expiryDate) {
+                                errorMessageContainer.textContent = 'All fields are required.';
+                                return;
+                            }
+                            if (minimumPrice <= 0 || discount <= 0) {
+                                errorMessageContainer.textContent = 'Minimum price and discount must be positive numbers.';
+                                return;
+                            }
+                            if (discount >= 70) {
+                                errorMessageContainer.textContent = 'Discount should be between 5 and 70.';
+                                return;
+                            }
+                            let currentDate = new Date().toISOString().split('T')[0];
+                            if (expiryDate <= currentDate) {
+                                errorMessageContainer.textContent = 'Expiry date must be in the future.';
+                                return;
+                            }
+
+                            fetch('/admin/editCoupon',{
+                                method:'POST',
+                                headers:{
+                                    'Content-Type': 'application/json'
+                                },
+                                body:JSON.stringify({
+                                    couponId,
+                                    minimumPrice,
+                                    discount,
+                                    expDate
+                                })
+                            }).then(response=>response.json())
+                            .then(data=>{
+                                if(data.success){
+                                    Swal.fire(
+                                        'success',
+                                        'coupon edit successfully completed',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload();
+                                    });
+                                }else{
+                                    Swal.fire(
+                                        'failed',
+                                        'coupon editing failed',
+                                        'error'
+                                    )
+                                }
+                            })
+
+
+                            const modalInstance = bootstrap.Modal.getInstance(this.closest('.modal'));
+                            modalInstance.hide();
+                        });
+                    });
+                });
+            </script>
+
 
     <%-include('../layouts/adminFooter')%>

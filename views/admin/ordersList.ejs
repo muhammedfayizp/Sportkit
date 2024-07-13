@@ -12,6 +12,7 @@
     .card {
         box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
     }
+
     .card .card-header {
         font-weight: 500;
     }
@@ -70,13 +71,82 @@
     .table-cart tbody tr:last-child {
         border-bottom: none;
     }
+    
+    .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .pagination .page-link {
+        margin: 0 2px;
+    }
+
+    @media (max-width: 767.98px) {
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .pagination {
+            margin-top: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+    }
+    .pagination .page-link:hover {
+        background-color: #b0b7c2;
+    }
+    .pagination .page-link.disabled {
+        color: #999;
+        pointer-events: none;
+        background-color: #f3f4f5;
+        border-color: #ddd;
+    }
+    .pagination .page-link.active {
+        background-color: #333;
+        color: #fff;
+    }
+
 </style>
 <div class="pc-container" style="background-color: rgb(234, 230, 230);">
     <div class="pcoded-content">
         <div class="row">
             <div class="col-md-12 col-xl-12">
                 <div class="card">
-                    <div class="card-header">My Orders</div>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                        <span class="mb-2 mb-md-0">My Orders</span>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                    <a class="page-link page-link-prev" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                        <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span> Prev
+                                    </a>
+                                </li>
+                                
+                                <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                                    <span class="page-link"><%= currentPage %></span>
+                                </li>
+                                
+                                <% if (currentPage + 1 < totalPages) { %>
+                                    <li class="page-item">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                <% } %>
+                            
+                                <% if (currentPage !== totalPages && totalPages > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= totalPages %>"><%= totalPages %></a>
+                                    </li>
+                                <% } %>
+                            
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link page-link-next" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                        Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
                     <div class="card-body">
                         <% if (orders && orders.length > 0) { %>
                             <% orders.forEach((order, index) => { %>
@@ -85,7 +155,7 @@
                                         <tbody>
                                                 <% order.items.forEach(item => { %>
                                                     <tr>
-                                                        <td class="product-col" data-label="Image">
+                                                        <td class="product-col">
                                                             <div class="product">
                                                                 <figure class="product-media">
                                                                     <a href="#">
@@ -98,12 +168,12 @@
                                                                 </figure>
                                                             </div>
                                                         </td>
-                                                        <td data-label="Product Name"><%= item.productId ? item.productId.name : 'Unknown Product' %></td>
-                                                        <td data-label="Price" class="text-center">$<%= order.totalAmount %></td>
-                                                        <td data-label="Quantity" class="text-center">Qty: <%= item.quantity %></td>
-                                                        <td data-label="Payment Method" class="text-center"><%= order.PaymentMethod %></td>
+                                                        <td><%= item.productId ? item.productId.name : 'Unknown Product' %></td>
+                                                        <td class="text-center">$<%= order.totalAmount %></td>
+                                                        <td class="text-center">Qty: <%= item.quantity %></td>
+                                                        <td class="text-center"><%= order.PaymentMethod %></td>
                                                         <% if(item.status !== 'Cancelled') { %>
-                                                            <td data-label="Status" class="text-center">
+                                                            <td class="text-center">
                                                                 <select class="form-select" id="selectStatus<%= index %>" data-orderid="<%= order._id %>" data-productid="<%= item.productId ? item.productId._id : '' %>">
                                                                     <option value="Confirmed" <%= item.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
                                                                     <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>

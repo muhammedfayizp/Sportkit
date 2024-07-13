@@ -37,41 +37,70 @@
         font-weight: bold;
     }
     .button-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-.buttons button {
-    background-color: #333;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin-right: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+    .buttons {
+        display: flex;
+        align-items: center;
+    }
 
-.select-date select, .select-date button {
-    margin-right: 10px;
-}
+    .buttons button {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-right: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-.date-range input[type="date"] {
-    margin-right: 10px;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
+    .select-date, .date-range {
+        display: flex;
+        align-items: center;
+    }
 
-    select {
-        margin-top: 10px;
-        padding: 10px;
+    .select-date select {
+        margin-right: 10px;
+        padding: 8px;
         border-radius: 5px;
         border: 1px solid #ccc;
     }
-    .summary-container {
-        text-align: right;
+
+    .date-range input[type="date"] {
+        margin-right: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    @media screen and (max-width: 768px) {
+        .button-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .buttons, .select-date, .date-range {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            justify-content: center;
+        }
+
+        .select-date, .date-range {
+            flex-direction: column;
+        }
+
+        .select-date select, .date-range input[type="date"], .select-date button, .date-range button {
+            width: 100%;
+            margin-right: 0;
+        }
     }
 </style>
 
@@ -85,7 +114,7 @@
                             <h5 class="m-b-10">Sales Report</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
                             <li class="breadcrumb-item">Sales</li>
                         </ul>
                     </div>
@@ -134,29 +163,34 @@
                                 </thead>
                                 <tbody>
                                     <% (Details || orderData).forEach(order => { %>
-                                    <% order.items.forEach(item => { %>
-                                    <tr>
-                                        <td><%= order.orderId %></td>
-                                        <td><%= order.PaymentMethod %></td>
-                                        <td><%= new Date(order.currentDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
-                                        <td><%= item.productId.name %></td>
-                                        <td><%= item.price %></td>
-                                        <td><%= item.quantity %></td>
-                                        <% if(order.discount) { %>
-                                            <td><%= order.discount %></td>
-                                        <% } else { %>
-                                            <td>-</td>
-                                        <% } %>
-                                        <td><%= item.price * item.quantity %></td>
-                                    </tr>
-                                    <% }) %>
+                                        <% order.items.forEach(item => { %>
+                                            <tr>
+                                                <td><%= order.orderId %></td>
+                                                <td><%= order.PaymentMethod %></td>
+                                                <td><%= new Date(order.currentDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></td>
+                                                <td><%= item.productId.name %></td>
+                                                <td><%= item.price %></td>
+                                                <td><%= item.quantity %></td>
+                                                <% if(order.discount) { %>
+                                                    <td><%= order.discount %></td>
+                                                <% } else { %>
+                                                    <td>-</td>
+                                                <% } %>
+                                                <td><%= item.price * item.quantity %></td>
+                                            </tr>
+                                        <% }) %>
                                     <% }) %>
                                 </tbody>
                             </table>
                             <div class="invoice-container">
-                                <p>Sub Total: <span><%= subTotal %></span></p>
-                                <p>Discount: <span><%= Discount %></span></p>
-                                <p>Total: <span><%= subTotal - Discount %></span></p>
+                                <% if (!query.type && !query.startDate && !query.endDate) { %>
+                                    <p>Sub Total: <span><%= subTotalInitial %></span></p>
+                                    <p>Discount: <span><%= discountInitial %></span></p>
+                                <% } else { %>
+                                    <p>Sub Total: <span><%= subTotalFiltered %></span></p>
+                                    <p>Discount: <span><%= discountFiltered %></span></p>
+                                <% } %>
+                                <p>Total: <span><%= (req.query.type || req.query.startDate) ? (subTotalFiltered - discountFiltered) : (subTotalInitial - discountInitial) %></span></p>
                             </div>
                             <nav aria-label="Page navigation" class="mt-5">
                                 <ul class="pagination justify-content-center">
@@ -258,62 +292,52 @@
     XLSX.writeFile(workbook, "sales_report.xlsx", { bookSST: true, type: 'binary' });
 });
 </script>
+
+
 <script>
-    function change(){
-        const value = document.getElementById('select').value.trim();
-        if(value){
-            window.location.href = `/admin/sales?type=${value}`;
+    function change() {
+        const select = document.getElementById('select');
+        const selectedOption = select.value;
+
+        if (selectedOption === "Select" || !selectedOption) {
+            alert('Please select any option: Today, Last Week, Last Month.');
+            return;
         }
+        handleDateSelection(selectedOption);
     }
-</script>
 
-<script>
     function apply() {
-        const startDate = new Date(document.getElementById('start-date').value);
-        const endDate = new Date(document.getElementById('end-date').value);
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
 
-        const formattedStartDate = formatDate(startDate);
-        const formattedEndDate = formatDate(endDate);
+        if (!startDate || !endDate) {
+            alert('Please select both start and end dates.');
+            return;
+        }
 
-        console.log('startDate:', formattedStartDate, 'endDate:', formattedEndDate);
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('Start date cannot be later than end date.');
+            return;
+        }
+
+        handleDateRange(startDate, endDate);
+    }
+
+    function handleDateSelection(type) {
+        window.location.href = `/admin/sales?type=${type}`;
+    }
+
+    function handleDateRange(startDate, endDate) {
+        const formattedStartDate = formatDate(new Date(startDate));
+        const formattedEndDate = formatDate(new Date(endDate));
         window.location.href = `/admin/sales?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
     }
 
     function formatDate(date) {
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return `${year}-${month}-${day}`;
     }
-</script>
-
-<script>
-    function change() {
-    const select = document.getElementById('select');
-    const selectedOption = select.value;
-
-    if (selectedOption === "Select" || !selectedOption) {
-        alert('Please select any option : Today, Last Week, Last Month.');
-        return;
-    }
-    handleDateSelection(selectedOption);
-}
-
-function apply() {
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
-
-    if (!startDate || !endDate) {
-        alert('Please select both dates.');
-        return;
-    }
-
-    if (new Date(startDate) > new Date(endDate)) {
-        alert('Start date cannot be later than end date.');
-        return;
-    }
-    handleDateRange(startDate, endDate);
-}
-
 </script>
 <%- include('../layouts/adminFooter') %>

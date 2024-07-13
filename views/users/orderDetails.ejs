@@ -83,6 +83,30 @@
                 padding: 0;
             }
         </style>
+        <style>
+            .img-fluid {
+                object-fit: cover;
+                border-radius: 8px;
+            }
+        
+            @media (max-width: 576px) {
+                td[data-label]:before {
+                    content: attr(data-label);
+                    font-weight: bold;
+                    display: block;
+                    text-align: center;
+                }
+        
+                .col-12 {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                }
+            }
+        
+            .text-sm-left {
+                text-align: left !important;
+            }
+        </style>
 
         <body>
             <div class="container-xl px-4 mt-4">
@@ -150,7 +174,7 @@
                                             <% if(orders.forEach(order=>{%>
                                                 <% if(order && userData) {%>
                                                     <p>
-                                                        <%= order.currentDate %>
+                                                       Date : <%= new Date(order.currentDate).toLocaleString('en-IN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})  %>
                                                     </p>
                                                     <p>Order Id : <%= order.orderId%>
                                                     </p>
@@ -182,27 +206,23 @@
                                             <table class="table" style="table-layout: fixed; width: 100%;">
                                                 <tbody>
                                                     <% order.items.forEach(item=> { %>
-                                                        <tr class="d-flex">
-                                                            <td
-                                                                class="col-1 d-flex justify-content-center align-items-center">
-                                                                <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>"
-                                                                    alt="product image" class="img-fluid"
-                                                                    style="width: 60px; height: 60px;">
+                                                        <tr class="d-flex flex-wrap align-items-center">
+                                                            <td class="col-12 col-sm-2 d-flex justify-content-center align-items-center ">
+                                                                <img src="/IMAGES/<%= item.productId.Inputimage[0].filename %>" alt="product image" class="img-fluid rounded" style="width: 140px; height: 140px;">
                                                             </td>
-                                                            <td class="col-5 text-center ml-3"
-                                                                data-label="Product Name">
+                                                            <td class="col-12 col-sm-5 text-center  " data-label="Product Name">
                                                                 <%= item.productId.name %>
                                                             </td>
-                                                            <td class="col-1 text-center" data-label="Price">₹<%=
-                                                                    item.price %>
+                                                            <td class="col-6 col-sm-1 text-center " data-label="Price">
+                                                                ₹<%= item.price %>
                                                             </td>
-                                                            <td class="col-1 text-center" data-label="Quantity">Qty: <%=
-                                                                    item.quantity %>
+                                                            <td class="col-6 col-sm-1 text-center " data-label="Quantity">
+                                                                Qty: <%= item.quantity %>
                                                             </td>
-                                                            <td class="col-2 text-center" data-label="Payment Method">
+                                                            <td class="col-12 col-sm-2 text-center " data-label="Payment Method">
                                                                 <%= order.PaymentMethod %>
                                                             </td>
-                                                            <td class="col-1 text-center" data-label="Status">
+                                                            <td class="col-12 col-sm-1 text-center " data-label="Status">
                                                                 <%= item.status %>
                                                             </td>
                                                         </tr>
@@ -238,29 +258,34 @@
                                                         </tr>
                                                         <% }) %>
                                                         <tr class="d-flex flex-wrap text-right mt-5 mr-4">
-                                                                <% if(order.items.status =='Cancelled') { %>
-                                                                    <td class="col-12 col-sm-4 " colspan="3">
-                                                                        Delivery Charge: 0
+                                                            <% orders.forEach(order => { %>
+                                                                <% order.items.forEach(item => { %>
+                                                                    <% if(item.status === 'Cancelled') { %>
+                                                                        <td class="col-12 col-sm-4" colspan="3">
+                                                                            Delivery Charge: 0
+                                                                        </td>
+                                                                        <td class="col-12 col-sm-4" colspan="3">
+                                                                            Total: ₹ 0
+                                                                        </td>
+                                                                        <td class="col-12 col-sm-4" colspan="3">
+                                                                            Discount: 0
+                                                                        </td>
+                                                                    <% } else { %>
+                                                                        <td class="col-12 col-sm-4" colspan="3">
+                                                                            Delivery Charge: <%= cartData.deliveryCharge ? cartData.deliveryCharge : 0 %>
+                                                                        </td>
+                                                                        <td class="col-12 col-sm-4" colspan="3">
+                                                                            Total: ₹<%= order.totalAmount %>
+                                                                        </td>
+                                                                    <% } %>
+                                                                    <% if(item.status !== 'Cancelled') { %>
+                                                                    <td class="col-12 col-sm-4" colspan="3">
+                                                                        Discount: <%= order.discount ? order.discount : 0 %>
                                                                     </td>
-                                                                <% } else {%>
-                                                                <td class="col-12 col-sm-4 " colspan="3">
-                                                                    Delivery Charge: <%= cartData.deliveryCharge ?
-                                                                        cartData.deliveryCharge : 0 %>
-                                                                </td>
-                                                                <%} %>
-                                                                <td class="col-12 col-sm-4 " colspan="3">
-                                                                    Discount: <%= order.discount ? order.discount : 0 %>
-                                                                </td>
-                                                                <% if(order.items.status =='Cancelled') { %>
-                                                                    <td class="col-12 col-sm-4" colspan="3" id="totalAmount">
-                                                                        Total : ₹ 0
-                                                                    </td>
-                                                                <% } else {%>
-                                                                <td class="col-12 col-sm-4" colspan="3" id="totalAmount">
-                                                                    Total : ₹<%= order.totalAmount %>
-                                                                </td>
-                                                                <%} %>
-                                                            </tr>
+                                                                    <% } %>
+                                                                <% }); %>
+                                                            <% }); %>
+                                                        </tr>   
                                                 </tbody>
                                             </table>
                                         </div>
@@ -553,7 +578,7 @@
                 });
             </script>
 
-            <script>
+            <!-- <script>
                function Repayment(status, orderId) {
                     console.log('Status: ' + status);
                     console.log('OrderId: ' + orderId);
@@ -581,10 +606,45 @@
                         console.error('Error:', error);
                     });
                 }
+            </script> -->
+
+            <script>
+                function Repayment(status, orderId) {
+    console.log('Status: ' + status);
+    console.log('OrderId: ' + orderId);
+    fetch('/repayment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            status: status
+        })
+    }).then(response => response.json())
+    .then(data => {
+        console.log('Repayment response:', data);  // Log the repayment response
+        if (data.success) {
+            Swal.fire(
+                'success',
+                'Repayment successfully Completed',
+                'success'
+            ).then(() => {
+                console.log('Repayment success, reloading page...');
+                window.location.reload();
+            });
+        } else {
+            console.error('Repayment failed:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
             </script>
             <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-            <script>
-                
+
+            <!-- <script>
                 function razorPay(status, orderId) {
                     const totalAmountText = document.getElementById('totalAmount').textContent;
                     const totalAmount = totalAmountText.replace('Total : ₹', '').trim();
@@ -627,6 +687,55 @@
                         console.error('Error:', error);
                     });
                 }
+
+            </script> -->
+
+            <script>
+                function razorPay(status, orderId) {
+    const totalAmountText = document.getElementById('totalAmount').textContent;
+    const totalAmount = totalAmountText.replace('Total : ₹', '').trim();
+    let cartTotal = totalAmount * 100;
+
+    fetch('/razorpay', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            cartTotal
+        })
+    }).then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let options = {
+                "key": data.key_id,
+                "amount": data.amount,
+                "currency": "INR",
+                "name": "Sportkit",
+                "order_id": data.orderid,
+                "handler": function (response) {
+                    Repayment(status, orderId);
+                },
+                "prefill": {
+                    "name": data.name,
+                    "email": data.email
+                }
+            };
+
+            let razorpayObject = new Razorpay(options);
+            razorpayObject.on('payment.failed', (response) => {
+                console.log('Payment failed:', response.error);  // Log payment failure
+                placeOrder('razorpay', orderId, 'Failed');
+            });
+            razorpayObject.open();
+        } else {
+            console.error('Razorpay initialization failed:', data.message);  // Log initialization failure
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
 
             </script>
             <%- include('../layouts/footbar') %>

@@ -8,15 +8,13 @@
                         <div class="form-group">
                             <label for="editCategoryName">Edit Category Name</label>
                             <div class="alert alert-danger mt-2" id="editFlashMessage" style="display: none;"></div>
-                            <input class="form-control" type="text" id="editCategoryName" name="editName" required placeholder="Enter New Category Name" value="<%= categeoryDetail.name %>">
-
+                            <input class="form-control" type="text" id="editCategoryName" name="editName" required placeholder="Enter New Category Name" value="<%= categeoryDetail ? categeoryDetail.name : '' %>">
                             <label for="username">Status</label>
                             <select class="custom-select mr-sm-2 mt-2" name="statusOpt">
                                 <option value="LISTED">LISTED</option>
                                 <option value="UNLISTED">UNLISTED</option>
                             </select>
-                            <input type="hidden" value="<%= categeoryDetail._id %>" name="id">
-                            <div class="invalid-feedback" id="editCategoryNameError">Category Name should not contain blank
+                            <input type="hidden" value="<%= categeoryDetail ? categeoryDetail._id : '' %>" name="id">                            <div class="invalid-feedback" id="editCategoryNameError">Category Name should not contain blank
                                 spaces.
                             </div>
                         </div>

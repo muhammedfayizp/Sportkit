@@ -52,26 +52,58 @@
     .prev:hover, .next:hover {
         background-color: rgba(0, 0, 0, 0.8);
     }
-    .category-box {
-        padding: 10px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .container {
+        background-color: #fff;
+        padding: 20px;
         border-radius: 8px;
-        background-color: #ded7e4;
-        transition: transform 0.2s ease;
-        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
     }
 
-    .category-box:hover {
-        transform: translateY(-10px);
+    .header {
+        height: 100px;
+        margin-bottom: 30px;
+    }
+
+    .header h3 {
+        font-weight: bold;
+        padding-top: 20px;
+        margin: 0;
+    }
+
+    .category-box {
+        margin: 10px;
     }
 
     .category-content {
+        text-align: center;
         padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: transform 0.2s;
     }
 
-    .category-box p {
-        margin: 10px 0;
+    .category-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .rank, .sold-count, .category-name {
+        font-weight: bold;
+    }
+
+    .rank {
+        font-size: large;
+        color: #007bff;
+    }
+
+    .sold-count {
+        color: #28a745;
+    }
+
+    .category-name {
+        color: #343a40;
     }
 
 </style>
@@ -83,26 +115,23 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Dashboard sale</h5>
+                            <h5 class="m-b-10">Dashboard</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                            <li class="breadcrumb-item">Dashboard sale</li>
+                            <li class="breadcrumb-item">Dashboard</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- [ breadcrumb ] end -->
-        <!-- [ Main Content ] start -->
-        <div class="row" >
-            <!-- support-section start -->
+
+        <div class="row">
             <div class="col-xl-6 col-md-12">
                 <div class="card flat-card">
                     <div class="card-body text-center">
                         <h5 class="card-title">Best Selling Product</h5>
                         <div class="slideshow-container">
-                            <% topSellingProducts.forEach((item, index) => { %>
+                            <% topSellingProducts.slice(0, 5).forEach((item, index) => { %>
                             <div class="mySlides">
                                 <div style="background-color: rgb(234, 230, 230); padding: 10px; text-align: center;">
                                     <img src="/IMAGES/<%= item.Inputimage[0].filename%>" alt="Best Selling Product" style="width: 100%; max-width: 200px; max-height: 200px; height: auto;">
@@ -199,21 +228,21 @@
                 </div>
             </div>
         </div>
-        <div style="background-color: #fff;">
-            <div class="text-center" style="height: 100px;">
-                <h3 class="font-weight-bold pt-4">TOP SELLING CATEGORIES</h3><br><br><br>
+        <div class="container top-selling-categories">
+            <div class="text-center header">
+                <h3>TOP SELLING CATEGORIES</h3>
             </div>
             <div class="row justify-content-center">
-                <% topSellingCategory.forEach((item, index) => { %>
+                <% topSellingCategory.slice(0, 5).forEach((item, index) => { %>
                     <div class="col-lg-2 category-box">
-                        <div class="category-content ml-4">
-                            <p class="font-weight-bold" style="font-size: large;">TOP <%= index + 1 %></p>
-                            <p class="font-weight-bold">SOLD: <%= item.soldCount ? item.soldCount : 0 %></p>
-                            <p class="font-weight-bold"><%= item.name %></p>
+                        <div class="category-content">
+                            <p class="rank">TOP <%= index + 1 %></p>
+                            <p class="sold-count">SOLD: <%= item.soldCount ? item.soldCount : 0 %></p>
+                            <p class="category-name"><%= item.name %></p>
                         </div>
                     </div>
                 <% }) %>
-            </div><br><br>
+            </div>
         </div>
     </div>
 </div>

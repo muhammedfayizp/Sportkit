@@ -432,7 +432,6 @@ const productRemove = async (req, res) => {
             } else {
                 return res.json({ success: false, message: 'Product not found in cart' });
             }
-
         }
     } catch (error) {
         console.log(error);

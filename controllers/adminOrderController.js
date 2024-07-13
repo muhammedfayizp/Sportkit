@@ -2,34 +2,28 @@ const Order=require('../models/order_model')
 const Wallet=require('../models/wallet-model')
 const Product=require('../models/product_model')
 
-const loadOrderList=async(req,res)=>{
+const loadOrderList = async (req, res) => {
     try {
-        let orders = await Order.find()
-        .populate({
-            path: 'items.productId',
-            model: 'Product'
-        })
-        .exec();
-        orders=[...orders].reverse()
-        res.render('ordersList',{orders})
-} catch (error) {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 3;
+        
+        const count = await Order.countDocuments();
+        const totalPages = Math.ceil(count / limit);
+        
+        const orders = await Order.find()
+            .populate('items.productId').sort({currentDate:-1}).skip((page - 1) * limit).limit(limit).exec();
+
+            res.render('ordersList', {orders,currentPage: page,totalPages,page});
+    } catch (error) {
         console.log(error);
     }
-}
+};
 
 const loadOrderDetailList=async(req,res)=>{
     try {
         const orderId = req.query.orderId;
         const orders = await Order.find({ _id: orderId })
-        .populate({
-            path: 'items.productId',
-            model: 'Product'
-        })
-        .populate({
-            path: 'UserId',
-            model: 'User' 
-        })
-        .exec();
+        .populate('items.productId').populate('UserId')
 
     res.render('orderDetailsList', { orders });
 
