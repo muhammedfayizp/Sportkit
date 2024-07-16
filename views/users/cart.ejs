@@ -1,13 +1,57 @@
 <%- include('../layouts/header') %>
 <%- include('../layouts/navbar') %>
 
+
 <style>
-    .readonly-input {
-        background-color: #f8f9fa;
-        cursor: not-allowed;
-        border: 1px solid #ced4da;
-        pointer-events: none;
-    }
+    .product_count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.increment-btn, .decrement-btn {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.increment-btn:hover, .decrement-btn:hover {
+    background-color: #ffffff;
+}
+
+.readonly-input {
+    width: 50px;
+    text-align: center;
+    margin: 0 5px;
+    border: 1px solid #ced4da;
+    background-color: #f8f9fa;
+    pointer-events: none;
+}
+
+.table-cart th, .table-cart td {
+    vertical-align: middle;
+}
+
+.up-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 10px solid black; 
+}
+
+.down-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid black; 
+}
 </style>
 <main class="main">
     <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
@@ -36,7 +80,6 @@
                                     <th>Product</th>
                                     <th></th>
                                     <th>Price</th>
-                                    <th>St</th>
                                     <th>Quantity</th>
                                     <th>Total</th>
                                     <th></th>
@@ -63,21 +106,18 @@
                                                 <td class="price-col">₹<%= product.productId.finalPrice %></td>
                                             <% } else { %>
                                                 <td class="price-col">₹<%= product.price %></td>
-                                            <% } %>
-                                            <td class="st-col text-center pr-5" id="stock-display-<%= product.productId._id %>">
-                                                <%= `${product.quantity}/${product.productId.quantity}` %>
-                                            </td>                                            
+                                            <% } %>                                            
                                             <td class="quantity-col">
-                                                <div class="cart-product-quantity">
-                                                    <input type="number"
-                                                           id="quantity-<%= product.productId._id %>"
-                                                           class="form-control readonly-input"
-                                                           value="<%= product.quantity %>"
-                                                           min="1"
-                                                           max="<%= product.productId.quantity %>"
-                                                           step="1"
-                                                           data-product-id="<%= product.productId._id %>"
-                                                           onchange="updateStockDisplay(this)">
+                                                <div class="product_count">
+                                                    <span class="decrement-btn mx-1" onclick="decrementQuantity('<%= product.productId._id %>')">
+                                                        <i class="down-arrow"></i>
+                                                    </span>
+                                                    <input class="input-number readonly-input" id="quantity_<%= product.productId._id %>" type="text"
+                                                        value="<%= product.quantity %>" min="1" max="<%= product.productId.quantity %>"
+                                                        data-product-id="<%= product.productId._id %>" readonly>
+                                                    <span class="increment-btn mx-1" onclick="incrementQuantity('<%= product.productId._id %>')">
+                                                        <i class="up-arrow"></i>
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td class="total-col" data-product-id="<%= product.productId._id %>">₹<%= product.totalAmount %></td>
@@ -120,44 +160,7 @@
 </main><!-- End .main -->
 
 <!--quantity update-->
-<script>
-    document.querySelectorAll('.cart-product-quantity input').forEach(input => {
-        input.addEventListener('change', updateQuantity);
-    });
 
-    function updateQuantity(event) {
-        const input = event.target;
-        const productId = input.dataset.productId;
-        const newQuantity = input.value;
-
-        fetch('/update-quantity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ productId, newQuantity }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            updateUI(data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-</script>
-<!--price update-->
-<script>
-    function updateUI(data) {
-        const totalPriceElement = document.querySelector(`.total-col[data-product-id="${data.productId}"]`);
-        const cartTotalElement = document.querySelector('.cart-total');
-
-        if (totalPriceElement && cartTotalElement) {
-            totalPriceElement.textContent = `₹${data.totalPrice}`;
-            cartTotalElement.textContent = `₹${data.cartTotal}`;
-        }
-    }
-</script>
 <script>
     function removeCart(productId) {
         Swal.fire({
@@ -216,16 +219,89 @@
         });
     }
 </script>
+
 <script>
-    function updateStockDisplay(input) {
-        const productId = input.dataset.productId;
-        const newQuantity = parseInt(input.value,);
-        const stockDisplay = document.getElementById(`stock-display-${productId}`);
-        if (stockDisplay) {
-            stockDisplay.textContent = `${newQuantity}/${input.max}`;
+    function incrementQuantity(productId) {
+        const input = document.querySelector(`input[data-product-id='${productId}']`);
+        const currentQuantity = parseInt(input.value);
+        const maxQuantity = parseInt(input.getAttribute('max'));
+
+        if (currentQuantity < maxQuantity) {
+            const newQuantity = currentQuantity + 1;
+            input.value = newQuantity;
+            updateQuantityServer(productId, newQuantity);
+            updateSubtotal(productId, newQuantity);
+            updateCartTotal();
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Maximum Stock Exceeded',
+                text: 'The requested quantity exceeds the available stock.',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
+    function decrementQuantity(productId) {
+        const input = document.querySelector(`input[data-product-id='${productId}']`);
+        const currentQuantity = parseInt(input.value);
+        const minQuantity = parseInt(input.getAttribute('min'));
+
+        if (currentQuantity > minQuantity) {
+            const newQuantity = currentQuantity - 1;
+            input.value = newQuantity;
+            updateQuantityServer(productId, newQuantity);
+            updateSubtotal(productId, newQuantity);
+            updateCartTotal();
+        }
+    }
+
+    function updateQuantityServer(productId, newQuantity) {
+        fetch('/update-quantity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId, newQuantity }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateUI(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function updateSubtotal(productId, newQuantity) {
+        const priceCol = document.querySelector(`td.price-col[data-product-id='${productId}']`);
+        const price = parseFloat(priceCol.textContent.replace('₹', ''));
+        const totalCol = document.querySelector(`td.total-col[data-product-id='${productId}']`);
+        totalCol.textContent = `₹${(price * newQuantity).toFixed(2)}`;
+    }
+
+    function updateCartTotal() {
+        const totalCols = document.querySelectorAll('.total-col');
+        let cartTotal = 0;
+        totalCols.forEach(totalCol => {
+            const total = parseFloat(totalCol.textContent.replace('₹', ''));
+            cartTotal += total;
+        });
+        const cartTotalElement = document.querySelector('.cart-total');
+        cartTotalElement.textContent = `₹${cartTotal.toFixed(2)}`;
+    }
+
+    function updateUI(data) {
+        const totalPriceElement = document.querySelector(`.total-col[data-product-id="${data.productId}"]`);
+        const cartTotalElement = document.querySelector('.cart-total');
+
+        if (totalPriceElement && cartTotalElement) {
+            totalPriceElement.textContent = `₹${data.totalPrice}`;
+            cartTotalElement.textContent = `₹${data.cartTotal}`;
         }
     }
 </script>
+
 
 <%- include('../layouts/footbar') %>
 <%- include('../layouts/footer') %>

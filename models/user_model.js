@@ -33,7 +33,14 @@ const userSchema=mongoose.Schema({
     coupon:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Coupon',
-    }]
+    }],
+    referral:{
+        type:String,
+    },
+    referred:{
+        type:String
+    }
+
 
 })
 

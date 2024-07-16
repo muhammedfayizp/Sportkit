@@ -139,23 +139,24 @@ const adminLogout = async (req, res) => {
 
 const productOfferLoad = async (req, res) => {
     try {
-        const products = await Product.find()
-        const offer = await productOffer.find().populate('productId')
-        res.render('productOffer', { products, offer })
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
 
+        const products = await Product.find();
+        const offer = await productOffer.find().skip(skip).limit(limit).populate('productId');
+        const totalOffers = await productOffer.countDocuments();
+
+        res.render('productOffer', {products,offer,currentPage: page,totalPages: Math.ceil(totalOffers / limit)});
     } catch (error) {
         console.log(error);
     }
-}
+};
 
 const addProductOffer = async (req, res) => {
     try {
         const { productId, offerAmount, expDate } = req.body
-        const addOffer = new productOffer({
-            productId: productId,
-            discount: offerAmount,
-            expiryDate: expDate
-        })
+        const addOffer = new productOffer({productId: productId,discount: offerAmount,expiryDate: expDate})
         await addOffer.save()
         await Product.findByIdAndUpdate(productId, { $push: { offers: addOffer._id } })
         res.json({ success: true })
@@ -183,13 +184,19 @@ const offerStatus = async (req, res) => {
 
 const loadCategoryOffer = async (req, res) => {
     try {
-        const category = await Category.find()
-        const CatgOffer = await categoryOffer.find().populate('categoryId')
-        res.render('categoryOffer', { category, CatgOffer })
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
+
+        const category = await Category.find();
+        const CatgOffer = await categoryOffer.find().skip(skip).limit(limit).populate('categoryId');
+        const totalOffers = await categoryOffer.countDocuments();
+
+        res.render('categoryOffer', {category,CatgOffer,currentPage: page,totalPages: Math.ceil(totalOffers / limit)});
     } catch (error) {
         console.log(error);
     }
-}
+};
 
 const addCategOffer = async (req, res) => {
     try {
@@ -288,7 +295,6 @@ const couponEdit=async(req,res)=>{
     try {
         const {couponId,minimumPrice,discount,expDate}=req.body
          const expiryDate = new Date(expDate);
-         console.log(typeof(expiryDate));
         const couponData=await Coupon.findOneAndUpdate({_id:couponId},{$set:{minimumPrice:minimumPrice,discount:discount,expiryDate:expiryDate}})
         await couponData.save()
         res.json({success:true,coupon: couponData})

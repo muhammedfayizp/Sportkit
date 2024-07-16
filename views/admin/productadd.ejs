@@ -89,47 +89,46 @@
         </div>
     </div>
 </div>
-<script defer src="https://cdn.crop.guide/loader/l.js?c=DSFJQL"></script>
-
+<script defer src="https://cdn.crop.guide/loader/l.js?c=FFLFHS"></script>
 <script>
     document.getElementById('Inputimage').addEventListener('change', function(event) {
-    const files = event.target.files;
-    const imagePreview = document.getElementById('imagePreview');
-    imagePreview.innerHTML = ''; 
+        const files = event.target.files;
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.innerHTML = ''; 
 
-    const existingImages = Array.from(document.querySelectorAll('.image-wrapper'));
-    existingImages.forEach(img => imagePreview.appendChild(img));
+        const existingImages = Array.from(document.querySelectorAll('.image-wrapper'));
+        existingImages.forEach(img => imagePreview.appendChild(img));
 
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
 
-        reader.onload = function(e) {
-            const imageWrapper = document.createElement('div');
-            imageWrapper.className = 'image-wrapper mr-3 mb-3';
-            imageWrapper.dataset.index = i + existingImages.length; 
+            reader.onload = function(e) {
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'image-wrapper mr-3 mb-3';
+                imageWrapper.dataset.index = i + existingImages.length; 
 
-            const closeButton = document.createElement('button');
-            closeButton.className = 'close-button';
-            closeButton.type = 'button';
-            closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
-            closeButton.onclick = function() {
-                imageRemove(i + existingImages.length); 
+                const closeButton = document.createElement('button');
+                closeButton.className = 'close-button';
+                closeButton.type = 'button';
+                closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+                closeButton.onclick = function() {
+                    imageRemove(i + existingImages.length); 
+                };
+
+                const img = document.createElement('img');
+                img.style.height = '100px';
+                img.style.maxWidth = '100px';
+                img.src = e.target.result;
+                img.alt = 'Product Image';
+
+                imageWrapper.appendChild(closeButton);
+                imageWrapper.appendChild(img);
+                imagePreview.appendChild(imageWrapper);
             };
 
-            const img = document.createElement('img');
-            img.style.height = '100px';
-            img.style.maxWidth = '100px';
-            img.src = e.target.result;
-            img.alt = 'Product Image';
-
-            imageWrapper.appendChild(closeButton);
-            imageWrapper.appendChild(img);
-            imagePreview.appendChild(imageWrapper);
-        };
-
-        reader.readAsDataURL(file);
-    }
+            reader.readAsDataURL(file);
+        }
         if (files.length > 0) {
             document.getElementById('addImageButton').style.display = 'none';
         }

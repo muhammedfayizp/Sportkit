@@ -225,6 +225,39 @@ const placeOrder = async (req, res) => {
         if(newOrder.totalAmount<2500){
             newOrder.totalAmount+=cartData.deliveryCharge
         }
+
+        const firstOrder=await Order.findOne({UserId:userId})
+        const userData=await User.findById(userId)
+        const refCode=userData.referred
+
+        if(refCode&&firstOrder==undefined){
+            const referralUser=await User.findOne({
+                referral:refCode
+            })
+            const refUserWallet=await Wallet.findOne({UserId:referralUser._id})
+            if(refUserWallet){
+                refUserWallet.balance+=30
+                refUserWallet.history.push({
+                    amount: 25,
+                    method: 'Referral',
+                    transactionType: 'credit',
+                    currentAmount: refUserWallet.balance
+                })
+            }else{
+                const walletAddMoney=new Wallet({
+                    UserId:referralUser._id,
+                    balance:25,
+                    history: [{
+                        amount: 25,
+                        transactionType: 'credit',
+                        method: 'Referral',
+                        currentAmount: 25
+                    }]
+                })
+                await walletAddMoney.save()
+            }
+        }
+
         
         if (paymentMethodType === 'cash-on-delivery') {
             if(cartData.cartTotal>2500){

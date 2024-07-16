@@ -1,294 +1,333 @@
-<%-include('../layouts/adminHeader')%>
-<%-include('../layouts/adminSidebar')%>
-<style>
-    .image-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-    .close-button {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.7);
-        border: none;
-        font-size: 16px;
-        cursor: pointer;
-    }
-</style>
+<%- include('../layouts/adminHeader') %>
+    <%- include('../layouts/adminSidebar') %>
+        <style>
+            .image-wrapper {
+                position: relative;
+                display: inline-block;
+            }
 
-<div class="pc-container" style="background-color: rgb(234, 230, 230);">
-    <div class="pcoded-content">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Edit Product Details</h4>
-                        <% if (errmsg.length > 0) { %>
-                            <div class="alert alert-danger"><%= errmsg %></div>
-                        <% } %>
-                        <form action="/admin/editProduct?id=<%= productDetail._id %>" method="POST" enctype="multipart/form-data" onsubmit="return validation()">
-                            <input type="hidden" id="removedImages" name="removedImages" value="">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Name</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-11">
-                                                    <input type="text" class="form-control" id="name" name="name"
-                                                        placeholder="Enter Product Name" value="<%= productDetail.name %>">
-                                                    <div id="nameContainer" class="text-danger"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+            .close-button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.7);
+                border: none;
+                font-size: 16px;
+                cursor: pointer;
+            }
+        </style>
+
+        <div class="pc-container" style="background-color: rgb(234, 230, 230);">
+            <div class="pcoded-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Edit Product Details</h4>
+                                <% if (errmsg.length> 0) { %>
+                                    <div class="alert alert-danger">
+                                        <%= errmsg %>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Price</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-11">
-                                                    <input type="text" class="form-control" id="price" name="price"
-                                                        placeholder="Enter Product Price" value="<%= productDetail.price %>">
-                                                    <div id="priceContainer" class="text-danger"></div>
+                                    <% } %>
+                                        <form id="editProductForm"
+                                            action="/admin/editProduct?id=<%= productDetail._id %>" method="POST"
+                                            enctype="multipart/form-data">
+                                            <input type="hidden" id="removedImages" name="removedImages" value="">
+                                            <div class="form-body">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Name</label>
+                                                        <div class="col-lg-10">
+                                                            <input type="text" class="form-control" id="name"
+                                                                name="name" placeholder="Enter Product Name"
+                                                                value="<%= productDetail.name %>">
+                                                            <div id="nameContainer" class="text-danger"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Quantity</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-11">
-                                                    <input type="number" class="form-control" id="quantity" name="quantity"
-                                                        placeholder="Enter Quantity" value="<%= productDetail.quantity %>">
-                                                    <div id="quantityContainer" class="text-danger"></div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Price</label>
+                                                        <div class="col-lg-10">
+                                                            <input type="text" class="form-control" id="price"
+                                                                name="price" placeholder="Enter Product Price"
+                                                                value="<%= productDetail.price %>">
+                                                            <div id="priceContainer" class="text-danger"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                              
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Category</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-11">
-                                                    <div class="form-group mb-4">
-                                                        <select class="custom-select mr-sm-2" id="category" name="category">
-                                                            <option value="Choose..." disabled selected>Choose...</option>
-                                                            <% categories.forEach((category) => { %>
-                                                                <option value="<%= category._id %>" <%= category._id.equals(productDetail.category) ? 'selected' : '' %>>
-                                                                    <%= category.name %>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Quantity</label>
+                                                        <div class="col-lg-10">
+                                                            <input type="number" class="form-control" id="quantity"
+                                                                name="quantity" placeholder="Enter Quantity"
+                                                                value="<%= productDetail.quantity %>">
+                                                            <div id="quantityContainer" class="text-danger"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Category</label>
+                                                        <div class="col-lg-10">
+                                                            <select class="custom-select mr-sm-2" id="category"
+                                                                name="category">
+                                                                <option value="Choose..." disabled selected>Choose...
                                                                 </option>
-                                                            <% }); %>
-                                                        </select>
-                                                        <div id="categoryContainer" class="text-danger"></div>
+                                                                <% categories.forEach((category)=> { %>
+                                                                    <option value="<%= category._id %>"
+                                                                        <%=category._id.equals(productDetail.category)
+                                                                        ? 'selected' : '' %>>
+                                                                        <%= category.name %>
+                                                                    </option>
+                                                                    <% }); %>
+                                                            </select>
+                                                            <div id="categoryContainer" class="text-danger"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                                
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Description</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-11">
-                                                    <textarea class="form-control" rows="3" id="description" name="description"
-                                                        placeholder="Text Here..."><%= productDetail.description %></textarea>
-                                                    <div id="descriptionContainer" class="text-danger"></div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Description</label>
+                                                        <div class="col-lg-10">
+                                                            <textarea class="form-control" rows="3" id="description"
+                                                                name="description"
+                                                                placeholder="Text Here..."><%= productDetail.description %></textarea>
+                                                            <div id="descriptionContainer" class="text-danger"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
 
-                                <div class="form-group">
-                                    <div class="row">
-                                        <label class="col-lg-2">Images</label>
-                                        <div class="col-lg-10">
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <input type="file" class="form-control-file" id="Inputimage" multiple="multiple" accept="image/*" name="Inputimage">
-                                                    <div id="imagePreview" class="d-flex flex-wrap mt-2">
-                                                        <% for (let i = 0; i < productDetail.Inputimage.length; i++) { %>
-                                                            <div class="image-wrapper mr-3 mb-3" data-index="<%= i %>">
-                                                                <button class="close-button" aria-label="Close alert" type="button" onclick="imageRemove('<%= productDetail._id %>', '<%= i %>')">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                                <img style="height: 100px; max-width: 100px;" src="/IMAGES/<%= productDetail.Inputimage[i].filename %>" alt="Product Image">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-lg-2">Images</label>
+                                                        <div class="col-lg-10">
+                                                            <input type="file" class="form-control-file" id="Inputimage"
+                                                                multiple accept="image/*" name="Inputimage">
+                                                            <div id="imagePreview" class="d-flex flex-wrap mt-2">
+                                                                <% productDetail.Inputimage.forEach((image, index)=> {
+                                                                    %>
+                                                                    <div class="image-wrapper mr-3 mb-3"
+                                                                        data-index="<%= index %>">
+                                                                        <button class="close-button"
+                                                                            aria-label="Close alert" type="button"
+                                                                            onclick="imageRemove('<%= productDetail._id %>', '<%= index %>')">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                        <img style="height: 100px; max-width: 100px;"
+                                                                            src="/IMAGES/<%= image.filename %>"
+                                                                            alt="Product Image">
+                                                                    </div>
+                                                                    <% }); %>
                                                             </div>
-                                                        <% } %>
+                                                            <button id="addImageButton" class="btn btn-primary mt-2">Add
+                                                                Images</button>
+                                                            <div id="imageValidationMessage" class="text-danger"></div>
+                                                        </div>
                                                     </div>
-                                                    <button id="addImageButton" class="btn btn-primary mt-2" style="display: none;">Add Images</button>
-                                                    <div id="imageValidationMessage" class="text-danger"></div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                               
-                                </div>
+                                            <div class="form-actions">
+                                                <div class="text-right">
+                                                    <button type="submit" class="btn btn-info">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </form>
                             </div>
-                            <div class="form-actions">
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-info">Save Changes</button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>   
-</div>
-<script defer src="https://cdn.crop.guide/loader/l.js?c=DSFJQL"></script>
+        <script defer src="https://cdn.crop.guide/loader/l.js?c=FFLFHS"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const imageWrappers = document.querySelectorAll('.image-wrapper');
+                if (imageWrappers.length === 0) {
+                    document.getElementById('addImageButton').style.display = 'block';
+                }
+            });
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const imageWrappers = document.querySelectorAll('.image-wrapper');
-        if (imageWrappers.length === 0) {
-            document.getElementById('addImageButton').style.display = 'block';
-        }
-    });
+            function imageRemove(productId, imageIndex) {
+                const imageWrapper = document.querySelector(`.image-wrapper[data-index='${imageIndex}']`);
+                if (imageWrapper) {
+                    imageWrapper.remove();
+                }
 
-    function imageRemove(productId, imageIndex) {
-        const imageWrapper = document.querySelector(`.image-wrapper[data-index='${imageIndex}']`);
-        if (imageWrapper) {
-            imageWrapper.remove();
-        }
+                const removedImagesInput = document.getElementById('removedImages');
+                let removedImages = removedImagesInput.value ? JSON.parse(removedImagesInput.value) : [];
+                removedImages.push(imageIndex);
+                removedImagesInput.value = JSON.stringify(removedImages);
 
-        const removedImagesInput = document.getElementById('removedImages');
-        let removedImages = removedImagesInput.value ? JSON.parse(removedImagesInput.value) : [];
-        removedImages.push(imageIndex);
-        removedImagesInput.value = JSON.stringify(removedImages);
+                const imageWrappers = document.querySelectorAll('.image-wrapper');
+                if (imageWrappers.length < 4) {
+                    document.getElementById('addImageButton').style.display = 'block';
+                } else {
+                    document.getElementById('addImageButton').style.display = 'none';
+                }
 
-        const imageWrappers = document.querySelectorAll('.image-wrapper');
-        if (imageWrappers.length < 4) {
-            document.getElementById('addImageButton').style.display = 'block';
-        } else {
-            document.getElementById('addImageButton').style.display = 'none';
-        }
-
-        validateImageCount();   
-    } 
-
-    document.getElementById('Inputimage').addEventListener('change', function() {
-        previewImage(this, 'imagePreview');
-        this.value = ''; 
-        validateImageCount();
-    });
-    
-    document.getElementById('addImageButton').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('Inputimage').click()
-    });
-
-    document.querySelector('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (!validation() || !validateImageCount()) {
-            return;
-        }
-
-        const imagePreviews = document.querySelectorAll('.image-wrapper img');
-        const imagePaths = Array.from(imagePreviews).map(img => img.src);
-
-        const formData = new FormData(this);
-        imagePaths.forEach((path, index) => {
-            formData.append(`imagePath${index}`, path);
-        });
-
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        }).then(response => response.json())
-          .then(data => {
-            if (data.success) {
-                Swal.fire(
-                    'Success',
-                    'Product edit successful',
-                    'success'
-                ).then(() => {
-                    window.location.href = '/admin/productlist';
-                });
-            } else {
-                console.log('Error:', data.message);
+                validateImageCount();
             }
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    });
 
-    function validation() {
-        let isValid = true;
+            document.getElementById('Inputimage').addEventListener('change', function () {
+                if (validateImageCount(true)) {
+                    previewNewImages(this.files);
+                    validateImageCount();
+                } else {
+                    this.value = '';
+                }
+            });
 
-        document.getElementById('nameContainer').innerText = '';
-        document.getElementById('priceContainer').innerText = '';
-        document.getElementById('quantityContainer').innerText = '';
-        document.getElementById('categoryContainer').innerText = '';
-        document.getElementById('descriptionContainer').innerText = '';
+            document.getElementById('addImageButton').addEventListener('click', function (e) {
+                e.preventDefault();
+                document.getElementById('Inputimage').click();
+            });
 
-        const name = document.getElementById('name').value.trim();
-        if (name === '') {
-            document.getElementById('nameContainer').innerText = 'Name is emp.';
-            isValid = false;
-        }
+            document.getElementById('editProductForm').addEventListener('submit', function (e) {
+                e.preventDefault();
 
-        const price = document.getElementById('price').value.trim();
-        if (price === '') {
-            document.getElementById('priceContainer').innerText = 'Price is emp.';
-            isValid = false;
-        } else if (isNaN(price) || parseFloat(price) <= 0) {
-            document.getElementById('priceContainer').innerText = 'Please enter a valid positive price.';
-            isValid = false;
-        }
+                if (!validation() || !validateImageCount()) {
+                    return;
+                }
 
-        const quantity = document.getElementById('quantity').value.trim();
-        if (quantity === '') {
-            document.getElementById('quantityContainer').innerText = 'Quantity is emp.';
-            isValid = false;
-        } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
-            document.getElementById('quantityContainer').innerText = 'Please enter a valid positive quantity.';
-            isValid = false;
-        }
+                const formData = new FormData(this);
+                const newImages = document.getElementById('Inputimage').files;
 
-        const category = document.getElementById('category').value;
-        if (category === 'Choose...' || category === '') {
-            document.getElementById('categoryContainer').innerText = 'Category is emp.';
-            isValid = false;
-        }
+                if (newImages.length === 0 && removedImagesExist()) {
+                    Swal.fire(
+                        'Error',
+                        'Please add at least one new image after removing an existing one.',
+                        'error'
+                    );
+                    return;
+                }
 
-        if (description === '') {
-            document.getElementById('descriptionContainer').innerText = 'Description is emp.';
-            isValid = false;
-        }
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success',
+                                'Product edit successful',
+                                'success'
+                            ).then(() => {
+                                window.location.href = '/admin/productlist';
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
 
-        return isValid;
-    }
+            function removedImagesExist() {
+                const removedImagesInput = document.getElementById('removedImages').value;
+                return removedImagesInput && JSON.parse(removedImagesInput).length > 0;
+            }
 
-    function validateImageCount() {
-    const imageCount = document.querySelectorAll('.image-wrapper').length;
-    const imageValidationMessage = document.getElementById('imageValidationMessage');
-    
-    if (imageCount === 0) {
-        imageValidationMessage.innerText = 'Please upload at least one image.';
-        return false;
-    } else if (imageCount > 4) {
-        imageValidationMessage.innerText = 'Maximum of 4 images allowed.';
-        return false;
-    } else {
-        imageValidationMessage.innerText = '';
-        return true;
-    }
-}
-</script>
-<%-include('../layouts/adminFooter')%>
+            function validation() {
+                let isValid = true;
+
+                document.getElementById('nameContainer').innerText = '';
+                document.getElementById('priceContainer').innerText = '';
+                document.getElementById('quantityContainer').innerText = '';
+                document.getElementById('categoryContainer').innerText = '';
+                document.getElementById('descriptionContainer').innerText = '';
+
+                const name = document.getElementById('name').value.trim();
+                if (name === '') {
+                    document.getElementById('nameContainer').innerText = 'Name is empty.';
+                    isValid = false;
+                }
+
+                const price = document.getElementById('price').value.trim();
+                if (price === '') {
+                    document.getElementById('priceContainer').innerText = 'Price is empty.';
+                    isValid = false;
+                } else if (isNaN(price) || parseFloat(price) <= 0) {
+                    document.getElementById('priceContainer').innerText = 'Please enter a valid positive price.';
+                    isValid = false;
+                }
+
+                const quantity = document.getElementById('quantity').value.trim();
+                if (quantity === '') {
+                    document.getElementById('quantityContainer').innerText = 'Quantity is empty.';
+                    isValid = false;
+                } else if (isNaN(quantity) || parseInt(quantity) <= 0) {
+                    document.getElementById('quantityContainer').innerText = 'Please enter a valid positive quantity.';
+                    isValid = false;
+                }
+
+                const category = document.getElementById('category').value;
+                if (category === 'Choose...' || category === '') {
+                    document.getElementById('categoryContainer').innerText = 'Category is empty.';
+                    isValid = false;
+                }
+
+                const description = document.getElementById('description').value.trim();
+                if (description === '') {
+                    document.getElementById('descriptionContainer').innerText = 'Description is empty.';
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            function validateImageCount(isFileInputChange = false) {
+                const imageWrappers = document.querySelectorAll('.image-wrapper');
+                const imageCount = imageWrappers.length + (isFileInputChange ? document.getElementById('Inputimage').files.length : 0);
+                const validationMessage = document.getElementById('imageValidationMessage');
+
+                if (imageCount > 4) {
+                    validationMessage.innerText = 'You can upload maximum of 4 images.';
+                    return false;
+                } else {
+                    validationMessage.innerText = '';
+                    return true;
+                }
+            }
+
+            function previewNewImages(files) {
+                const previewContainer = document.getElementById('imagePreview');
+
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const imageWrapper = document.createElement('div');
+                        imageWrapper.classList.add('image-wrapper', 'mr-3', 'mb-3');
+
+                        const closeButton = document.createElement('button');
+                        closeButton.classList.add('close-button');
+                        closeButton.setAttribute('type', 'button');
+                        closeButton.setAttribute('aria-label', 'Close alert');
+                        closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+                        closeButton.addEventListener('click', function () {
+                            imageWrapper.remove();
+                            validateImageCount();
+                        });
+
+                        const img = document.createElement('img');
+                        img.style.height = '100px';
+                        img.style.maxWidth = '100px';
+                        img.src = e.target.result;
+                        img.alt = 'New Image Preview';
+
+                        imageWrapper.appendChild(closeButton);
+                        imageWrapper.appendChild(img);
+                        previewContainer.appendChild(imageWrapper);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            }
+
+        </script>
+        <%- include('../layouts/adminFooter') %>

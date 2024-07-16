@@ -193,8 +193,8 @@
                                         <hr class="line">
                                         <div class="copy-button">
                                             <div class="input-container">
-                                                <input id="copyvalue" type="text" readonly value="<%= item.couponCode %>" >
-                                                <button onclick="copyIt('<%= item._id %>')" class="copybtn">COPY</button>
+                                                <input id="copyvalue-<%= index %>" type="text" readonly value="<%= item.couponCode %>" >
+                                                <button onclick="copyIt('<%= index %>')" class="copybtn">COPY</button>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mt-4">
@@ -205,7 +205,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6 mt-3">
-                                                <a id="updateLink<%= item._id %>" class="update-link" data-coupon-id="<%= item._id %>" data-minimum-price="<%= item.minimumPrice %>" data-discount="<%= item.discount %>" data-expiry-date="<%= new Date(item.expiryDate).toLocaleDateString('en-IN') %>">Update</a>
+                                                <a id="updateLink<%= item._id %>" class="update-link" data-coupon-id="<%= item._id %>" data-minimum-price="<%= item.minimumPrice %>" data-discount="<%= item.discount %>" data-expiry-date="<%= item.expiryDate.toISOString().split('T')[0] %>">Update</a>
                                             </div>
                                             <div class="col-6">
                                                 <p class="d-flex justify-content-end mt-3">Exp: <%= new Date(item.expiryDate).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit' }) %></p>
@@ -224,7 +224,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <form class="update-form" data-coupon-id="<%= item._id %>">
-                                                    <div id="update-error-message-<%= item._id %>" style="color: red; margin-bottom: 10px;"></div> <!-- Error message container -->
+                                                    <div id="update-error-message-<%= item._id %>" style="color: red; margin-bottom: 10px;"></div> 
                                                     <div class="form-group">
                                                         <label for="input1">Minimum Price</label>
                                                         <input type="text" class="form-control" id="input1" name="minimumPrice" required>
@@ -339,13 +339,22 @@
             </script>
             
             
-            <script>
+            <!-- <script>
                 let copybtn = document.querySelector(".copybtn");
                 function copyIt(){
                 let copyInput = document.querySelector('#copyvalue');
                 copyInput.select();
                 document.execCommand("copy");
                 copybtn.textContent = "COPIED";
+                }
+            </script> -->
+            <script>
+                function copyIt(index) {
+                    let copyInput = document.querySelector('#copyvalue-' + index);
+                    copyInput.select();
+                    document.execCommand("copy");
+                    let copybtn = copyInput.nextElementSibling;
+                    copybtn.textContent = "COPIED";
                 }
             </script>
 
@@ -414,9 +423,10 @@
                             const discount = this.querySelector('#input2').value;
                             const expDate = this.querySelector('#input3').value;
 
+                            const errorMessageContainer = form.querySelector('#update-error-message-' + couponId);
                             errorMessageContainer.textContent = '';
 
-                            if (!minimumPrice || !discount || !expiryDate) {
+                            if (!minimumPrice || !discount || !expDate) {
                                 errorMessageContainer.textContent = 'All fields are required.';
                                 return;
                             }
@@ -429,41 +439,40 @@
                                 return;
                             }
                             let currentDate = new Date().toISOString().split('T')[0];
-                            if (expiryDate <= currentDate) {
+                            if (expDate <= currentDate) {
                                 errorMessageContainer.textContent = 'Expiry date must be in the future.';
                                 return;
                             }
 
-                            fetch('/admin/editCoupon',{
-                                method:'POST',
-                                headers:{
+                            fetch('/admin/editCoupon', {
+                                method: 'POST',
+                                headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body:JSON.stringify({
+                                body: JSON.stringify({
                                     couponId,
                                     minimumPrice,
                                     discount,
                                     expDate
                                 })
-                            }).then(response=>response.json())
-                            .then(data=>{
-                                if(data.success){
+                            }).then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
                                     Swal.fire(
-                                        'success',
-                                        'coupon edit successfully completed',
+                                        'Success',
+                                        'Coupon edited successfully',
                                         'success'
                                     ).then(() => {
                                         window.location.reload();
                                     });
-                                }else{
+                                } else {
                                     Swal.fire(
-                                        'failed',
-                                        'coupon editing failed',
+                                        'Failed',
+                                        'Coupon editing failed',
                                         'error'
-                                    )
+                                    );
                                 }
-                            })
-
+                            });
 
                             const modalInstance = bootstrap.Modal.getInstance(this.closest('.modal'));
                             modalInstance.hide();
@@ -471,6 +480,4 @@
                     });
                 });
             </script>
-
-
     <%-include('../layouts/adminFooter')%>

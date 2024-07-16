@@ -1,242 +1,237 @@
 <%-include('../layouts/navbar')%>
-    <%-include('../layouts/header')%>
-    <style type="text/css">
-        body {
-            background-color: #cad1dc;
-            color: #333639;
-        }
+<%-include('../layouts/header')%>
+<style type="text/css">
+    body {
+        background-color: #cad1dc;
+        color: #333639;
+    }
 
-        .img-account-profile {
-            height: 10rem;
-        }
+    .img-account-profile {
+        height: 10rem;
+    }
 
-        .rounded-circle {
-            border-radius: 50% !important;
-        }
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
 
-        .card {
-            box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
-        }
+    .card {
+        box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+    }
 
-        .card .card-header {
-            font-weight: 500;
-        }
+    .card .card-header {
+        font-weight: 500;
+    }
 
-        .card-header:first-child {
-            border-radius: 0.35rem 0.35rem 0 0;
-        }
+    .card-header:first-child {
+        border-radius: 0.35rem 0.35rem 0 0;
+    }
 
-        .card-header {
-            padding: 1rem 1.35rem;
-            margin-bottom: 0;
-            background-color: rgba(33, 40, 50, 0.03);
-            border-bottom: 1px solid rgba(33, 40, 50, 0.125);
-        }
+    .card-header {
+        padding: 1rem 1.35rem;
+        margin-bottom: 0;
+        background-color: rgba(33, 40, 50, 0.03);
+        border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+    }
 
-        .form-control,
-        .dataTable-input {
-            display: block;
-            width: 100%;
-            padding: 0.875rem 1.125rem;
-            font-size: 0.875rem;
-            font-weight: 400;
-            line-height: 1;
-            color: #69707a;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid #7e8082;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            border-radius: 0.35rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
+    .form-control,
+    .dataTable-input {
+        display: block;
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1;
+        color: #69707a;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #7e8082;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.35rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
 
-        .nav-borders .nav-link.active {
-            color: #0061f2;
-            border-bottom-color: #0061f2;
-        }
+    .nav-borders .nav-link.active {
+        color: #0061f2;
+        border-bottom-color: #0061f2;
+    }
 
-        .nav-borders .nav-link {
-            color: #69707a;
-            border-bottom-width: 0.125rem;
-            border-bottom-style: solid;
-            border-bottom-color: transparent;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-left: 0;
-            padding-right: 0;
-            margin-left: 1rem;
-            margin-right: 1rem;
-        }
-    </style>
-        <div class="row justify-content-center align-items-center g-2">
-            <div class="col-sm-6">
-                <div class="text-center pt-3" style="height: 60px; background-color: #fff;">
-                    <h4 id="addAddressModalLabel">Edit Address</h4>
-                </div>
-                <form method="post" action="/editAddress?addressId=<%= address._id %>" onsubmit="return validation()" style="background-color: #fff;">
-                    <div class="form-row px-3">
-                        <div class="col">
-                            <label for="address">Name:</label>
-                            <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter your Name" value="<%= address.name %>">
-                            <span id="errorName" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-row px-3">
-                        <div class="col">
-                            <label for="address">Mobile:</label>
-                            <input type="text" class="form-control" id="Mobile" name="Mobile" placeholder="Enter your Mobile number" value="<%= address.mobile %>">
-                            <span id="errorMobile" class="text-danger"></span>
-                        </div>
-                        <div class="col">
-                            <label for="address">Pincode:</label>
-                            <input type="text" class="form-control" id="Pincode" name="Pincode" placeholder="Enter Pincode" value="<%= address.pincode %>">
-                            <span id="errorPincode" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-row px-3">
-                        <div class="col">
-                            <label for="address">State:</label>
-                            <input type="text" class="form-control" id="State" name="State" placeholder="Enter state" value="<%= address.state %>">
-                            <span id="errorState" class="text-danger"></span>
-                        </div>
-                        <div class="col">
-                            <label for="address">District:</label>
-                            <input type="text" class="form-control" id="District" name="District" placeholder="Enter District" value="<%= address.dist %>">
-                            <span id="errorDistrict" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-row px-3">
-                        <div class="col">
-                            <label for="address">City:</label>
-                            <input type="text" class="form-control" id="City" name="City" placeholder="Enter City" value="<%= address.city %>">
-                            <span id="errorCity" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-group px-3">
-                        <label for="address">House Address:</label>
-                        <input type="text" class="form-control" id="houseAddress" name="houseAddress" placeholder="Enter House Address" value="<%= address.houseName %>">
-                        <span id="errorhouseAddress" class="text-danger"></span>
-                    </div>
-                    <div class="form-row px-3">
-                        <div class="col-6">
-                            <label>House No:</label>
-                            <input type="text" class="form-control" id="houseNumber" name="houseNumber" placeholder="Enter House Number" value="<%= address.houseNo %>">
-                            <span id="errorhouseNumber" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="text-center mb-2">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </form>
-            </div>
+    .nav-borders .nav-link {
+        color: #69707a;
+        border-bottom-width: 0.125rem;
+        border-bottom-style: solid;
+        border-bottom-color: transparent;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+</style>
+<div class="row justify-content-center align-items-center g-2">
+    <div class="col-sm-6">
+        <div class="text-center pt-3" style="height: 60px; background-color: #fff;">
+            <h4 id="addAddressModalLabel">Edit Address</h4>
         </div>
-        
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript"></script>
-<script>
-        function validation(){
-            const name=document.getElementById('Name').value.trim();
-            const mobile = document.getElementById('Mobile').value.trim();
-            const pincode=document.getElementById('Pincode').value.trim()
-            const state=document.getElementById('State').value.trim()
-            const district=document.getElementById('District').value.trim()
-            const city=document.getElementById('City').value.trim()
-            const houseAddress=document.getElementById('houseAddress').value.trim()
-            const houseNo=document.getElementById('houseNumber').value.trim()
+        <form method="post" action="/editAddress?addressId=<%= address._id %>" onsubmit="return validation()" style="background-color: #fff;">
+            <div class="form-row px-3">
+                <div class="col">
+                    <label for="Name">Name:</label>
+                    <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter your Name" value="<%= address.name %>">
+                    <span id="errorName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row px-3">
+                <div class="col">
+                    <label for="Mobile">Mobile:</label>
+                    <input type="text" class="form-control" id="Mobile" name="Mobile" placeholder="Enter your Mobile number" value="<%= address.mobile %>">
+                    <span id="errorMobile" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label for="Pincode">Pincode:</label>
+                    <input type="text" class="form-control" id="Pincode" name="Pincode" placeholder="Enter Pincode" value="<%= address.pincode %>">
+                    <span id="errorPincode" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row px-3">
+                <div class="col">
+                    <label for="State">State:</label>
+                    <input type="text" class="form-control" id="State" name="State" placeholder="Enter state" value="<%= address.state %>">
+                    <span id="errorState" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label for="District">District:</label>
+                    <input type="text" class="form-control" id="District" name="District" placeholder="Enter District" value="<%= address.dist %>">
+                    <span id="errorDistrict" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row px-3">
+                <div class="col">
+                    <label for="City">City:</label>
+                    <input type="text" class="form-control" id="City" name="City" placeholder="Enter City" value="<%= address.city %>">
+                    <span id="errorCity" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group px-3">
+                <label for="houseAddress">House Address:</label>
+                <input type="text" class="form-control" id="houseAddress" name="houseAddress" placeholder="Enter House Address" value="<%= address.houseName %>">
+                <span id="errorhouseAddress" class="text-danger"></span>
+            </div>
+            <div class="form-row px-3">
+                <div class="col-6">
+                    <label for="houseNumber">House No:</label>
+                    <input type="text" class="form-control" id="houseNumber" name="houseNumber" placeholder="Enter House Number" value="<%= address.houseNo %>">
+                    <span id="errorhouseNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="text-center mb-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
 
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    function validation() {
+        const name = document.getElementById('Name').value.trim();
+        const mobile = document.getElementById('Mobile').value.trim();
+        const pincode = document.getElementById('Pincode').value.trim();
+        const state = document.getElementById('State').value.trim();
+        const district = document.getElementById('District').value.trim();
+        const city = document.getElementById('City').value.trim();
+        const houseAddress = document.getElementById('houseAddress').value.trim();
+        const houseNo = document.getElementById('houseNumber').value.trim();
 
+        // Clear previous errors
+        document.getElementById('errorName').innerText = '';
+        document.getElementById('errorMobile').innerText = '';
+        document.getElementById('errorPincode').innerText = '';
+        document.getElementById('errorState').innerText = '';
+        document.getElementById('errorDistrict').innerText = '';
+        document.getElementById('errorCity').innerText = '';
+        document.getElementById('errorhouseAddress').innerText = '';
+        document.getElementById('errorhouseNumber').innerText = '';
 
+        let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+        let mobileRegex = /^\d{10}$/;
+        let pincodeRegex = /^.{6,}$/;
+        let stateRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+        let districtRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+        let cityRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+        let houseAddressRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+        let houseNoRegex = /^.{4,}$/;
 
-            document.getElementById('errorName').innerText = '';
-            document.getElementById('errorMobile').innerText = '';
-            document.getElementById('errorPincode').innerText = '';
-            document.getElementById('errorState').innerText = '';
-            document.getElementById('errorDistrict').innerText = '';
-            document.getElementById('errorCity').innerText = '';
-            document.getElementById('errorhouseAddress').innerText = '';
-            document.getElementById('errorhouseNumber').innerText = '';
-
-            let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
-            const mobileRegex = /^\d{10}$/;
-            let pincodeRegex = /^.{6,}$/;
-            let stateRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
-            let cityRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
-            let districtRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
-            let houseAddressRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
-            let houseNoRegex =  /^.{4,}$/;
-
-            if(name===''){
-                errorName.innerText='name cannot be empty';
-                return false;
-            }else if(!nameRegex.test(name)){
-                errorName.innerText='name can only contain letters and spaces';
-                return false;
-            }else if(name.charAt(0)===''){
-                errorName.innerText='please remove the space'
-                return false
-            }
-
-            if (email === "") {
-                errorEmail.innerText = "Email cannot be empty";
-                return false;
-            } else if (!emailRegex.test(email)) {
-                errorEmail.innerText = " enter a valid email address";
-                return false;
-            }
-
-
-            if (pincode === "") {
-                errorPincode.innerText = "Pincode cannot be empty";
-                return false;
-            } else if (!pincodeRegex.test(pincode)) {
-                errorPincode.innerText = "Pincode must be at least 5 characters";
-                return false;
-            }
-
-            if (state=== "") {
-                errorState.innerText = "State cannot be empty";
-                return false;
-            } else if (!stateRegex.test(state)) {
-                errorState.innerText = "state can only contain letters";
-                return false;
-            }
-
-            if ( district=== "") {
-                errorDistrict.innerText = "district cannot be empty";
-                return false;
-            } else if (!districtRegex.test(district)) {
-                errorDistrict.innerText = "district can only contain letters";
-                return false;
-            }
-
-            if ( city=== "") {
-                errorCity.innerText = "Email cannot be empty";
-                return false;
-            } else if (!cityRegex.test(city)) {
-                errorCity.innerText = "city can only contain letters";
-                return false;
-            }
-
-            if (houseAddress === "") {
-                errorhouseAddress.innerText = "Email cannot be empty";
-                return false;
-            } else if (!houseAddressRegex.test(houseAddress)) {
-                errorhouseAddress.innerText = "house address can only contain letters";
-                return false;
-            }
-            if (houseNo === "") {
-                errorhouseNumber.innerText = "Email cannot be empty";
-                return false;
-            } else if (!houseNoRegex.test(houseNo)) {
-                errorhouseNumber.innerText = "house number can only contain numbers";
-                return false;
-            }                 
-            
-            return true;  
+        if (name === '') {
+            document.getElementById('errorName').innerText = 'Name cannot be empty';
+            return false;
+        } else if (!nameRegex.test(name)) {
+            document.getElementById('errorName').innerText = 'Name can only contain letters and spaces';
+            return false;
         }
+
+        if (mobile === '') {
+            document.getElementById('errorMobile').innerText = 'Mobile number cannot be empty';
+            return false;
+        } else if (!mobileRegex.test(mobile)) {
+            document.getElementById('errorMobile').innerText = 'Enter a valid 10-digit mobile number';
+            return false;
+        }
+
+        if (pincode === '') {
+            document.getElementById('errorPincode').innerText = 'Pincode cannot be empty';
+            return false;
+        } else if (!pincodeRegex.test(pincode)) {
+            document.getElementById('errorPincode').innerText = 'Pincode must be at least 6 characters';
+            return false;
+        }
+
+        if (state === '') {
+            document.getElementById('errorState').innerText = 'State cannot be empty';
+            return false;
+        } else if (!stateRegex.test(state)) {
+            document.getElementById('errorState').innerText = 'State can only contain letters';
+            return false;
+        }
+
+        if (district === '') {
+            document.getElementById('errorDistrict').innerText = 'District cannot be empty';
+            return false;
+        } else if (!districtRegex.test(district)) {
+            document.getElementById('errorDistrict').innerText = 'District can only contain letters';
+            return false;
+        }
+
+        if (city === '') {
+            document.getElementById('errorCity').innerText = 'City cannot be empty';
+            return false;
+        } else if (!cityRegex.test(city)) {
+            document.getElementById('errorCity').innerText = 'City can only contain letters';
+            return false;
+        }
+
+        if (houseAddress === '') {
+            document.getElementById('errorhouseAddress').innerText = 'House Address cannot be empty';
+            return false;
+        } else if (!houseAddressRegex.test(houseAddress)) {
+            document.getElementById('errorhouseAddress').innerText = 'House Address can only contain letters';
+            return false;
+        }
+
+        if (houseNo === '') {
+            document.getElementById('errorhouseNumber').innerText = 'House Number cannot be empty';
+            return false;
+        } else if (!houseNoRegex.test(houseNo)) {
+            document.getElementById('errorhouseNumber').innerText = 'House Number must be at least 4 characters';
+            return false;
+        }
+
+        return true;
+    }
 </script>
-        <%-include('../layouts/footbar') %>
-            <%-include('../layouts/footer') %>
+
+<%-include('../layouts/footbar') %>
+<%-include('../layouts/footer') %>

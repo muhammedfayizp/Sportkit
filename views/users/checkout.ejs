@@ -259,7 +259,6 @@
             .modal {
                 display: none;
                 position: fixed;
-                z-index: 1;
                 left: 0;
                 top: 0;
                 width: 100%;
@@ -287,7 +286,43 @@
                 cursor: pointer;
             }
 
-            
+            @media (max-width: 576px) {
+
+                .discount-container,
+                .right-container {
+                    flex-direction: column;
+                }
+
+                .action-buttons button {
+                    width: 100%;
+                    margin: 5px 0;
+                }
+
+                .discount-container,
+                .checkout {
+                    padding: 10px;
+                }
+
+                .form-control,
+                .action-buttons button {
+                    padding: 10px 15px;
+                }
+
+                .view-button,
+                .copy-button button {
+                    padding: 7px 15px;
+                }
+
+                .modal-content {
+                    width: 90%;
+                    margin: 5% auto;
+                }
+
+                .card-body-1 {
+                    width: 95%;
+                    margin: 10px auto;
+                }
+            }
         </style>
         <main class="main">
             <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
@@ -311,12 +346,13 @@
 
                         <div class="discount-container">
                             <div class="view-button-container">
-                                <button class="view-button" onclick="toggleCoupons()">View</button>
+                                <button class="view-button" onclick="toggleCoupons()"
+                                    aria-label="Toggle Coupons">View</button>
                             </div>
                             <div id="myModal" class="modal">
                                 <div class="modal-content">
                                     <span class="close" onclick="closeModal()">&times;</span>
-                                    <div id="couponSection" class="col-md-12 col-xl-8 hidden">
+                                    <div id="couponSection" class="col-lg-12 col-md-6 hidden">
                                         <div class="card">
                                             <div class="card-header">My Coupons</div>
                                             <% if (coupons && coupons.length> 0) { %>
@@ -345,9 +381,10 @@
                                                                     <hr class="line">
                                                                     <div class="copy-button">
                                                                         <div class="input-container">
-                                                                            <input id="copyvalue" type="text" readonly
+                                                                            <input id="copyvalue-<%= index %>"
+                                                                                type="text" readonly
                                                                                 value="<%= item.couponCode %>">
-                                                                            <button onclick="copyIt('<%= item._id %>')"
+                                                                            <button onclick="copyIt('<%= index %>')"
                                                                                 class="copybtn">COPY</button>
                                                                         </div>
                                                                     </div>
@@ -380,8 +417,10 @@
                                     </form>
                                 </div>
                                 <div class="action-buttons">
-                                    <button type="submit" form="coupon-form" id="apply-coupon">Apply</button>
-                                    <button type="reset" form="coupon-form" id="remove-coupon">Remove</button>
+                                    <button type="submit" form="coupon-form" id="apply-coupon"
+                                        aria-label="Apply Coupon">Apply</button>
+                                    <button type="reset" form="coupon-form" id="remove-coupon"
+                                        aria-label="Remove Coupon">Remove</button>
                                 </div>
                             </div>
                         </div>
@@ -766,8 +805,6 @@
                     return false
                 }
 
-
-
                 if (mobile === "") {
                     errorMobile.innerText = "Mobile number cannot be empty";
                     return false;
@@ -776,12 +813,11 @@
                     return false;
                 }
 
-
                 if (pincode === "") {
                     errorPincode.innerText = "Pincode cannot be empty";
                     return false;
                 } else if (!pincodeRegex.test(pincode)) {
-                    errorPincode.innerText = "Pincode must be at least 5 characters";
+                    errorPincode.innerText = "Pincode must be at least 6 number";
                     return false;
                 }
 
@@ -821,7 +857,7 @@
                     errorhouseNumber.innerText = "Email cannot be empty";
                     return false;
                 } else if (!houseNoRegex.test(houseNo)) {
-                    errorhouseNumber.innerText = "house number can only contain numbers";
+                    errorhouseNumber.innerText = "house number can only contain 4 numbers";
                     return false;
                 }
 
@@ -846,45 +882,50 @@
                         },
                         body: body,
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Order Successful',
-                                text: data.message || 'Your order was placed successfully!',
-                            }).then(() => {
-                                window.location.href = '/';
-                            });
-                        } else {
-                            let title = 'Order Failed';
-                            let text = data.message;
-                            let icon = 'error';
-                            if (data.message === 'not_available') {
-                                title = 'Error';
-                                text = 'Cash on delivery not available for purchases above 2500';
-                            } else if (data.message === 'no_wallet') {
-                                title = 'No Wallet';
-                                text = 'You have no wallet';
-                            } else if (data.message === 'insufficient_balance') {
-                                title = 'Insufficient Balance';
-                                text = `You don't have enough balance in your wallet.`;
-                            } else if (data.message === 'your payment failed') {
-                                icon = 'info';
-                                text = 'Your payment failed';
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Order Successful',
+                                    text: data.message || 'Your order was placed successfully!',
+                                }).then(() => {
+                                    window.location.href = '/';
+                                });
+                            } else {
+                                if (data.message === 'not_available') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Cash on delivery not available for purchases above 2500',
+                                    })
+
+                                } else if (data.message === 'no_wallet') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title : 'No Wallet',
+                                        text : 'You have no wallet',
+                                    })
+                                } else if (data.message === 'insufficient_balance') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title : 'Insufficient Balance',
+                                        text : `You don't have enough balance in your wallet.`,
+                                    })
+                                } else if (data.message === 'your payment failed') {
+                                    Swal.fire({
+                                        icon : 'info',
+                                        title : 'balance non',
+                                        text : 'Your payment failed',
+                                    }).then(() => {
+                                        window.location.href = '/orderHistoryList';
+                                    });
+                                }
                             }
-                            Swal.fire({
-                                icon: icon,
-                                title: title,
-                                text: text,
-                            }).then(() => {
-                                window.location.href = '/orderHistoryList';
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
                 }
 
                 let totalCartPrice = $('#cart-total-price').text().replace('₹', '').trim();
@@ -1004,6 +1045,16 @@
             function closeModal() {
                 var modal = document.getElementById('myModal');
                 modal.style.display = 'none';
+            }
+        </script>
+
+        <script>
+            function copyIt(index) {
+                let copyInput = document.querySelector('#copyvalue-' + index);
+                copyInput.select();
+                document.execCommand("copy");
+                let copybtn = copyInput.nextElementSibling;
+                copybtn.textContent = "COPIED";
             }
         </script>
         <%-include('../layouts/footbar') %>

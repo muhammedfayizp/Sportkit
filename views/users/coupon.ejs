@@ -214,8 +214,8 @@
                                         <hr class="line">
                                         <div class="copy-button">
                                             <div class="input-container">
-                                                <input id="copyvalue" type="text" readonly value="<%= item.couponCode %>">
-                                                <button onclick="copyIt('<%= item._id %>')" class="copybtn">COPY</button>
+                                                <input id="copyvalue-<%= index %>" type="text" readonly value="<%= item.couponCode %>" >
+                                                <button onclick="copyIt('<%= index %>')" class="copybtn">COPY</button>
                                             </div>
                                         </div>
                                         <p class="d-flex justify-content-end mt-4 text-dark">
@@ -255,12 +255,12 @@
 </div>
 
 <script>
-    let copybtn = document.querySelector(".copybtn");
-    function copyIt(){
-    let copyInput = document.querySelector('#copyvalue');
-    copyInput.select();
-    document.execCommand("copy");
-    copybtn.textContent = "COPIED";
+    function copyIt(index) {
+        let copyInput = document.querySelector('#copyvalue-' + index);
+        copyInput.select();
+        document.execCommand("copy");
+        let copybtn = copyInput.nextElementSibling;
+        copybtn.textContent = "COPIED";
     }
 </script>
 

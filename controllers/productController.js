@@ -143,59 +143,61 @@ const productEditing = async (req, res) => {
     try {
         upload(req, res, async function (error) {
             if (error) {
-                return res.status(500).json({ success: false, message: 'Image upload failed' });
+                return res.json({ success: false, message: 'Image upload failed' });
             }
-
+                
             const productId = req.query.id;
-            const { name, price, quantity, category, description} = req.body;
-            let {removedImages}=req.body
+            let { name, price, quantity, category, description, removedImages } = req.body;
 
             if (!category || category === "") {
                 req.flash('errmsg', 'Please select a valid category.');
                 return res.redirect(`/admin/editProduct?id=${productId}`);
             }
 
-            let existProduct = await Product.findById(productId);
+            let existingProduct = await Product.findById(productId);
 
-            existProduct.name = name;
-            existProduct.price = price;
-            existProduct.quantity = quantity;
-            existProduct.category = category;
-            existProduct.description = description;
+            if (existingProduct.Inputimage.length < 4) {
+                res.json({ success: false, message: 'Maximum of 4 images allowed.' });
+            }
+
+            existingProduct.name = name;
+            existingProduct.price = price;
+            existingProduct.quantity = quantity;
+            existingProduct.category = category;
+            existingProduct.description = description;
+
+            let imagesRemoved = false;
+            if (imagesRemoved && (!req.files || req.files.length === 0)) {
+                return res.json({ success: false, message: 'Please add at least one new image after removing an existing one.' });
+            }
 
             if (removedImages) {
-                removedImages = JSON.parse(removedImages);
-                removedImages.forEach(index => {
-                    existProduct.Inputimage.splice(index, 1);
+                const removedImageIndexes = JSON.parse(removedImages);
+                removedImageIndexes.forEach(index => {
+                    existingProduct.Inputimage.splice(index, 1);
                 });
+                imagesRemoved = removedImageIndexes.length > 0;
             }
 
-            if (existProduct.Inputimage.length > 4) {
-                return res.status(400).json({ success: false, message: 'Maximum of 4 images allowed.' });
-            }
-
+            
             if (req.files && req.files.length > 0) {
                 const newImages = req.files.map(file => ({
                     filename: file.filename,
                     path: '/IMAGES/' + file.filename
                 }));
-
-                if (existProduct.Inputimage.length + newImages.length > 4) {
-                    return res.status(400).json({ success: false, message: 'Maximum of 4 images allowed.' });
+                if (existingProduct.Inputimage.length + newImages.length > 4) {
+                    return res.json({ success: false, message: 'Maximum of 4 images allowed.' });
                 }
-
-                existProduct.Inputimage.push(...newImages);
+                existingProduct.Inputimage.push(...newImages);
             }
 
-            await existProduct.save();
+            await existingProduct.save();
             res.json({ success: true });
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('Error:', error);
     }
 };
-
 
 
 module.exports={
