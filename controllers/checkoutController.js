@@ -238,7 +238,7 @@ const placeOrder = async (req, res) => {
             if(refUserWallet){
                 refUserWallet.balance+=30
                 refUserWallet.history.push({
-                    amount: 25,
+                    amount: 30,
                     method: 'Referral',
                     transactionType: 'credit',
                     currentAmount: refUserWallet.balance
@@ -246,12 +246,12 @@ const placeOrder = async (req, res) => {
             }else{
                 const walletAddMoney=new Wallet({
                     UserId:referralUser._id,
-                    balance:25,
+                    balance:30,
                     history: [{
-                        amount: 25,
+                        amount: 30,
                         transactionType: 'credit',
                         method: 'Referral',
-                        currentAmount: 25
+                        currentAmount: 30   
                     }]
                 })
                 await walletAddMoney.save()
