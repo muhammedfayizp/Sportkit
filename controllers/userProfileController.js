@@ -31,11 +31,11 @@ const loadUserProfile = async (req, res) => {
                 res.redirect('/login')
             } else {
 
-                res.render('userProfile', { userData,categories})
+                res.render('userProfile', { userData,categories,baseUrl: process.env.BASE_URL})
             }
 
         } else {
-            res.render('userProfile', { products,categories})
+            res.render('userProfile', { products,categories,baseUrl: process.env.BASE_URL})
         }
 
     } catch (error) {
