@@ -28,7 +28,9 @@ app.use('/admin',adminRoute)
 app.use('/',authRoute)
 
 
-mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit")
+// mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit")
+
+mongoose.connect("mongodb://localhost:27017/sportkit")
 .then(()=>{
     console.log("Mongodb Connected");
 }).catch((err)=>{
