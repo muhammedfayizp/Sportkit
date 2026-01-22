@@ -10,8 +10,6 @@ const nocache=require('nocache')
 const userRoute=require('./Routes/userRoute');
 const adminRoute=require('./Routes/adminRoute');
 
-// const MONGODB = "mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit"
-
 
 app.use(flash())
 app.use(nocache())
@@ -28,11 +26,6 @@ app.use('/admin',adminRoute)
 
 app.use('/',authRoute)
 
-
-// mongoose.connect("mongodb+srv://fayizp6235:W7pTg7rpACHd2lnD@sportkit.7wgll3e.mongodb.net/?appName=sportkit")
-
-// mongoose.connect("mongodb://localhost:27017/sportkit")
-console.log("mongo =", process.env.MONGODB_URI);
 
 mongoose.connect(process.env.MONGODB_URI)
 .then(()=>{
