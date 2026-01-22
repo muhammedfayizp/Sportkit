@@ -23,6 +23,7 @@ const loadUserProfile = async (req, res) => {
         const user = req.session.user
         const categories=await Category.find({is_Listed:true})
         const products=await Product.find({is_delete:true})
+
         if (user) {
             const userData = await User.findById(user)
 
