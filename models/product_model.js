@@ -1,6 +1,5 @@
         const mongoose=require('mongoose');
         const Category=require('./category_model');
-        const { path } = require('../Routes/userRoute');
         const productSchema=mongoose.Schema({
             name:{
                 type:String,

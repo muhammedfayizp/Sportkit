@@ -1,237 +1,270 @@
-<%-include('../layouts/header')%>
-<%-include('../layouts/navbar')%>
+<%-include('.. /layouts/header')%>
+    <%-include('.. /layouts/navbar')%>
 
-<style>
-    .product-gallery-item {
-    border: 1px solid #ccc;
-    padding: 5px;
-    margin-right: 10px;
-    cursor: pointer;
-}
+        <style>
+            .product-gallery-item {
+                border: 1px solid #ccc;
+                padding: 5px;
+                margin-right: 10px;
+                cursor: pointer;
+            }
 
-.product-gallery-item:hover {
-    border-color: #333;
-}
-@media (max-width: 767px) {
-    .product-details-action {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+            .product-gallery-item:hover {
+                border-color: #333;
+            }
 
-    .product-details-action .btn-product {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+            @media (max-width: 767px) {
+                .product-details-action {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
 
-    .product-details-action .btn-product:last-child {
-        margin-bottom: 0;
-    }
-}
-</style>
+                .product-details-action .btn-product {
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
 
-<main class="main">
-    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-        <div class="container d-flex align-items-center">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="/product">Products</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><a href="">Details</a></li>
-            </ol>
-        </div><!-- End .container -->
-    </nav><!-- End .breadcrumb-nav -->
-    
+                .product-details-action .btn-product:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        </style>
 
-    <div class="page-content">
-        <div class="container">
-            <div class="product-details-top">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="product-gallery product-gallery-vertical">
-                            <div class="row">
-                                <figure class="product-main-image" style="width: 400px;">
-                                    <img id="product-zoom" src="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product image">
-                                </figure>
-                                
-                                <div id="product-zoom-gallery" class="product-image-gallery">
-                                    <a class="product-gallery-item active" href="#" data-image="/IMAGES/<%=products.Inputimage[0].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[0].filename %>" alt="product side">
-                                    </a>
-                                        
-                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[1].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[1].filename %>" alt="product cross">
-                                    </a>
-                                        
-                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[2].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[2].filename %>" alt="product with model">
-                                    </a>
-                                        
-                                    <a class="product-gallery-item" href="#" data-image="/IMAGES/<%=products.Inputimage[3].filename %>" data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
-                                        <img src="/IMAGES/<%=products.Inputimage[3].filename %>" alt="product back">
-                                    </a>
+        <main class="main">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+                <div class="container d-flex align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/product">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="">Details</a></li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+
+
+            <div class="page-content">
+                <div class="container">
+                    <div class="product-details-top">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="product-gallery product-gallery-vertical">
+                                    <div class="row">
+                                        <% if (products && products.Inputimage && products.Inputimage.length) { %>
+
+                                            <figure class="product-main-image" style="width: 400px;">
+                                                <img id="product-zoom"
+                                                    src="/IMAGES/<%=products.Inputimage[0].filename %>"
+                                                    data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>"
+                                                    alt="product image">
+                                            </figure>
+
+                                            <div id="product-zoom-gallery" class="product-image-gallery">
+                                                <a class="product-gallery-item active" href="#"
+                                                    data-image="/IMAGES/<%=products.Inputimage[0].filename %>"
+                                                    data-zoom-image="/IMAGES/<%=products.Inputimage[0].filename %>">
+                                                    <img src="/IMAGES/<%=products.Inputimage[0].filename %>"
+                                                        alt="product side">
+                                                </a>
+
+                                                <a class="product-gallery-item" href="#"
+                                                    data-image="/IMAGES/<%=products.Inputimage[1].filename %>"
+                                                    data-zoom-image="/IMAGES/<%=products.Inputimage[1].filename %>">
+                                                    <img src="/IMAGES/<%=products.Inputimage[1].filename %>"
+                                                        alt="product cross">
+                                                </a>
+
+                                                <a class="product-gallery-item" href="#"
+                                                    data-image="/IMAGES/<%=products.Inputimage[2].filename %>"
+                                                    data-zoom-image="/IMAGES/<%=products.Inputimage[2].filename %>">
+                                                    <img src="/IMAGES/<%=products.Inputimage[2].filename %>"
+                                                        alt="product with model">
+                                                </a>
+
+                                                <a class="product-gallery-item" href="#"
+                                                    data-image="/IMAGES/<%=products.Inputimage[3].filename %>"
+                                                    data-zoom-image="/IMAGES/<%=products.Inputimage[3].filename %>">
+                                                    <img src="/IMAGES/<%=products.Inputimage[3].filename %>"
+                                                        alt="product back">
+                                                </a>
+                                            </div>
+                                            <% } %>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-
-                    <div class="col-md-6">
-                        <div class="product-details">
-                            <h1 class="product-title"><%= products.name %></h1><!-- End .product-title -->
-
-                            <div class="product-price mt-5">
-                               ₹ <%= products.price%>
-                            </div><!-- End .product-price -->
-
-                            <div class="product-content mt-2 mb-5">
-                                <h3>Description</h3>
-                                <p><%= products.description %> </p>
-                            </div><!-- End .product-content -->
-                            <% if(userData) { %>
-                                <div class="product-details-action">
-                                    <button class="btn-product" onclick="addtocart('<%= products._id %>')"><span>add to cart</span></button>
-                                    <div class="product-details-action pt-3 pl-4">
-                                        <button class="btn-product" onclick="addtoWishlist('<%= products._id %>')"><span>add to wishlist</span></button>
-                                    </div><!-- End .details-action-wrapper -->
-                                </div><!-- End .product-details-action -->
-                            <% } else { %>
-                                <div class="product-details-action">
-                                    <a href="/login" class="btn-product"><span>add to cart</span></a>
-                                    <div class="product-details-action pt-3 pl-4">
-                                        <a href="/login" class="btn-product btn-wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .details-action-wrapper -->
-                                </div><!-- End .product-details-action -->
-                            <% } %>
-                            
-                            <div class="product-details-footer">
-                                <div class="social-icons social-icons-sm">
-                                    <span class="social-label">Share:</span>
-                                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-                                </div>
-                            </div><!-- End .product-details-footer -->
-                        </div><!-- End .product-details -->
-                    </div><!-- End .col-md-6 -->
-                </div><!-- End .row -->
-            </div><!-- End .product-details-top -->  
-        </div><!-- End .container -->
-    </div><!-- End .page-content -->
-</main>
-
-<script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
 
 
-<script>
-    function addtocart(productId){
-        const quantity=1;
-        fetch(`/addToCart?productId=${productId}&quantity=${quantity}`,{
-            method:'post'})
-            .then(response=>response.json())
-            .then(data=>{
-                if(data.success){
-                    Swal.fire({
-                        icon:'success',
-                        title:'Success',
-                        text:'successfully product added to cart',
-                        showConfiremButton:false,
-                        timer:2500,
-                    })
-                    .then(()=>{
-                        window.location.reload()
-                    });
-                }else if(data.message=='out of stock'){
-                    Swal.fire(
-                        'error',
-                        'out of stock',
-                        'error'
-                    )
-                }else{
-                    Swal.fire({
-                        icon:'error',
-                        title:'Error',
-                        text:'failed to add product to cart',
-                        showConfiremButton:false,
-                        timer:2500
-                    })
-                }
-            })
-            .catch(error=>{
-                console.log(error);
-                Swal.fire({
-                    icon:'error',
-                    title:'Error',
-                    text:'an error occurred whiel adding product to cart',
-                    showConfiremButton:false,
-                    timer:2500
+                            <div class="col-md-6">
+                                <div class="product-details">
+                                    <h1 class="product-title">
+                                        <%= products.name %>
+                                    </h1><!-- End .product-title -->
+
+                                    <div class="product-price mt-5">
+                                        ₹ <%= products.price%>
+                                    </div><!-- End .product-price -->
+
+                                    <div class="product-content mt-2 mb-5">
+                                        <h3>Description</h3>
+                                        <p>
+                                            <%= products.description %>
+                                        </p>
+                                    </div><!-- End .product-content -->
+                                    <% if(userData) { %>
+                                        <div class="product-details-action">
+                                            <button class="btn-product"
+                                                onclick="addtocart('<%= products._id %>')"><span>add to
+                                                    cart</span></button>
+                                            <div class="product-details-action pt-3 pl-4">
+                                                <button class="btn-product"
+                                                    onclick="addtoWishlist('<%= products._id %>')"><span>add to
+                                                        wishlist</span></button>
+                                            </div><!-- End .details-action-wrapper -->
+                                        </div><!-- End .product-details-action -->
+                                        <% } else { %>
+                                            <div class="product-details-action">
+                                                <a href="/login" class="btn-product"><span>add to cart</span></a>
+                                                <div class="product-details-action pt-3 pl-4">
+                                                    <a href="/login" class="btn-product btn-wishlist"><span>add to
+                                                            wishlist</span></a>
+                                                </div><!-- End .details-action-wrapper -->
+                                            </div><!-- End .product-details-action -->
+                                            <% } %>
+
+                                                <div class="product-details-footer">
+                                                    <div class="social-icons social-icons-sm">
+                                                        <span class="social-label">Share:</span>
+                                                        <a href="#" class="social-icon" title="Facebook"
+                                                            target="_blank"><i class="icon-facebook-f"></i></a>
+                                                        <a href="#" class="social-icon" title="Twitter"
+                                                            target="_blank"><i class="icon-twitter"></i></a>
+                                                        <a href="#" class="social-icon" title="Instagram"
+                                                            target="_blank"><i class="icon-instagram"></i></a>
+                                                        <a href="#" class="social-icon" title="Pinterest"
+                                                            target="_blank"><i class="icon-pinterest"></i></a>
+                                                    </div>
+                                                </div><!-- End .product-details-footer -->
+                                </div><!-- End .product-details -->
+                            </div><!-- End .col-md-6 -->
+                        </div><!-- End .row -->
+                    </div><!-- End .product-details-top -->
+                </div><!-- End .container -->
+            </div><!-- End .page-content -->
+        </main>
+
+        <script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
+
+
+        <script>
+            function addtocart(productId) {
+                const quantity = 1;
+                fetch(`/addToCart?productId=${productId}&quantity=${quantity}`, {
+                    method: 'post'
                 })
-            })
-    }
-</script>
-
-<script>
-    function addtoWishlist(productId){
-        fetch('/addToWishlist',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({productId})
-        })
-        .then(response=>response.json())
-        .then(data=>{
-            if(data.success){
-                Swal.fire(
-                    'Success',
-                    'successfully product added to wishlist',
-                    'success'
-                )
-            }else{
-                Swal.fire(
-                    'Failed',
-                    'your wishlist adding failed',
-                    'error'
-                )
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'successfully product added to cart',
+                                showConfiremButton: false,
+                                timer: 2500,
+                            })
+                                .then(() => {
+                                    window.location.reload()
+                                });
+                        } else if (data.message == 'out of stock') {
+                            Swal.fire(
+                                'error',
+                                'out of stock',
+                                'error'
+                            )
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'failed to add product to cart',
+                                showConfiremButton: false,
+                                timer: 2500
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'an error occurred whiel adding product to cart',
+                            showConfiremButton: false,
+                            timer: 2500
+                        })
+                    })
             }
-        })
-    }
-</script>
+        </script>
 
-<script>
-    $(document).ready(function() {
-        $("#product-zoom").elevateZoom({
-            zoomType: "inner",
-            cursor: "crosshair",
-            zoomWindowFadeIn: 500,
-            zoomWindowFadeOut: 750
-        });
+        <script>
+            function addtoWishlist(productId) {
+                fetch('/addToWishlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success',
+                                'successfully product added to wishlist',
+                                'success'
+                            )
+                        } else {
+                            Swal.fire(
+                                'Failed',
+                                'your wishlist adding failed',
+                                'error'
+                            )
+                        }
+                    })
+            }
+        </script>
 
-        $(".product-gallery-item").on("click", function(e) {
-            e.preventDefault();
-            var ezoom = $('#product-zoom').data('elevateZoom');
-            ezoom.swaptheimage($(this).data('image'), $(this).data('zoom-image'));
-            $(".product-gallery-item").removeClass("active");
-            $(this).addClass("active");
-        });
-    });
-</script>
+        <script>
+            $(document).ready(function () {
+                $("#product-zoom").elevateZoom({
+                    zoomType: "inner",
+                    cursor: "crosshair",
+                    zoomWindowFadeIn: 500,
+                    zoomWindowFadeOut: 750
+                });
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    const galleryItems = document.querySelectorAll('.product-gallery-item');
+                $(".product-gallery-item").on("click", function (e) {
+                    e.preventDefault();
+                    var ezoom = $('#product-zoom').data('elevateZoom');
+                    ezoom.swaptheimage($(this).data('image'), $(this).data('zoom-image'));
+                    $(".product-gallery-item").removeClass("active");
+                    $(this).addClass("active");
+                });
+            });
+        </script>
 
-    galleryItems.forEach(item => {
-        item.addEventListener('mouseover', function() {
-            const imageUrl = item.getAttribute('data-image');
-            const zoomImageUrl = item.getAttribute('data-zoom-image');
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const galleryItems = document.querySelectorAll('.product-gallery-item');
 
-            document.getElementById('product-zoom').src = imageUrl;
-            document.getElementById('product-zoom').setAttribute('data-zoom-image', zoomImageUrl);
-        });
-    });
-});
-</script>
+                galleryItems.forEach(item => {
+                    item.addEventListener('mouseover', function () {
+                        const imageUrl = item.getAttribute('data-image');
+                        const zoomImageUrl = item.getAttribute('data-zoom-image');
 
-<%-include('../layouts/footbar') %>
-<%-include('../layouts/footer') %>
+                        document.getElementById('product-zoom').src = imageUrl;
+                        document.getElementById('product-zoom').setAttribute('data-zoom-image', zoomImageUrl);
+                    });
+                });
+            });
+        </script>
+
+        <%-include('.. /layouts/footbar') %>
+            <%-include('.. /layouts/footer') %>

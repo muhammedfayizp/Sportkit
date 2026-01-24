@@ -1,6 +1,6 @@
 const express=require('express')
-require('dotenv').config();
 const app=express()
+require('dotenv').config();
 const mongoose=require('mongoose')
 const path=require('path')
 const authRoute=require('./authRoute')
@@ -13,9 +13,10 @@ const adminRoute=require('./Routes/adminRoute');
 
 app.use(flash())
 app.use(nocache())
-app.use(express.json());
 app.use(express.static(path.join(__dirname,'public')))
-app.use(express.urlencoded({extended:true}))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 //User Route
 app.use('/',userRoute)

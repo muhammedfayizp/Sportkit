@@ -184,6 +184,7 @@ const loadDetails = async (req, res) => {
         const categories = await Category.find({ is_Listed: true })
         const userData = await User.findOne({ _id: user })
 
+        
         res.render('productDetails', { products, categories, userData })
     } catch (error) {
         console.log(error);
