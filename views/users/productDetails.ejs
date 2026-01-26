@@ -1,5 +1,5 @@
-<%-include('.. /layouts/header')%>
-    <%-include('.. /layouts/navbar')%>
+<%-include('../layouts/header')%>
+    <%-include('../layouts/navbar')%>
 
         <style>
             .product-gallery-item {
@@ -50,7 +50,7 @@
                             <div class="col-md-6">
                                 <div class="product-gallery product-gallery-vertical">
                                     <div class="row">
-                                        <% if (products && products.Inputimage && products.Inputimage.length) { %>
+                                        <!-- <% if (products && products.Inputimage && products.Inputimage.length) { %> -->
 
                                             <figure class="product-main-image" style="width: 400px;">
                                                 <img id="product-zoom"
@@ -88,7 +88,7 @@
                                                         alt="product back">
                                                 </a>
                                             </div>
-                                            <% } %>
+                                            <!-- <% } %> -->
                                     </div>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
                                     </h1><!-- End .product-title -->
 
                                     <div class="product-price mt-5">
-                                        ₹ <%= products.price%>
+                                        ₹ <%= products.price %>
                                     </div><!-- End .product-price -->
 
                                     <div class="product-content mt-2 mb-5">
@@ -266,5 +266,5 @@
             });
         </script>
 
-        <%-include('.. /layouts/footbar') %>
-            <%-include('.. /layouts/footer') %>
+        <%-include('../layouts/footbar') %>
+            <%-include('../layouts/footer') %>
